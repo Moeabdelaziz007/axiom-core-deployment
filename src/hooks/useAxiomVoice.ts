@@ -63,6 +63,13 @@ export function useAxiomVoice() {
             // Speak the text
             window.speechSynthesis.speak(utterance);
 
+            // Add visual feedback for debugging
+            console.log('🎤 AVA Speaking:', text);
+            console.log('🔊 Voice:', utterance.voice ? utterance.voice.name : 'Default');
+            console.log('📝 Rate:', utterance.rate);
+            console.log('🎚 Pitch:', utterance.pitch);
+            console.log('🔊 Volume:', utterance.volume);
+
         } catch (error) {
             console.error('❌ AVA Error:', error);
             setIsPlaying(false);
