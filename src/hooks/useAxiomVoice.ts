@@ -52,49 +52,73 @@ export function useAxiomVoice() {
             setIsPlaying(true);
             console.log('🎤 AVA: Requesting speech...');
 
-            // 1. طلب الصوت من الخادم
+            // Try server-side TTS first
             const audioData = await fintechClient.speak(text);
 
-            if (!audioData) {
-                console.error('❌ AVA: No audio data received');
-                return;
+            if (audioData) {
+                // 2. تحويل Base64 إلى Float32Array
+                const binaryString = atob(audioData);
+                const pcmData = new Float32Array(binaryString.length / 4);
+                const dataView = new DataView(new Uint8Array(binaryString.split('').map(c => c.charCodeAt(0))).buffer);
+
+                for (let i = 0; i < pcmData.length; i++) {
+                    pcmData[i] = dataView.getFloat32(i * 4, true); // Little Endian
+                }
+
+                // 3. تحويل PCM إلى WAV
+                const wavBuffer = convertPCMToWav(pcmData);
+                const blob = new Blob([wavBuffer], { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+
+                // 4. تشغيل الصوت
+                const audio = new Audio(url);
+                audio.onended = () => {
+                    setIsPlaying(false);
+                    setHasPlayed(true);
+                    URL.revokeObjectURL(url);
+                };
+
+                await audio.play();
+                console.log('🔊 AVA: Speaking...');
+            } else {
+                throw new Error('No audio data from server');
             }
-
-            // 2. تحويل Base64 إلى Float32Array
-            const binaryString = atob(audioData);
-            const pcmData = new Float32Array(binaryString.length / 4);
-            const dataView = new DataView(new Uint8Array(binaryString.split('').map(c => c.charCodeAt(0))).buffer);
-
-            for (let i = 0; i < pcmData.length; i++) {
-                pcmData[i] = dataView.getFloat32(i * 4, true); // Little Endian
-            }
-
-            // 3. تحويل PCM إلى WAV
-            const wavBuffer = convertPCMToWav(pcmData);
-            const blob = new Blob([wavBuffer], { type: 'audio/wav' });
-            const url = URL.createObjectURL(blob);
-
-            // 4. تشغيل الصوت
-            const audio = new Audio(url);
-            audio.onended = () => {
-                setIsPlaying(false);
-                setHasPlayed(true);
-                URL.revokeObjectURL(url);
-            };
-
-            await audio.play();
-            console.log('🔊 AVA: Speaking...');
 
         } catch (error) {
-            console.error('❌ AVA Error:', error);
-            setIsPlaying(false);
+            console.error('❌ AVA Server TTS Error:', error);
+
+            // Fallback to browser speech synthesis
+            try {
+                console.log('🔄 AVA: Falling back to browser TTS...');
+
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.onend = () => {
+                        setIsPlaying(false);
+                        setHasPlayed(true);
+                    };
+                    utterance.onerror = (e) => {
+                        console.error('❌ AVA Browser TTS Error:', e);
+                        setIsPlaying(false);
+                    };
+
+                    speechSynthesis.speak(utterance);
+                    console.log('🔊 AVA: Speaking with browser TTS...');
+                } else {
+                    console.error('❌ AVA: Speech synthesis not supported');
+                    setIsPlaying(false);
+                }
+            } catch (fallbackError) {
+                console.error('❌ AVA Fallback Error:', fallbackError);
+                setIsPlaying(false);
+            }
         }
     }, [isPlaying]);
 
     // تشغيل ترحيب تلقائي مرة واحدة
     const playWelcome = useCallback(() => {
         if (!hasPlayed) {
-            speak("Welcome to Axiom SAAAAS. I am AVA, your quantum assistant. All systems are operational.");
+            speak("Welcome to Axiom Control. I am AVA, your assistant. All systems are operational.");
         }
     }, [hasPlayed, speak]);
 
