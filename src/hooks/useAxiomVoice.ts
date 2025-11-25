@@ -1,126 +1,83 @@
 import { useState, useCallback, useEffect } from 'react';
-import { fintechClient } from '@/lib/fintech-client';
 
 export function useAxiomVoice() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [hasPlayed, setHasPlayed] = useState(false);
+    const [isSupported, setIsSupported] = useState(false);
 
-    // 🛠️ تحويل PCM إلى WAV (لأن المتصفحات لا تشغل PCM خام مباشرة)
-    const convertPCMToWav = (pcmData: Float32Array, sampleRate: number = 24000) => {
-        const buffer = new ArrayBuffer(44 + pcmData.length * 2);
-        const view = new DataView(buffer);
-
-        // RIFF chunk descriptor
-        writeString(view, 0, 'RIFF');
-        view.setUint32(4, 36 + pcmData.length * 2, true);
-        writeString(view, 8, 'WAVE');
-
-        // fmt sub-chunk
-        writeString(view, 12, 'fmt ');
-        view.setUint32(16, 16, true);
-        view.setUint16(20, 1, true); // PCM format
-        view.setUint16(22, 1, true); // Mono
-        view.setUint32(24, sampleRate, true);
-        view.setUint32(28, sampleRate * 2, true);
-        view.setUint16(32, 2, true);
-        view.setUint16(34, 16, true);
-
-        // data sub-chunk
-        writeString(view, 36, 'data');
-        view.setUint32(40, pcmData.length * 2, true);
-
-        // Write PCM samples
-        let offset = 44;
-        for (let i = 0; i < pcmData.length; i++, offset += 2) {
-            const s = Math.max(-1, Math.min(1, pcmData[i]));
-            view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-        }
-
-        return buffer;
-    };
-
-    const writeString = (view: DataView, offset: number, string: string) => {
-        for (let i = 0; i < string.length; i++) {
-            view.setUint8(offset + i, string.charCodeAt(i));
-        }
-    };
+    // Check if speech synthesis is supported
+    useEffect(() => {
+        setIsSupported('speechSynthesis' in window);
+    }, []);
 
     const speak = useCallback(async (text: string) => {
-        if (isPlaying) return;
+        if (isPlaying || !isSupported) {
+            console.log('🎤 AVA: Speech not available or already playing');
+            return;
+        }
 
         try {
             setIsPlaying(true);
-            console.log('🎤 AVA: Requesting speech...');
+            console.log('🎤 AVA: Starting speech synthesis...');
 
-            // Try server-side TTS first
-            const audioData = await fintechClient.speak(text);
+            // Cancel any existing speech
+            window.speechSynthesis.cancel();
 
-            if (audioData) {
-                // 2. تحويل Base64 إلى Float32Array
-                const binaryString = atob(audioData);
-                const pcmData = new Float32Array(binaryString.length / 4);
-                const dataView = new DataView(new Uint8Array(binaryString.split('').map(c => c.charCodeAt(0))).buffer);
+            // Create new utterance
+            const utterance = new SpeechSynthesisUtterance(text);
 
-                for (let i = 0; i < pcmData.length; i++) {
-                    pcmData[i] = dataView.getFloat32(i * 4, true); // Little Endian
-                }
+            // Configure voice settings
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
 
-                // 3. تحويل PCM إلى WAV
-                const wavBuffer = convertPCMToWav(pcmData);
-                const blob = new Blob([wavBuffer], { type: 'audio/wav' });
-                const url = URL.createObjectURL(blob);
+            // Try to use a female voice if available
+            const voices = window.speechSynthesis.getVoices();
+            const femaleVoice = voices.find(voice =>
+                voice.name.includes('Female') ||
+                voice.name.includes('Samantha') ||
+                voice.name.includes('Karen') ||
+                voice.name.includes('Google US English Female')
+            );
 
-                // 4. تشغيل الصوت
-                const audio = new Audio(url);
-                audio.onended = () => {
-                    setIsPlaying(false);
-                    setHasPlayed(true);
-                    URL.revokeObjectURL(url);
-                };
-
-                await audio.play();
-                console.log('🔊 AVA: Speaking...');
-            } else {
-                throw new Error('No audio data from server');
+            if (femaleVoice) {
+                utterance.voice = femaleVoice;
             }
+
+            // Event handlers
+            utterance.onstart = () => {
+                console.log('🔊 AVA: Started speaking...');
+            };
+
+            utterance.onend = () => {
+                console.log('✅ AVA: Finished speaking');
+                setIsPlaying(false);
+                setHasPlayed(true);
+            };
+
+            utterance.onerror = (event) => {
+                console.error('❌ AVA Speech Error:', event);
+                setIsPlaying(false);
+            };
+
+            // Speak the text
+            window.speechSynthesis.speak(utterance);
 
         } catch (error) {
-            console.error('❌ AVA Server TTS Error:', error);
-
-            // Fallback to browser speech synthesis
-            try {
-                console.log('🔄 AVA: Falling back to browser TTS...');
-
-                if ('speechSynthesis' in window) {
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    utterance.onend = () => {
-                        setIsPlaying(false);
-                        setHasPlayed(true);
-                    };
-                    utterance.onerror = (e) => {
-                        console.error('❌ AVA Browser TTS Error:', e);
-                        setIsPlaying(false);
-                    };
-
-                    speechSynthesis.speak(utterance);
-                    console.log('🔊 AVA: Speaking with browser TTS...');
-                } else {
-                    console.error('❌ AVA: Speech synthesis not supported');
-                    setIsPlaying(false);
-                }
-            } catch (fallbackError) {
-                console.error('❌ AVA Fallback Error:', fallbackError);
-                setIsPlaying(false);
-            }
+            console.error('❌ AVA Error:', error);
+            setIsPlaying(false);
         }
-    }, [isPlaying]);
+    }, [isPlaying, isSupported]);
 
     // تشغيل ترحيب تلقائي مرة واحدة
     const playWelcome = useCallback(() => {
-        if (!hasPlayed) {
-            speak("Welcome to Axiom Control. I am AVA, your assistant. All systems are operational.");
+        if (!hasPlayed && isSupported) {
+            // Small delay to ensure voices are loaded
+            setTimeout(() => {
+                speak("Welcome to Axiom Control. I am AVA, your assistant. All systems are operational.");
+            }, 500);
         }
-    }, [hasPlayed, speak]);
+    }, [hasPlayed, isSupported, speak]);
 
-    return { speak, playWelcome, isPlaying };
+    return { speak, playWelcome, isPlaying, isSupported };
 }
