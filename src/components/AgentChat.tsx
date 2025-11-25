@@ -61,6 +61,16 @@ export const AgentChat = ({ agentId, agentName, agentType, onClose }: AgentChatP
                 };
 
                 setMessages(prev => [...prev, assistantMessage]);
+
+                // Log agent operations for debugging
+                if (data.tool_calls && data.tool_calls.length > 0) {
+                    console.log('🔧 Agent Operations:', {
+                        agent: agentId,
+                        agentType: agentType,
+                        tools_used: data.tool_calls.map(call => call.tool),
+                        timestamp: new Date().toISOString()
+                    });
+                }
             }
         } catch (error) {
             console.error('❌ Chat Error:', error);
@@ -114,8 +124,8 @@ export const AgentChat = ({ agentId, agentName, agentType, onClose }: AgentChatP
                         >
                             <div
                                 className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${message.role === 'user'
-                                        ? 'bg-primary text-white'
-                                        : 'bg-white/10 border border-white/20 text-white'
+                                    ? 'bg-primary text-white'
+                                    : 'bg-white/10 border border-white/20 text-white'
                                     }`}
                             >
                                 {message.role === 'assistant' && message.tool_calls && message.tool_calls.length > 0 && (
