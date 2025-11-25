@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Orbitron, Rajdhani, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import { QuantumGuide } from '@/components/QuantumGuide';
 
 const inter = Inter({
     variable: "--font-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
         <html lang="en" className={`${inter.variable} ${orbitron.variable} ${rajdhani.variable} ${jetbrainsMono.variable}`}>
             <body className="min-h-screen bg-[#030712] text-white antialiased carbon-fiber-bg">
                 {children}
+                <QuantumGuide />
             </body>
         </html>
     );

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import {
   QuantumCard, StatBar, StatusBadge, NeonButton,
   BrandingFooter, HealthIndicator, SynthChart
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [balance, setBalance] = useState<number>(12450.00);
   const [loading, setLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -73,6 +75,13 @@ export default function DashboardPage() {
     }
   };
 
+  // Agent Chat Navigation Handler
+  const handleAgentChat = (agent: any) => {
+    // Navigate to agent-specific chat page
+    router.push(`/dashboard/chat/${agent.name.toLowerCase()}`);
+    speak(`Opening chat with ${agent.name}. ${agent.description}`);
+  };
+
   // Initial Load
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -117,6 +126,7 @@ export default function DashboardPage() {
     {
       id: 1,
       name: 'Sofra',
+      slug: 'sofra',
       role: 'CX Management System',
       status: 'active',
       health: 98,
@@ -131,6 +141,7 @@ export default function DashboardPage() {
     {
       id: 2,
       name: 'Aqar',
+      slug: 'aqar',
       role: 'Full Rental Unit Management',
       status: 'idle',
       health: 100,
@@ -145,6 +156,7 @@ export default function DashboardPage() {
     {
       id: 3,
       name: 'Mawid',
+      slug: 'mawid',
       role: 'Workflow Optimizer',
       status: 'flagged',
       health: 45,
@@ -159,6 +171,7 @@ export default function DashboardPage() {
     {
       id: 4,
       name: 'Tajer',
+      slug: 'tajer',
       role: 'E-Commerce Negotiator',
       status: 'active',
       health: 96,
@@ -295,6 +308,7 @@ export default function DashboardPage() {
                 key={agent.id}
                 className="hover:bg-white/5 cursor-pointer group transition-all duration-300 hover:-translate-y-1"
                 glow={agent.status === 'active' ? 'green' : agent.status === 'flagged' ? 'none' : 'cyan'}
+                onClick={() => handleAgentChat(agent)}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">

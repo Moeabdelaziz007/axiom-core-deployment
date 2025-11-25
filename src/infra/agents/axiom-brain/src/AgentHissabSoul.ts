@@ -19,7 +19,7 @@ interface HissabState {
 
 // Define the routing schema for the Supervisor
 const routeSchema = z.object({
-    destination: z.enum(["TrendSurfer", "GeminiWriter", "Scheduler", "Chat"]).describe("The next agent to route the request to.")
+    destination: z.enum(["TrendSurfer", "GeminiWriter", "Scheduler", "Tajer", "Chat"]).describe("The next agent to route the request to.")
 });
 
 /**
@@ -52,6 +52,7 @@ export class AgentHissabSoul {
       - TrendSurfer: For researching viral trends.
       - GeminiWriter: For writing content (Not implemented yet).
       - Scheduler: For posting content (Not implemented yet).
+      - Tajer: For e-commerce negotiation, competitor analysis, and inventory management.
       
       Analyze the user's request and decide which team member should act next.
       If the task is complete or requires general conversation, route to 'Chat'.`;
@@ -86,6 +87,34 @@ export class AgentHissabSoul {
             };
         };
 
+        // Tajer Kernel Node for E-commerce Operations
+        const tajerNode = async (state: HissabState) => {
+            const lastMessage = state.messages[state.messages.length - 1];
+
+            // Extract product information from the message
+            const message = lastMessage.content.toString();
+
+            // Check if this is a pricing or inventory request
+            if (message.toLowerCase().includes('price') || message.toLowerCase().includes('cost') || message.toLowerCase().includes('quantum')) {
+                return {
+                    messages: [new HumanMessage({ content: `🔍 Tajer Analysis: Checking competitor pricing for "${message}"` })],
+                    next: "Supervisor"
+                };
+            }
+
+            if (message.toLowerCase().includes('inventory') || message.toLowerCase().includes('stock') || message.toLowerCase().includes('units')) {
+                return {
+                    messages: [new HumanMessage({ content: `📦 Tajer Analysis: Checking inventory levels for "${message}"` })],
+                    next: "Supervisor"
+                };
+            }
+
+            return {
+                messages: [new HumanMessage({ content: `🛒 Tajer Analysis: Processing e-commerce request for "${message}"` })],
+                next: "Supervisor"
+            };
+        };
+
         // 3. Construct the Graph
         const workflow = new StateGraph<HissabState>({
             channels: {
@@ -101,6 +130,7 @@ export class AgentHissabSoul {
         })
             .addNode("Supervisor", supervisorNode)
             .addNode("TrendSurfer", trendSurferNode)
+            .addNode("Tajer", tajerNode)
             // .addNode("GeminiWriter", ...) // Future
             // .addNode("Scheduler", ...) // Future
 
@@ -108,12 +138,14 @@ export class AgentHissabSoul {
 
             .addConditionalEdges("Supervisor", (state) => state.next || "Chat", {
                 TrendSurfer: "TrendSurfer",
+                Tajer: "Tajer",
                 GeminiWriter: END, // Placeholder
                 Scheduler: END, // Placeholder
                 Chat: END
             })
 
             .addEdge("TrendSurfer", "Supervisor"); // Loop back
+            .addEdge("Tajer", "Supervisor"); // Loop back
 
         return workflow.compile();
     }
