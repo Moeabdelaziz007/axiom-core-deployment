@@ -22,6 +22,18 @@ const AGENT_TOOLS = {
                 }
             },
             {
+                name: 'get_crypto_price',
+                description: 'Get real-time cryptocurrency prices',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        symbol: { type: 'string', description: 'Cryptocurrency symbol (SOL, BTC, ETH)' },
+                        currency: { type: 'string', description: 'Target currency (SAR, USD, EUR)' }
+                    },
+                    required: ['symbol']
+                }
+            },
+            {
                 name: 'search_market_trends',
                 description: 'Analyze real estate market trends in specific area',
                 parameters: {
