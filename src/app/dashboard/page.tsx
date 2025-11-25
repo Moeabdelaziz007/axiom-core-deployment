@@ -7,6 +7,7 @@ import {
   BrandingFooter, HealthIndicator, SynthChart
 } from '@/components/AxiomUI';
 import { AuthModal } from '@/components/AuthModal';
+import { AgentChat } from '@/components/AgentChat';
 import { fintechClient } from '@/lib/fintech-client';
 import { useAxiomVoice } from '@/hooks/useAxiomVoice';
 import {
@@ -20,6 +21,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const { playWelcome, speak, isPlaying } = useAxiomVoice();
 
   // --- LIVE SIMULATION STATE ---
@@ -405,6 +408,19 @@ export default function DashboardPage() {
         onGoogleAuth={handleGoogleAuth}
         onWalletAuth={handleWalletAuth}
       />
+
+      {/* Agent Chat Modal */}
+      {selectedAgent && (
+        <AgentChat
+          agentId={selectedAgent.id.toString()}
+          agentName={selectedAgent.name}
+          agentType={selectedAgent.type}
+          onClose={() => {
+            setShowChatModal(false);
+            setSelectedAgent(null);
+          }}
+        />
+      )}
     </div>
   );
 }
