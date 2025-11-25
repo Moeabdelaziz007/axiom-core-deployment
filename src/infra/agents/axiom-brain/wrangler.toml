@@ -1,0 +1,26 @@
+name = "axiom-brain"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Default to localhost for dev, overridden by secrets in prod
+ORACLE_VM_ENDPOINT = "http://localhost:8000/rag"
+
+# Secrets (Set these via `wrangler secret put`)
+# GEMINI_API_KEY
+# AXIOM_SECRET_KEY
+
+# --- Agent Hissab Infrastructure ---
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hissab-ledger-checkpoint"
+database_id = "41dc5756-bdea-4ee3-89cb-4e1fd1f88d71"
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE_INDEX"
+index_name = "tax-rules-index"

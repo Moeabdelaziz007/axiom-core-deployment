@@ -1,0 +1,348 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+  QuantumCard, StatBar, StatusBadge, NeonButton,
+  BrandingFooter, HealthIndicator, SynthChart
+} from '@/components/AxiomUI';
+import { fintechClient } from '@/lib/fintech-client';
+import { useAxiomVoice } from '@/hooks/useAxiomVoice';
+import {
+  Activity, DollarSign, Users, TrendingUp,
+  Zap, Cpu, Bot, Globe, Shield, Radio, Server, Wallet, Mic,
+  BarChart3, Layers, Database, Lock
+} from 'lucide-react';
+
+export default function DashboardPage() {
+  const [balance, setBalance] = useState<number>(12450.00);
+  const [loading, setLoading] = useState(true);
+  const { playWelcome, speak, isPlaying } = useAxiomVoice();
+
+  // --- LIVE SIMULATION STATE ---
+  const [networkLoad, setNetworkLoad] = useState([20, 35, 25, 45, 30, 55, 40, 60, 50, 65]);
+  const [txVolume, setTxVolume] = useState([45, 52, 49, 62, 58, 71, 68, 84, 80, 92]);
+  const [uptime, setUptime] = useState(99.99);
+  const [securityLevel, setSecurityLevel] = useState<'stable' | 'warning' | 'critical'>('stable');
+
+  // Initial Load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        playWelcome();
+        setLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [playWelcome]);
+
+  // --- QUANTUM PULSE ENGINE (Simulation Logic) ---
+  useEffect(() => {
+    const interval = setInterval(() => {
+        // 1. Simulate Network Load Fluctuations
+        setNetworkLoad(prev => {
+            const newValue = Math.floor(Math.random() * 40) + 30; // Random 30-70
+            return [...prev.slice(1), newValue];
+        });
+
+        // 2. Simulate Transaction Volume & Balance
+        setTxVolume(prev => {
+            const newValue = Math.floor(Math.random() * 50) + 40; // Random 40-90
+            return [...prev.slice(1), newValue];
+        });
+
+        setBalance(prev => prev + (Math.random() - 0.4) * 15); // Fluctuating Balance
+
+        // 3. Simulate Micro-Uptime fluctuations
+        setUptime(prev => 99.90 + (Math.random() * 0.09));
+
+        // 4. Random Security Events (Rare)
+        if (Math.random() > 0.95) {
+             setSecurityLevel('warning');
+             setTimeout(() => setSecurityLevel('stable'), 2000);
+        }
+
+    }, 2000); // Update every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const agents = [
+    {
+      id: 1,
+      name: 'Sofra',
+      role: 'CX Management System',
+      status: 'active',
+      health: 98,
+      cpu: 45,
+      type: 'CX-Auditor',
+      avatar: '/agents/sofra.png',
+      description: 'Full-stack customer experience manager. "I turn complaints into loyal customers."',
+      superpower: 'Sentiment Guard',
+      predictionStatus: '🛡️ Protecting 12 Users',
+      predictionColor: 'text-axiom-success'
+    },
+    {
+      id: 2,
+      name: 'Aqar',
+      role: 'Full Rental Unit Management',
+      status: 'idle',
+      health: 100,
+      cpu: 12,
+      type: 'UnitManager',
+      avatar: '/agents/aqar.png',
+      description: 'End-to-end property management. "Your property, on autopilot."',
+      superpower: 'Market Oracle',
+      predictionStatus: '🔮 3 Opportunities Found',
+      predictionColor: 'text-axiom-purple'
+    },
+    {
+      id: 3,
+      name: 'Mawid',
+      role: 'Workflow Optimizer',
+      status: 'flagged',
+      health: 45,
+      cpu: 89,
+      type: 'FlowOptimizer',
+      avatar: '/agents/mawid.png',
+      description: 'Intelligent scheduling. "Time is money. I save both."',
+      superpower: 'Flow Predictor',
+      predictionStatus: '⚠️ High No-Show Risk',
+      predictionColor: 'text-red-400'
+    },
+    {
+      id: 4,
+      name: 'Tajer',
+      role: 'E-Commerce Negotiator',
+      status: 'active',
+      health: 96,
+      cpu: 60,
+      type: 'Negotiator',
+      avatar: '/agents/tajer.png',
+      description: 'Automated sales & negotiation. "I close deals while you sleep."',
+      superpower: 'Auto-Haggler',
+      predictionStatus: '💰 15 Deals Closed',
+      predictionColor: 'text-axiom-neon-green'
+    },
+  ];
+
+  return (
+    <div className="min-h-screen pb-20 space-y-8 animate-fade-in-up">
+      {/* --- HEADER: QUANTUM COMMAND CENTER STATUS --- */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 p-1">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-2 py-0.5 rounded bg-axiom-neon-green/10 border border-axiom-neon-green/30 text-axiom-neon-green text-[10px] font-mono tracking-widest uppercase">
+              Quantum System v3.0.0
+            </span>
+            <span className="flex items-center gap-1 text-[10px] text-axiom-success font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-axiom-success animate-pulse" />
+              Quantum Link Stable
+            </span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-white mb-2 tracking-tight">
+            Quantum <span className="text-transparent bg-clip-text bg-gradient-to-r from-axiom-neon-green to-axiom-cyan">Command</span>
+          </h1>
+          <p className="text-gray-400 font-rajdhani text-lg">
+            Monitoring <span className="text-white font-bold">3 Active Layers</span> across the Quantum Network.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <NeonButton
+            icon={Mic}
+            variant={isPlaying ? "success" : "secondary"}
+            onClick={() => speak("Quantum system diagnostic complete. All layers operational. Simulation protocols active.")}
+            className={isPlaying ? "animate-pulse shadow-[0_0_20px_rgba(57,255,20,0.4)]" : ""}
+          >
+            {isPlaying ? "Quantum AVA Active..." : "Voice Report"}
+          </NeonButton>
+          <NeonButton icon={Zap} variant="primary">Deploy Agent</NeonButton>
+        </div>
+      </div>
+
+      {/* --- SECTION 1: SYSTEM VITALS (The Architectural Depth) --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Layer 1: Cloud Infrastructure */}
+        <QuantumCard title="Cloud Layer" icon={Server} glow="green" className="h-full">
+          <div className="space-y-4">
+            <HealthIndicator label="Server Uptime" value={`${uptime.toFixed(3)}%`} status="stable" />
+            <HealthIndicator label="API Latency" value={`${Math.floor(networkLoad[9] / 2)}ms`} status="stable" />
+            <div className="mt-4">
+              <p className="text-xs text-gray-400 mb-2 font-mono flex justify-between">
+                  <span>Network Load</span>
+                  <span className="text-axiom-neon-green animate-pulse">{networkLoad[9]}%</span>
+              </p>
+              <SynthChart data={networkLoad} color="#39FF14" />
+            </div>
+          </div>
+        </QuantumCard>
+
+        {/* Layer 2: Blockchain (T-ORC & A-BOND) */}
+        <QuantumCard title="Chain Layer" icon={Database} glow="cyan" className="h-full">
+          <div className="space-y-4">
+            <HealthIndicator label="T-ORC Status" value="Synced" status="stable" />
+            <HealthIndicator label="A-BOND Yield" value="+4.2% APY" status="stable" />
+            <div className="mt-4">
+              <p className="text-xs text-gray-400 mb-2 font-mono flex justify-between">
+                  <span>Transaction Volume</span>
+                  <span className="text-axiom-cyan">{txVolume[9]} TPS</span>
+              </p>
+              <SynthChart data={txVolume} color="#00F0FF" />
+            </div>
+          </div>
+        </QuantumCard>
+
+        {/* Layer 3: Security & Identity */}
+        <QuantumCard title="Security Layer" icon={Shield} glow="purple" className="h-full">
+          <div className="space-y-4">
+            <HealthIndicator 
+                label="Threat Level" 
+                value={securityLevel === 'stable' ? 'Low' : 'ELEVATED'} 
+                status={securityLevel} 
+            />
+            <HealthIndicator label="Identity Anchors" value="3 Active" status={securityLevel === 'critical' ? 'warning' : 'stable'} />
+            
+            {securityLevel === 'warning' ? (
+                 <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/40 mt-4 glass-panel-premium animate-pulse">
+                    <div className="flex items-center gap-2 text-red-400 mb-2">
+                        <Activity className="w-4 h-4" />
+                        <span className="text-xs font-bold font-orbitron">Intrusion Attempt Blocked</span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 font-mono">
+                        Firewall engaged via Quantum Sentinel Protocol.
+                    </p>
+                 </div>
+            ) : (
+                <div className="p-4 rounded-lg bg-axiom-success/5 border border-axiom-success/20 mt-4 glass-panel-premium">
+                    <div className="flex items-center gap-2 text-axiom-success mb-2">
+                        <Shield className="w-4 h-4" />
+                        <span className="text-xs font-bold font-orbitron">System Secure</span>
+                    </div>
+                    <p className="text-[10px] text-gray-400 font-mono">
+                        No active threats detected in the last 24h cycle.
+                    </p>
+                </div>
+            )}
+          </div>
+        </QuantumCard>
+      </div>
+
+      {/* --- SECTION 2: ACTIVE FLEET & MARKETPLACE (Merged) --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-orbitron font-bold text-white flex items-center gap-2">
+              <Cpu className="w-6 h-6 text-axiom-neon-green" /> Quantum Fleet
+            </h2>
+            <span className="text-xs font-mono text-gray-400">3/15 Slots Used</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {agents.map(agent => (
+              <QuantumCard
+                key={agent.id}
+                className="hover:bg-white/5 cursor-pointer group transition-all duration-300 hover:-translate-y-1"
+                glow={agent.status === 'active' ? 'green' : agent.status === 'flagged' ? 'none' : 'cyan'}
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 overflow-hidden ${agent.status === 'active' ? 'border-axiom-neon-green shadow-[0_0_15px_rgba(57,255,20,0.3)]' : 'border-white/10'}`}>
+                      <img src={agent.avatar} alt={agent.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white group-hover:text-axiom-neon-green transition-colors">{agent.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-400">{agent.role}</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 font-mono">{agent.type}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <StatusBadge status={agent.status as any} />
+                </div>
+
+                {/* Superpower Visualization */}
+                <div className="mb-3 flex items-center justify-between bg-white/5 p-2 rounded border border-white/10 glass-panel-premium">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-3 h-3 text-axiom-neon-green" />
+                    <span className="text-[10px] font-mono text-gray-300 uppercase tracking-wider">{agent.superpower}</span>
+                  </div>
+                  <span className={`text-[9px] font-bold ${agent.predictionColor} animate-pulse flex items-center gap-1`}>
+                    <Activity className="w-2 h-2" />
+                    {agent.predictionStatus}
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <StatBar label="Health" value={agent.health} color={agent.health < 50 ? 'bg-red-500' : 'bg-axiom-neon-green'} />
+                  <StatBar label="Processing" value={agent.cpu} color="bg-axiom-cyan" />
+                </div>
+                {/* Persona Description */}
+                <div className="mt-4 pt-3 border-t border-white/5">
+                  <p className="text-[10px] text-gray-400 italic font-mono leading-relaxed">
+                    {agent.description}
+                  </p>
+                </div>
+              </QuantumCard>
+            ))}
+
+            {/* Add New Agent Placeholder */}
+            <button className="h-full min-h-[180px] rounded-2xl border border-dashed border-white/10 bg-white/5 hover:bg-white/10 hover:border-axiom-neon-green/30 transition-all flex flex-col items-center justify-center gap-3 group glass-panel-premium">
+              <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Zap className="w-6 h-6 text-gray-400 group-hover:text-axiom-neon-green" />
+              </div>
+              <span className="text-sm font-mono text-gray-400 group-hover:text-axiom-neon-green">Deploy New Unit</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Financial Analytics (The "Money" Section) */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-orbitron font-bold text-white flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-axiom-neon-green" /> Quantum Analytics
+          </h2>
+
+          <QuantumCard glow="green" className="h-full">
+            <div className="flex flex-col h-full justify-between">
+              <div>
+                <p className="text-sm text-gray-400 font-mono mb-1">Total Liquidity</p>
+                <div className="text-4xl font-mono font-bold text-white tracking-tighter mb-4">
+                  ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-axiom-neon-green font-mono mb-6">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>+12.5% vs last cycle</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 glass-panel-premium">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-400">Projected Revenue</span>
+                    <span className="text-white font-bold">${(balance * 0.1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                    <div className="bg-axiom-neon-green h-full w-[65%]" />
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 glass-panel-premium">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-400">Operational Costs</span>
+                    <span className="text-white font-bold">$145.20</span>
+                  </div>
+                  <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                    <div className="bg-red-500 h-full w-[15%]" />
+                  </div>
+                </div>
+              </div>
+
+              <NeonButton variant="primary" className="w-full mt-6" icon={Wallet}>
+                Manage Wallet
+              </NeonButton>
+            </div>
+          </QuantumCard>
+        </div>
+      </div>
+
+      <BrandingFooter />
+    </div>
+  );
+}

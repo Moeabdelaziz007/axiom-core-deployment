@@ -1,0 +1,23 @@
+{
+    "name": "axiom-token",
+    "version": "0.1.0",
+    "description": "$AXIOM sovereign currency with Token-2022 Transfer Hooks",
+    "scripts": {
+        "build": "anchor build",
+        "test": "anchor test",
+        "deploy": "ts-node scripts/deploy-token.ts",
+        "init-hydra": "ts-node scripts/init-hydra.ts"
+    },
+    "dependencies": {
+        "@coral-xyz/anchor": "^0.32.1",
+        "@glasseaters/hydra-sdk": "^0.3.2",
+        "@solana/spl-token": "^0.4.0",
+        "@solana/web3.js": "^1.87.6",
+        "@strata-foundation/spl-utils": "^3.11.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.5",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    }
+}

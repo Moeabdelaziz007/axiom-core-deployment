@@ -1,0 +1,10 @@
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/sbf-solana-solana/release/deps/libbs58-1ba20884b78e4445.rmeta: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/alphabet.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/decode.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/encode.rs
+
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/sbf-solana-solana/release/deps/libbs58-1ba20884b78e4445.rlib: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/alphabet.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/decode.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/encode.rs
+
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/sbf-solana-solana/release/deps/bs58-1ba20884b78e4445.d: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/alphabet.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/decode.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/encode.rs
+
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/lib.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/alphabet.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/decode.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bs58-0.4.0/src/encode.rs:

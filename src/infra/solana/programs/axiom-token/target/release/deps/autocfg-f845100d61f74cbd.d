@@ -1,0 +1,10 @@
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/release/deps/libautocfg-f845100d61f74cbd.rmeta: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/error.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/rustc.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/version.rs
+
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/release/deps/libautocfg-f845100d61f74cbd.rlib: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/error.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/rustc.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/version.rs
+
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/release/deps/autocfg-f845100d61f74cbd.d: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/error.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/rustc.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/version.rs
+
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/lib.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/error.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/rustc.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/autocfg-1.5.0/src/version.rs:

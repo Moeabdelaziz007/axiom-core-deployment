@@ -1,0 +1,8 @@
+name = "telegram-webhook"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+# Secrets (set via: wrangler secret put TELEGRAM_BOT_TOKEN)
+# TELEGRAM_BOT_TOKEN
+# COMMANDER_CHAT_ID
+# INTERNAL_SECRET_KEY

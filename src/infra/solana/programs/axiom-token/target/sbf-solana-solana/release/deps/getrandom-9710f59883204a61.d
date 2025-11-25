@@ -1,0 +1,10 @@
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/sbf-solana-solana/release/deps/libgetrandom-9710f59883204a61.rmeta: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/error.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/util.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/custom.rs
+
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/sbf-solana-solana/release/deps/libgetrandom-9710f59883204a61.rlib: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/error.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/util.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/custom.rs
+
+/Users/cryptojoker710/Desktop/Axiom ID/axiom-stack/programs/axiom-token/target/sbf-solana-solana/release/deps/getrandom-9710f59883204a61.d: /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/lib.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/error.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/util.rs /Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/custom.rs
+
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/lib.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/error.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/util.rs:
+/Users/cryptojoker710/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.16/src/custom.rs:

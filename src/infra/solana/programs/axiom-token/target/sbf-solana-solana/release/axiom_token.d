@@ -1,0 +1,1 @@
+/Users/cryptojoker710/Desktop/Axiom\ ID/axiom-stack/programs/axiom-token/target/sbf-solana-solana/release/axiom_token.so: /Users/cryptojoker710/Desktop/Axiom\ ID/axiom-stack/programs/axiom-token/src/lib.rs

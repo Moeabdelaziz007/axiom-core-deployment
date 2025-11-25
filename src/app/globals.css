@@ -1,0 +1,283 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #050505;
+    --foreground: #ededed;
+
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-orbitron: 'Orbitron', sans-serif;
+    --font-rajdhani: 'Rajdhani', sans-serif;
+
+    --axiom-cyan: #00F0FF;
+    --axiom-purple: #7000FF;
+    --axiom-neon-green: #39FF14;
+    --neon-purple-fade: rgba(157, 78, 221, 0.3);
+  }
+
+  body {
+    @apply bg-axiom-dark text-white antialiased;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+
+  /* 💎 Holographic Floating Panels */
+  .glass-panel {
+    background: rgba(18, 25, 30, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(157, 78, 221, 0.3);
+    box-shadow:
+      0 4px 60px rgba(0, 240, 255, 0.2),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(5px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-panel:hover {
+    border-color: rgba(0, 240, 255, 0.4);
+    box-shadow:
+      0 8px 80px rgba(0, 240, 255, 0.3),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    transform: translateZ(8px) translateY(-2px);
+  }
+
+  /* 💎 Premium Glass Panel with Carbon Fiber Texture */
+  .glass-panel-premium {
+    @apply bg-[#0F111A]/60 backdrop-blur-[20px] border border-white/10 relative overflow-hidden;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 4px 20px rgba(0, 0, 0, 0.5),
+      inset 0 0 20px rgba(255, 255, 255, 0.02);
+    background-image: 
+      radial-gradient(circle at 100% 100%, rgba(57, 255, 20, 0.05) 0%, transparent 15%),
+      repeating-linear-gradient(
+        45deg,
+        rgba(57, 255, 20, 0.03) 0px,
+        rgba(57, 255, 20, 0.03) 1px,
+        transparent 1px,
+        transparent 11px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(57, 255, 20, 0.03) 0px,
+        rgba(57, 255, 20, 0.03) 1px,
+        transparent 1px,
+        transparent 11px
+      );
+  }
+
+  .glass-panel-premium::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ✨ Neon Button with Green Theme */
+  .btn-neon {
+    @apply px-8 py-4 rounded-xl font-display font-bold text-white bg-gradient-to-r from-axiom-neon-green to-axiom-cyan relative overflow-hidden transition-all duration-300;
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+  }
+
+  .btn-neon:hover {
+    box-shadow: 0 0 30px rgba(57, 255, 20, 0.6);
+    transform: translateY(-2px);
+  }
+
+  /* Carbon Fiber Background Pattern */
+  .carbon-fiber-bg {
+    background-color: #0a0a0a;
+    background-image: 
+      radial-gradient(circle at 100% 100%, rgba(57, 255, 20, 0.05) 0%, transparent 15%),
+      repeating-linear-gradient(
+        45deg,
+        rgba(57, 255, 20, 0.03) 0px,
+        rgba(57, 255, 20, 0.03) 1px,
+        transparent 1px,
+        transparent 11px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(57, 255, 20, 0.03) 0px,
+        rgba(57, 255, 20, 0.03) 1px,
+        transparent 1px,
+        transparent 11px
+      );
+    background-size: 30px 30px, calc(100% - 1px) calc(100% - 1px);
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  }
+
+  .text-glow-purple {
+    text-shadow: 0 0 20px rgba(112, 0, 255, 0.6);
+  }
+
+  .text-glow-green {
+    text-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
+  }
+
+  .bg-deep-void {
+    background: radial-gradient(circle at 50% 50%, #1a1f35 0%, #0b0e17 100%);
+    background-attachment: fixed;
+  }
+
+  /* Neon Green Glow Effect */
+  .neon-glow {
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5), 0 0 20px rgba(57, 255, 20, 0.3);
+  }
+
+  .neon-glow:hover {
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.7), 0 0 30px rgba(57, 255, 20, 0.5);
+  }
+}
+
+/* --- DEEP SPACE GRAIN & GRID --- */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    /* Deep Grain Texture */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
+    /* Cyber Grid */
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 200px 200px, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+}
+
+/* Radial Glow for Depth */
+body::after {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150vw;
+  height: 150vh;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.03) 0%, rgba(0, 0, 0, 0) 60%);
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* --- QUANTUM ANIMATIONS --- */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scanline::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.1), transparent);
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes quantumFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(10px, -15px) scale(1.1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-8px, -25px) scale(0.9);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translate(-15px, -10px) scale(1.05);
+    opacity: 0.4;
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--axiom-neon-green), 0 0 20px var(--axiom-neon-green);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--axiom-neon-green), 0 0 40px var(--axiom-neon-green), 0 0 60px var(--axiom-cyan);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Enhanced Glass with Grain Texture */
+.glass-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a1d2d;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #39FF14;
+}
