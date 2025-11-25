@@ -6,6 +6,7 @@ import {
   QuantumCard, StatBar, StatusBadge, NeonButton,
   BrandingFooter, HealthIndicator, SynthChart
 } from '@/components/AxiomUI';
+import { AuthModal } from '@/components/AuthModal';
 import { fintechClient } from '@/lib/fintech-client';
 import { useAxiomVoice } from '@/hooks/useAxiomVoice';
 import {
@@ -17,6 +18,8 @@ import {
 export default function DashboardPage() {
   const [balance, setBalance] = useState<number>(12450.00);
   const [loading, setLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const { playWelcome, speak, isPlaying } = useAxiomVoice();
 
   // --- LIVE SIMULATION STATE ---
@@ -24,6 +27,48 @@ export default function DashboardPage() {
   const [txVolume, setTxVolume] = useState([45, 52, 49, 62, 58, 71, 68, 84, 80, 92]);
   const [uptime, setUptime] = useState(99.99);
   const [securityLevel, setSecurityLevel] = useState<'stable' | 'warning' | 'critical'>('stable');
+
+  // Authentication Handlers
+  const handleInitializeFleet = () => {
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      speak("Fleet already initialized. Ready to deploy new agents.");
+    }
+  };
+
+  const handleDeployAgent = () => {
+    if (!user) {
+      setShowAuthModal(true);
+    } else {
+      speak("Deploying new agent. Please specify agent type.");
+      // TODO: Open agent selection modal
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    try {
+      console.log('🔗 Initiating Google authentication...');
+      // TODO: Implement Google OAuth with Clerk/Dynamic
+      speak("Google authentication initiated. Please complete the sign-in process.");
+      setShowAuthModal(false);
+    } catch (error) {
+      console.error('❌ Google Auth Error:', error);
+      speak("Authentication failed. Please try again.");
+    }
+  };
+
+  const handleWalletAuth = async () => {
+    try {
+      console.log('🔗 Initiating Solana wallet connection...');
+      // TODO: Implement Solana wallet connection
+      speak("Wallet connection initiated. Please approve the connection request.");
+      setShowAuthModal(false);
+    } catch (error) {
+      console.error('❌ Wallet Auth Error:', error);
+      speak("Wallet connection failed. Please try again.");
+    }
+  };
 
   // Initial Load
   useEffect(() => {
@@ -154,7 +199,13 @@ export default function DashboardPage() {
           >
             {isPlaying ? "Voice Assistant Active..." : "Voice Report"}
           </NeonButton>
-          <NeonButton icon={Zap} variant="primary">Deploy Agent</NeonButton>
+          <NeonButton
+            icon={Zap}
+            variant="primary"
+            onClick={handleInitializeFleet}
+          >
+            Initialize Fleet
+          </NeonButton>
         </div>
       </div>
 
@@ -284,7 +335,10 @@ export default function DashboardPage() {
             ))}
 
             {/* Add New Agent Placeholder */}
-            <button className="h-full min-h-[180px] rounded-2xl border border-dashed border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all flex flex-col items-center justify-center gap-3 group">
+            <button
+              className="h-full min-h-[180px] rounded-2xl border border-dashed border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all flex flex-col items-center justify-center gap-3 group"
+              onClick={handleDeployAgent}
+            >
               <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Zap className="w-6 h-6 text-gray-400 group-hover:text-primary" />
               </div>
@@ -343,6 +397,14 @@ export default function DashboardPage() {
       </div>
 
       <BrandingFooter />
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onGoogleAuth={handleGoogleAuth}
+        onWalletAuth={handleWalletAuth}
+      />
     </div>
   );
 }
