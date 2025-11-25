@@ -7,14 +7,31 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                background: "var(--background)",
+                background: '#030712', // Very dark blue/black (like landing page)
                 foreground: "var(--foreground)",
+                // Axiom Blue Theme - Professional & Premium
+                surface: '#0f172a',    // Lighter dark for cards
+
+                // This is the blue gradient that impressed you in the "Initialize" button
+                primary: {
+                    DEFAULT: '#3b82f6', // Blue-500
+                    glow: '#60a5fa',    // Blue-400
+                    dark: '#1d4ed8',    // Blue-700
+                },
+
+                // Border colors instead of glowing green
+                border: {
+                    DEFAULT: 'rgba(255, 255, 255, 0.1)', // Subtle transparent borders
+                    hover: 'rgba(59, 130, 246, 0.5)',    // Blue glow on hover
+                },
+
+                // Keep some existing colors for compatibility
                 'axiom-dark': '#050505',
                 'axiom-panel': '#0F111A',
                 'axiom-glass': 'rgba(255, 255, 255, 0.03)',
                 'axiom-cyan': '#00F0FF',
                 'axiom-purple': '#7000FF',
-                'axiom-neon-green': '#39FF14',
+                'axiom-neon-green': '#39FF14', // Keep for reference but won't use
                 'axiom-red': '#FF003C',
                 'axiom-success': '#00FF94',
                 'axiom-warning': '#FCEE0A',
@@ -23,9 +40,9 @@ const config: Config = {
                 'holo-blue-fade': 'rgba(79, 172, 254, 0.7)',
             },
             fontFamily: {
-                sans: ['var(--font-sans)'],
-                orbitron: ['var(--font-orbitron)'],
-                rajdhani: ['var(--font-rajdhani)'],
+                sans: ['Inter', 'sans-serif'], // Unified with landing page
+                orbitron: ['var(--font-orbitron)'], // Keep for reference
+                rajdhani: ['var(--font-rajdhani)'], // Keep for reference
                 mono: ['var(--font-mono)'],
                 display: ['var(--font-display)'],
             },
@@ -44,10 +61,10 @@ const config: Config = {
                     'to': { opacity: '1', transform: 'translateY(0)' },
                 },
                 glowPulse: {
-                    '0%, 100%': { 
+                    '0%, 100%': {
                         boxShadow: '0 0 10px rgba(57, 255, 20, 0.5), 0 0 20px rgba(57, 255, 20, 0.3)'
                     },
-                    '50%': { 
+                    '50%': {
                         boxShadow: '0 0 20px rgba(57, 255, 20, 0.8), 0 0 40px rgba(57, 255, 20, 0.6)'
                     },
                 }

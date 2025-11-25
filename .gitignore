@@ -30,6 +30,7 @@ ts-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.example
 
 # vercel
 .vercel
@@ -57,11 +58,11 @@ Thumbs.db
 Desktop/
 Applications/
 Downloads/
-Public/
+# Public/ - REMOVED: This is needed for deployment
 apps/
 packages/
 services/
-src/
+# src/ - REMOVED: This is needed for deployment
 docs/
 infrastructure/
 tools/

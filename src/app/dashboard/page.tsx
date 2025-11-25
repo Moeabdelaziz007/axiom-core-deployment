@@ -28,8 +28,8 @@ export default function DashboardPage() {
   // Initial Load
   useEffect(() => {
     const timer = setTimeout(() => {
-        playWelcome();
-        setLoading(false);
+      playWelcome();
+      setLoading(false);
     }, 1500);
     return () => clearTimeout(timer);
   }, [playWelcome]);
@@ -37,28 +37,28 @@ export default function DashboardPage() {
   // --- QUANTUM PULSE ENGINE (Simulation Logic) ---
   useEffect(() => {
     const interval = setInterval(() => {
-        // 1. Simulate Network Load Fluctuations
-        setNetworkLoad(prev => {
-            const newValue = Math.floor(Math.random() * 40) + 30; // Random 30-70
-            return [...prev.slice(1), newValue];
-        });
+      // 1. Simulate Network Load Fluctuations
+      setNetworkLoad(prev => {
+        const newValue = Math.floor(Math.random() * 40) + 30; // Random 30-70
+        return [...prev.slice(1), newValue];
+      });
 
-        // 2. Simulate Transaction Volume & Balance
-        setTxVolume(prev => {
-            const newValue = Math.floor(Math.random() * 50) + 40; // Random 40-90
-            return [...prev.slice(1), newValue];
-        });
+      // 2. Simulate Transaction Volume & Balance
+      setTxVolume(prev => {
+        const newValue = Math.floor(Math.random() * 50) + 40; // Random 40-90
+        return [...prev.slice(1), newValue];
+      });
 
-        setBalance(prev => prev + (Math.random() - 0.4) * 15); // Fluctuating Balance
+      setBalance(prev => prev + (Math.random() - 0.4) * 15); // Fluctuating Balance
 
-        // 3. Simulate Micro-Uptime fluctuations
-        setUptime(prev => 99.90 + (Math.random() * 0.09));
+      // 3. Simulate Micro-Uptime fluctuations
+      setUptime(prev => 99.90 + (Math.random() * 0.09));
 
-        // 4. Random Security Events (Rare)
-        if (Math.random() > 0.95) {
-             setSecurityLevel('warning');
-             setTimeout(() => setSecurityLevel('stable'), 2000);
-        }
+      // 4. Random Security Events (Rare)
+      if (Math.random() > 0.95) {
+        setSecurityLevel('warning');
+        setTimeout(() => setSecurityLevel('stable'), 2000);
+      }
 
     }, 2000); // Update every 2 seconds
 
@@ -126,111 +126,111 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen pb-20 space-y-8 animate-fade-in-up">
-      {/* --- HEADER: QUANTUM COMMAND CENTER STATUS --- */}
+      {/* --- HEADER: AXIOM COMMAND CENTER STATUS --- */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 p-1">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2 py-0.5 rounded bg-axiom-neon-green/10 border border-axiom-neon-green/30 text-axiom-neon-green text-[10px] font-mono tracking-widest uppercase">
-              Quantum System v3.0.0
+            <span className="px-2 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary text-[10px] font-mono tracking-widest uppercase">
+              Axiom System v3.0.0
             </span>
-            <span className="flex items-center gap-1 text-[10px] text-axiom-success font-mono">
-              <span className="w-1.5 h-1.5 rounded-full bg-axiom-success animate-pulse" />
-              Quantum Link Stable
+            <span className="flex items-center gap-1 text-[10px] text-primary font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              System Online
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-orbitron font-bold text-white mb-2 tracking-tight">
-            Quantum <span className="text-transparent bg-clip-text bg-gradient-to-r from-axiom-neon-green to-axiom-cyan">Command</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">
+            Axiom <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-500">Control</span>
           </h1>
-          <p className="text-gray-400 font-rajdhani text-lg">
-            Monitoring <span className="text-white font-bold">3 Active Layers</span> across the Quantum Network.
+          <p className="text-gray-400 text-lg">
+            Managing <span className="text-white font-bold">3 Active Layers</span> across the Axiom Network.
           </p>
         </div>
         <div className="flex gap-3">
           <NeonButton
             icon={Mic}
             variant={isPlaying ? "success" : "secondary"}
-            onClick={() => speak("Quantum system diagnostic complete. All layers operational. Simulation protocols active.")}
-            className={isPlaying ? "animate-pulse shadow-[0_0_20px_rgba(57,255,20,0.4)]" : ""}
+            onClick={() => speak("Axiom system diagnostic complete. All layers operational. Business intelligence protocols active.")}
+            className={isPlaying ? "animate-pulse" : ""}
           >
-            {isPlaying ? "Quantum AVA Active..." : "Voice Report"}
+            {isPlaying ? "Voice Assistant Active..." : "Voice Report"}
           </NeonButton>
           <NeonButton icon={Zap} variant="primary">Deploy Agent</NeonButton>
         </div>
       </div>
 
-      {/* --- SECTION 1: SYSTEM VITALS (The Architectural Depth) --- */}
+      {/* --- SECTION 1: SYSTEM VITALS --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Layer 1: Cloud Infrastructure */}
-        <QuantumCard title="Cloud Layer" icon={Server} glow="green" className="h-full">
+        <QuantumCard title="Infrastructure" icon={Server} glow="green" className="h-full">
           <div className="space-y-4">
             <HealthIndicator label="Server Uptime" value={`${uptime.toFixed(3)}%`} status="stable" />
             <HealthIndicator label="API Latency" value={`${Math.floor(networkLoad[9] / 2)}ms`} status="stable" />
             <div className="mt-4">
               <p className="text-xs text-gray-400 mb-2 font-mono flex justify-between">
-                  <span>Network Load</span>
-                  <span className="text-axiom-neon-green animate-pulse">{networkLoad[9]}%</span>
+                <span>Network Load</span>
+                <span className="text-primary animate-pulse">{networkLoad[9]}%</span>
               </p>
-              <SynthChart data={networkLoad} color="#39FF14" />
+              <SynthChart data={networkLoad} color="#3b82f6" />
             </div>
           </div>
         </QuantumCard>
 
         {/* Layer 2: Blockchain (T-ORC & A-BOND) */}
-        <QuantumCard title="Chain Layer" icon={Database} glow="cyan" className="h-full">
+        <QuantumCard title="Blockchain" icon={Database} glow="cyan" className="h-full">
           <div className="space-y-4">
-            <HealthIndicator label="T-ORC Status" value="Synced" status="stable" />
-            <HealthIndicator label="A-BOND Yield" value="+4.2% APY" status="stable" />
+            <HealthIndicator label="Protocol Status" value="Synced" status="stable" />
+            <HealthIndicator label="Yield Rate" value="+4.2% APY" status="stable" />
             <div className="mt-4">
               <p className="text-xs text-gray-400 mb-2 font-mono flex justify-between">
-                  <span>Transaction Volume</span>
-                  <span className="text-axiom-cyan">{txVolume[9]} TPS</span>
+                <span>Transaction Volume</span>
+                <span className="text-primary">{txVolume[9]} TPS</span>
               </p>
-              <SynthChart data={txVolume} color="#00F0FF" />
+              <SynthChart data={txVolume} color="#3b82f6" />
             </div>
           </div>
         </QuantumCard>
 
         {/* Layer 3: Security & Identity */}
-        <QuantumCard title="Security Layer" icon={Shield} glow="purple" className="h-full">
+        <QuantumCard title="Security" icon={Shield} glow="purple" className="h-full">
           <div className="space-y-4">
-            <HealthIndicator 
-                label="Threat Level" 
-                value={securityLevel === 'stable' ? 'Low' : 'ELEVATED'} 
-                status={securityLevel} 
+            <HealthIndicator
+              label="Threat Level"
+              value={securityLevel === 'stable' ? 'Low' : 'ELEVATED'}
+              status={securityLevel}
             />
             <HealthIndicator label="Identity Anchors" value="3 Active" status={securityLevel === 'critical' ? 'warning' : 'stable'} />
-            
+
             {securityLevel === 'warning' ? (
-                 <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/40 mt-4 glass-panel-premium animate-pulse">
-                    <div className="flex items-center gap-2 text-red-400 mb-2">
-                        <Activity className="w-4 h-4" />
-                        <span className="text-xs font-bold font-orbitron">Intrusion Attempt Blocked</span>
-                    </div>
-                    <p className="text-[10px] text-gray-400 font-mono">
-                        Firewall engaged via Quantum Sentinel Protocol.
-                    </p>
-                 </div>
-            ) : (
-                <div className="p-4 rounded-lg bg-axiom-success/5 border border-axiom-success/20 mt-4 glass-panel-premium">
-                    <div className="flex items-center gap-2 text-axiom-success mb-2">
-                        <Shield className="w-4 h-4" />
-                        <span className="text-xs font-bold font-orbitron">System Secure</span>
-                    </div>
-                    <p className="text-[10px] text-gray-400 font-mono">
-                        No active threats detected in the last 24h cycle.
-                    </p>
+              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/40 mt-4 bg-white/5 animate-pulse">
+                <div className="flex items-center gap-2 text-red-400 mb-2">
+                  <Activity className="w-4 h-4" />
+                  <span className="text-xs font-bold">Security Alert</span>
                 </div>
+                <p className="text-[10px] text-gray-400 font-mono">
+                  Firewall protocol engaged successfully.
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 mt-4 bg-white/5">
+                <div className="flex items-center gap-2 text-primary mb-2">
+                  <Shield className="w-4 h-4" />
+                  <span className="text-xs font-bold">System Secure</span>
+                </div>
+                <p className="text-[10px] text-gray-400 font-mono">
+                  No threats detected in the last 24 hours.
+                </p>
+              </div>
             )}
           </div>
         </QuantumCard>
       </div>
 
-      {/* --- SECTION 2: ACTIVE FLEET & MARKETPLACE (Merged) --- */}
+      {/* --- SECTION 2: ACTIVE AGENTS & ANALYTICS --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-orbitron font-bold text-white flex items-center gap-2">
-              <Cpu className="w-6 h-6 text-axiom-neon-green" /> Quantum Fleet
+            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Cpu className="w-6 h-6 text-primary" /> Active Agents
             </h2>
             <span className="text-xs font-mono text-gray-400">3/15 Slots Used</span>
           </div>
@@ -244,11 +244,11 @@ export default function DashboardPage() {
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 overflow-hidden ${agent.status === 'active' ? 'border-axiom-neon-green shadow-[0_0_15px_rgba(57,255,20,0.3)]' : 'border-white/10'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 overflow-hidden ${agent.status === 'active' ? 'border-primary shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-white/10'}`}>
                       <img src={agent.avatar} alt={agent.name} className="w-full h-full object-cover" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-white group-hover:text-axiom-neon-green transition-colors">{agent.name}</h3>
+                      <h3 className="font-bold text-white group-hover:text-primary transition-colors">{agent.name}</h3>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-400">{agent.role}</span>
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 font-mono">{agent.type}</span>
@@ -259,9 +259,9 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Superpower Visualization */}
-                <div className="mb-3 flex items-center justify-between bg-white/5 p-2 rounded border border-white/10 glass-panel-premium">
+                <div className="mb-3 flex items-center justify-between bg-white/5 p-2 rounded border border-white/10">
                   <div className="flex items-center gap-2">
-                    <Zap className="w-3 h-3 text-axiom-neon-green" />
+                    <Zap className="w-3 h-3 text-primary" />
                     <span className="text-[10px] font-mono text-gray-300 uppercase tracking-wider">{agent.superpower}</span>
                   </div>
                   <span className={`text-[9px] font-bold ${agent.predictionColor} animate-pulse flex items-center gap-1`}>
@@ -271,8 +271,8 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <StatBar label="Health" value={agent.health} color={agent.health < 50 ? 'bg-red-500' : 'bg-axiom-neon-green'} />
-                  <StatBar label="Processing" value={agent.cpu} color="bg-axiom-cyan" />
+                  <StatBar label="Health" value={agent.health} color={agent.health < 50 ? 'bg-red-500' : 'bg-primary'} />
+                  <StatBar label="Processing" value={agent.cpu} color="bg-primary" />
                 </div>
                 {/* Persona Description */}
                 <div className="mt-4 pt-3 border-t border-white/5">
@@ -284,19 +284,19 @@ export default function DashboardPage() {
             ))}
 
             {/* Add New Agent Placeholder */}
-            <button className="h-full min-h-[180px] rounded-2xl border border-dashed border-white/10 bg-white/5 hover:bg-white/10 hover:border-axiom-neon-green/30 transition-all flex flex-col items-center justify-center gap-3 group glass-panel-premium">
+            <button className="h-full min-h-[180px] rounded-2xl border border-dashed border-white/10 bg-white/5 hover:bg-white/10 hover:border-primary/30 transition-all flex flex-col items-center justify-center gap-3 group">
               <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Zap className="w-6 h-6 text-gray-400 group-hover:text-axiom-neon-green" />
+                <Zap className="w-6 h-6 text-gray-400 group-hover:text-primary" />
               </div>
-              <span className="text-sm font-mono text-gray-400 group-hover:text-axiom-neon-green">Deploy New Unit</span>
+              <span className="text-sm font-mono text-gray-400 group-hover:text-primary">Deploy New Agent</span>
             </button>
           </div>
         </div>
 
-        {/* Financial Analytics (The "Money" Section) */}
+        {/* Financial Analytics */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-orbitron font-bold text-white flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-axiom-neon-green" /> Quantum Analytics
+          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-primary" /> Analytics
           </h2>
 
           <QuantumCard glow="green" className="h-full">
@@ -306,24 +306,24 @@ export default function DashboardPage() {
                 <div className="text-4xl font-mono font-bold text-white tracking-tighter mb-4">
                   ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
-                <div className="flex items-center gap-2 text-xs text-axiom-neon-green font-mono mb-6">
+                <div className="flex items-center gap-2 text-xs text-primary font-mono mb-6">
                   <TrendingUp className="w-3 h-3" />
                   <span>+12.5% vs last cycle</span>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="p-3 rounded-lg bg-white/5 border border-white/10 glass-panel-premium">
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-gray-400">Projected Revenue</span>
                     <span className="text-white font-bold">${(balance * 0.1).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
-                    <div className="bg-axiom-neon-green h-full w-[65%]" />
+                    <div className="bg-primary h-full w-[65%]" />
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-white/5 border border-white/10 glass-panel-premium">
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-gray-400">Operational Costs</span>
                     <span className="text-white font-bold">$145.20</span>
