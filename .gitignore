@@ -1,0 +1,93 @@
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# testing
+coverage/
+
+# next.js
+.next/
+out/
+build/
+dist/
+
+# production
+build/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+ts-debug.log*
+
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Additional ignore patterns for system files
+.DS_Store
+*.log
+*.tmp
+.cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+
+# Exclude entire directories outside project scope
+Desktop/
+Applications/
+Downloads/
+Public/
+apps/
+packages/
+services/
+src/
+docs/
+infrastructure/
+tools/
+projects/
+amrikyy-*
+maya-*
+meili-*
+react-*
+sameer/
+blockhouse_analysis
+cryptojoker710
+final_project
+go/
+Kimi-Dev/
+Library/
+Movies/
+Music/
+Pictures/
+Users/
+WebstormProjects/
+PycharmProjects/
+PychymProjects/
+venv/
+w.savedSearch
+web-project/
+
+# Exclude system and hidden files
+.*
+!.gitignore
