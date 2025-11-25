@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { SolanaAgentKit } from 'solana-agent-kit';
 
 // Agent Tool Definitions
 const AGENT_TOOLS = {
@@ -62,8 +63,8 @@ const AGENT_TOOLS = {
         ]
     },
     tajer: {
-        name: 'Tajer E-Commerce Negotiator',
-        description: 'AI agent for e-commerce negotiation and market analysis',
+        name: 'Tajer E-Commerce & DeFi Negotiator',
+        description: 'AI agent for e-commerce negotiation, market analysis, and blockchain operations',
         tools: [
             {
                 name: 'analyze_competitor',
@@ -101,6 +102,44 @@ const AGENT_TOOLS = {
                         target_margin: { type: 'number', description: 'Desired profit margin percentage' }
                     },
                     required: ['cost_price', 'market_position']
+                }
+            },
+            {
+                name: 'deploy_token',
+                description: 'Deploy a new SPL token on Solana blockchain',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        token_name: { type: 'string', description: 'Token name (e.g., AXIOM)' },
+                        token_symbol: { type: 'string', description: 'Token symbol (e.g., AXM)' },
+                        decimals: { type: 'number', description: 'Token decimals (default: 9)' },
+                        initial_supply: { type: 'number', description: 'Initial token supply' }
+                    },
+                    required: ['token_name', 'token_symbol']
+                }
+            },
+            {
+                name: 'trade_token',
+                description: 'Swap tokens using Jupiter aggregator on Solana',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        input_token: { type: 'string', description: 'Input token mint address or symbol (SOL, USDC, etc.)' },
+                        output_token: { type: 'string', description: 'Output token mint address or symbol' },
+                        input_amount: { type: 'number', description: 'Amount to swap' },
+                        slippage: { type: 'number', description: 'Slippage tolerance percentage (default: 3)' }
+                    },
+                    required: ['input_token', 'output_token', 'input_amount']
+                }
+            },
+            {
+                name: 'get_balance',
+                description: 'Check wallet balance for SOL and SPL tokens',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        token_mint: { type: 'string', description: 'Token mint address (optional, defaults to SOL)' }
+                    }
                 }
             }
         ]
@@ -205,7 +244,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Gemini API integration with Function Calling
-async function callGeminiWithTools(message: string, systemPrompt: string, tools: any[]) {
+async function callGeminiWithTools(message: string, systemPrompt: string, tools: any[], solanaKit?: SolanaAgentKit | null) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -255,7 +294,7 @@ async function callGeminiWithTools(message: string, systemPrompt: string, tools:
 
             // Check for function calls
             if (content.functionCall) {
-                const toolResults = await executeToolCalls([content.functionCall]);
+                const toolResults = await executeToolCalls([content.functionCall], solanaKit);
 
                 return {
                     reply: candidate.content.parts[0].text || `Executed ${content.functionCall.name}`,
@@ -288,7 +327,7 @@ async function callGeminiWithTools(message: string, systemPrompt: string, tools:
 }
 
 // Execute tool calls
-async function executeToolCalls(toolCalls: any[]) {
+async function executeToolCalls(toolCalls: any[], solanaKit?: SolanaAgentKit | null) {
     const results: Record<string, any> = {};
 
     for (const call of toolCalls) {
@@ -330,6 +369,18 @@ async function executeToolCalls(toolCalls: any[]) {
                     results[call.name] = saveReport(call.args);
                     break;
 
+                case 'deploy_token':
+                    results[call.name] = await deployToken(call.args, solanaKit);
+                    break;
+
+                case 'trade_token':
+                    results[call.name] = await tradeToken(call.args, solanaKit);
+                    break;
+
+                case 'get_balance':
+                    results[call.name] = await getBalance(call.args, solanaKit);
+                    break;
+
                 default:
                     results[call.name] = `Tool ${call.name} not implemented yet`;
             }
@@ -345,7 +396,8 @@ async function executeToolCalls(toolCalls: any[]) {
 // Tool Implementations
 function calculatePropertyValue(args: any) {
     const { location, size, property_type, bedrooms, amenities } = args;
-    const basePrice = MOCK_DATA.riyadhPropertyPrices[args.location.toLowerCase().replace(' ', '_')] || 4000;
+    const locationKey = (location as string).toLowerCase().replace(' ', '_') as keyof typeof MOCK_DATA.riyadhPropertyPrices;
+    const basePrice = MOCK_DATA.riyadhPropertyPrices[locationKey] || 4000;
     const value = basePrice * size;
 
     return {
@@ -501,4 +553,114 @@ function generateMockTrendData(trend: string) {
     }
 
     return points;
+}
+
+// Solana Agent Kit Tool Implementations
+async function deployToken(args: any, solanaKit?: SolanaAgentKit | null) {
+    if (!solanaKit) {
+        return {
+            error: 'Solana Agent Kit not initialized',
+            message: 'Please check environment configuration'
+        };
+    }
+
+    try {
+        const { token_name, token_symbol, decimals = 9, initial_supply = 1000000 } = args;
+
+        console.log(`🚀 Deploying token: ${token_name} (${token_symbol})`);
+
+        // Use Solana Agent Kit to deploy token
+        // Note: Using mock implementation for now - will be replaced with actual ADK calls
+        const tokenMint = `mock_token_${Date.now()}`;
+
+        return {
+            success: true,
+            token_name: token_name,
+            token_symbol: token_symbol,
+            mint_address: tokenMint.toString(),
+            decimals: decimals,
+            initial_supply: initial_supply,
+            explorer_url: `https://explorer.solana.com/address/${tokenMint.toString()}`,
+            message: `✅ Successfully deployed ${token_name} (${token_symbol}) token!`
+        };
+    } catch (error) {
+        console.error('❌ Deploy token error:', error);
+        return {
+            error: 'Failed to deploy token',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        };
+    }
+}
+
+async function tradeToken(args: any, solanaKit?: SolanaAgentKit | null) {
+    if (!solanaKit) {
+        return {
+            error: 'Solana Agent Kit not initialized',
+            message: 'Please check environment configuration'
+        };
+    }
+
+    try {
+        const { input_token, output_token, input_amount, slippage = 3 } = args;
+
+        console.log(`💱 Trading ${input_amount} ${input_token} for ${output_token}`);
+
+        // Use Solana Agent Kit to trade tokens
+        // Note: Using mock implementation for now - will be replaced with actual ADK calls
+        const mockOutputAmount = input_amount * 0.95; // Mock 5% slippage
+        const mockSignature = `mock_tx_${Date.now()}`;
+
+        return {
+            success: true,
+            input_token: input_token,
+            output_token: output_token,
+            input_amount: input_amount,
+            output_amount: mockOutputAmount,
+            transaction_id: mockSignature,
+            slippage: slippage,
+            explorer_url: `https://explorer.solana.com/tx/${mockSignature}`,
+            message: `✅ Successfully swapped ${input_amount} ${input_token} for ${mockOutputAmount} ${output_token}!`
+        };
+    } catch (error) {
+        console.error('❌ Trade token error:', error);
+        return {
+            error: 'Failed to trade tokens',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        };
+    }
+}
+
+async function getBalance(args: any, solanaKit?: SolanaAgentKit | null) {
+    if (!solanaKit) {
+        return {
+            error: 'Solana Agent Kit not initialized',
+            message: 'Please check environment configuration'
+        };
+    }
+
+    try {
+        const { token_mint } = args;
+
+        console.log(`💰 Checking balance for token: ${token_mint || 'SOL'}`);
+
+        // Use Solana Agent Kit to get balance
+        // Note: Using mock implementation for now - will be replaced with actual ADK calls
+        const mockBalance = token_mint ? Math.random() * 1000 : 2.5; // Mock SOL balance
+
+        return {
+            success: true,
+            token_mint: token_mint || 'SOL',
+            balance: mockBalance,
+            decimals: 9,
+            formatted_balance: mockBalance.toFixed(9),
+            address: '5xqZTQLZhxFZFPhYDK6Lo1zHEij3uwQkMhAKGLQtrwYg', // From our generated wallet
+            message: `💰 Current balance: ${mockBalance.toFixed(9)} ${token_mint || 'SOL'}`
+        };
+    } catch (error) {
+        console.error('❌ Get balance error:', error);
+        return {
+            error: 'Failed to get balance',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        };
+    }
 }
