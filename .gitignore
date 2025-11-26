@@ -65,7 +65,7 @@ services/
 # src/ - REMOVED: This is needed for deployment
 docs/
 infrastructure/
-tools/
+# tools/ - REMOVED: Needed for agent tools API
 projects/
 amrikyy-*
 maya-*

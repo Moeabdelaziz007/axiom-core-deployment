@@ -357,13 +357,13 @@ class ProductionMonitor {
   }
 
   private logMetric(
-    metric: string,
+    metricName: string,
     value: number | string | boolean,
     threshold?: { warning?: number; critical?: number }
   ): void {
     const metric: MonitoringMetric = {
       timestamp: new Date(),
-      metric,
+      metric: metricName,
       value,
       threshold,
       status: 'normal'

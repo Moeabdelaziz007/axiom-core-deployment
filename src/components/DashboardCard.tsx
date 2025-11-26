@@ -60,3 +60,5 @@ export const DashboardCard = ({
         </div>
     );
 };
+
+export { DashboardCard as Card };

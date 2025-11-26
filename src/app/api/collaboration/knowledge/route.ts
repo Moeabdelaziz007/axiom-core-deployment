@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { D1Database } from '@cloudflare/workers-types';
+// import { D1Database } from '@cloudflare/workers-types';
 
 // Mock database for development - replace with actual D1 in production
 let mockKnowledge = [
@@ -112,11 +112,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
-      title, 
-      type, 
-      content, 
-      contributor, 
+    const {
+      title,
+      type,
+      content,
+      contributor,
       tags = [],
       quality = 80,
       usefulness = 80
@@ -235,7 +235,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function RATE(request: NextRequest) {
   try {
     const body = await request.json();
     const { knowledgeId, rating } = body;
@@ -272,7 +272,7 @@ export async function POST(request: NextRequest) {
     // In production, this would update in D1 database
     // const db = (request as any).env.DB as D1Database;
     // await db.prepare(`
-    //   UPDATE collaboration_knowledge 
+    //   UPDATE collaboration_knowledge
     //   SET quality = ?, usefulness = ?, rating_count = ?, updated_at = ?
     //   WHERE id = ?
     // `).bind(

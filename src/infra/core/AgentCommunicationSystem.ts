@@ -13,11 +13,11 @@
  * @version 1.0.0
  */
 
-import { 
-  AgentMessage, 
-  MessageType, 
-  MessagePriority, 
-  DeliveryStatus, 
+import {
+  AgentMessage,
+  MessageType,
+  MessagePriority,
+  DeliveryStatus,
   DeliveryState,
   SecurityMetadata,
   EncryptionInfo,
@@ -52,14 +52,14 @@ export class AgentCommunicationSystem {
   private spamFilters: SpamFilter[] = [];
   private encryptionKeys: Map<string, EncryptionKey> = new Map();
   private connections: Map<string, AgentConnection> = new Map();
-  
+
   // Performance monitoring
   private metrics: CommunicationMetrics;
   private performanceMonitor: PerformanceMonitor;
-  
+
   // Configuration
   private config: CommunicationConfig;
-  
+
   constructor(
     private agentFramework: AgentSuperpowersFramework,
     private collaborationSystem: AgentCollaborationSystem,
@@ -91,7 +91,7 @@ export class AgentCommunicationSystem {
   ): Promise<MessageResult> {
     const messageId = this.generateMessageId();
     const timestamp = new Date();
-    
+
     try {
       // Create message
       const message: AgentMessage = {
@@ -151,10 +151,10 @@ export class AgentCommunicationSystem {
 
       // Encrypt and sign message
       const securedMessage = await this.encryptAndSign(message);
-      
+
       // Queue message for delivery
       await this.queueMessage(securedMessage);
-      
+
       // Log to audit trail
       this.logAudit({
         messageId: securedMessage.id,
@@ -167,7 +167,7 @@ export class AgentCommunicationSystem {
 
       // Update metrics
       this.metrics.recordMessageSent(message);
-      
+
       return {
         success: true,
         messageId: securedMessage.id,
@@ -184,7 +184,7 @@ export class AgentCommunicationSystem {
         timestamp,
         metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
       });
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -205,15 +205,15 @@ export class AgentCommunicationSystem {
     options: MessageOptions = {}
   ): Promise<BroadcastResult> {
     const results: MessageResult[] = [];
-    
+
     for (const recipientId of recipients) {
       const result = await this.sendMessage(senderId, recipientId, type, content, options);
       results.push(result);
     }
-    
+
     const successCount = results.filter(r => r.success).length;
     const failureCount = results.length - successCount;
-    
+
     return {
       totalRecipients: recipients.length,
       successCount,
@@ -254,7 +254,7 @@ export class AgentCommunicationSystem {
     try {
       // Decrypt and verify message
       const message = await this.decryptAndVerify(encryptedMessage, senderInfo);
-      
+
       // Validate message integrity
       if (!await this.validateMessage(message)) {
         throw new Error('Message validation failed');
@@ -272,10 +272,10 @@ export class AgentCommunicationSystem {
 
       // Process message based on type
       const result = await this.processMessage(message);
-      
+
       // Update delivery status
       await this.updateDeliveryStatus(message.id, 'delivered');
-      
+
       // Log to audit trail
       this.logAudit({
         messageId: message.id,
@@ -283,16 +283,16 @@ export class AgentCommunicationSystem {
         recipientId: Array.isArray(message.recipientId) ? 'multiple' : message.recipientId,
         type: 'message_received',
         timestamp: new Date(),
-        metadata: { 
-          messageType: message.type, 
+        metadata: {
+          messageType: message.type,
           priority: message.priority,
-          processingTime: result.processingTime 
+          processingTime: result.processingTime
         }
       });
 
       // Update metrics
       this.metrics.recordMessageReceived(message);
-      
+
       return {
         success: true,
         messageId: message.id,
@@ -310,7 +310,7 @@ export class AgentCommunicationSystem {
         timestamp: new Date(),
         metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
       });
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -325,36 +325,146 @@ export class AgentCommunicationSystem {
    */
   private async processMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     switch (message.type) {
       case 'text':
         return await this.processTextMessage(message);
-      
+
       case 'task':
         return await this.processTaskMessage(message);
-      
+
       case 'collaboration':
         return await this.processCollaborationMessage(message);
-      
+
       case 'marketplace':
         return await this.processMarketplaceMessage(message);
-      
+
       case 'discovery':
         return await this.processDiscoveryMessage(message);
-      
+
       case 'heartbeat':
         return await this.processHeartbeatMessage(message);
-      
+
       case 'file':
         return await this.processFileMessage(message);
-      
+
       case 'voice':
       case 'video':
         return await this.processMediaMessage(message);
-      
+
       default:
         return await this.processDefaultMessage(message);
     }
+  }
+
+  // ============================================================================
+  // MESSAGE MANAGEMENT
+  // ============================================================================
+
+  /**
+   * Get message history
+   */
+  async getMessageHistory(
+    agentId: string,
+    options: any = {}
+  ): Promise<AgentMessage[]> {
+    // In production, query database
+    // For now return empty array or mock data
+    return [];
+  }
+
+  /**
+   * Mark message as read
+   */
+  async markAsRead(
+    messageId: string,
+    agentId: string,
+    readAt: Date
+  ): Promise<any> {
+    // In production, update database
+    return {
+      success: true,
+      readAt,
+      confirmed: true,
+      error: null
+    };
+  }
+
+  /**
+   * Get delivery status
+   */
+  async getDeliveryStatus(
+    messageId: string,
+    agentId: string
+  ): Promise<any> {
+    // In production, query delivery tracking
+    return {
+      status: 'delivered',
+      attempts: 1,
+      lastAttempt: new Date(),
+      deliveredAt: new Date(),
+      readAt: null,
+      acknowledged: true,
+      trace: [],
+      error: null
+    };
+  }
+
+  /**
+   * Delete message
+   */
+  async deleteMessage(
+    messageId: string,
+    agentId: string
+  ): Promise<any> {
+    // In production, delete from database
+    return {
+      success: true,
+      deletedAt: new Date(),
+      error: null
+    };
+  }
+
+  /**
+   * Get message queue
+   */
+  async getMessageQueue(
+    agentId: string,
+    options: any = {}
+  ): Promise<any[]> {
+    // In production, query message queue
+    return [];
+  }
+
+  /**
+   * Search messages
+   */
+  async searchMessages(
+    agentId: string,
+    query: string,
+    options: any = {}
+  ): Promise<any> {
+    // In production, search database
+    return {
+      messages: [],
+      total: 0
+    };
+  }
+
+  /**
+   * Get message stats
+   */
+  async getMessageStats(
+    agentId: string,
+    options: any = {}
+  ): Promise<any> {
+    // In production, aggregate stats
+    return {
+      sent: 0,
+      received: 0,
+      volume: 0,
+      avgResponseTime: 0
+    };
   }
 
   // ============================================================================
@@ -371,7 +481,7 @@ export class AgentCommunicationSystem {
     config: SessionConfig = {}
   ): Promise<SessionResult> {
     const sessionId = this.generateSessionId();
-    
+
     try {
       const session: CommunicationSession = {
         id: sessionId,
@@ -406,12 +516,12 @@ export class AgentCommunicationSystem {
 
       // Store session
       this.activeSessions.set(sessionId, session);
-      
+
       // Send invitations to participants
       for (const participantId of participants) {
         await this.sendSessionInvitation(sessionId, initiatorId, participantId);
       }
-      
+
       // Log session creation
       this.logAudit({
         sessionId,
@@ -489,13 +599,13 @@ export class AgentCommunicationSystem {
 
       session.participants.push(participant);
       session.state = 'active';
-      
+
       // Update session
       this.activeSessions.set(sessionId, session);
-      
+
       // Notify other participants
       await this.notifySessionParticipants(sessionId, 'participant_joined', { participantId });
-      
+
       // Log session join
       this.logAudit({
         sessionId,
@@ -557,10 +667,10 @@ export class AgentCommunicationSystem {
 
       // Update session
       this.activeSessions.set(sessionId, session);
-      
+
       // Notify remaining participants
       await this.notifySessionParticipants(sessionId, 'participant_left', { participantId, reason });
-      
+
       // Log session leave
       this.logAudit({
         sessionId,
@@ -595,22 +705,22 @@ export class AgentCommunicationSystem {
    * Secure message with encryption and signing
    */
   private async secureMessage(
-    senderId: string, 
+    senderId: string,
     content: any
   ): Promise<SecurityMetadata> {
     const keyId = await this.getOrCreateKey(senderId);
     const encryptionKey = this.encryptionKeys.get(keyId);
-    
+
     if (!encryptionKey) {
       throw new Error('Encryption key not found');
     }
 
     // Encrypt content
     const encryptedContent = await this.encryptContent(content, encryptionKey);
-    
+
     // Create signature
     const signature = await this.signContent(encryptedContent, encryptionKey);
-    
+
     return {
       encryption: {
         algorithm: this.config.encryptionAlgorithm,
@@ -670,7 +780,7 @@ export class AgentCommunicationSystem {
    * Encrypt content
    */
   private async encryptContent(
-    content: any, 
+    content: any,
     key: EncryptionKey
   ): Promise<string> {
     // In production, use actual encryption library
@@ -682,7 +792,7 @@ export class AgentCommunicationSystem {
    * Sign content
    */
   private async signContent(
-    content: string, 
+    content: string,
     key: EncryptionKey
   ): Promise<string> {
     // In production, use actual signing library
@@ -780,7 +890,7 @@ export class AgentCommunicationSystem {
   ): Promise<MessageRouting> {
     const recipients = Array.isArray(recipientId) ? recipientId : [recipientId];
     const path: string[] = [];
-    
+
     // Calculate optimal route for each recipient
     for (const recipient of recipients) {
       const route = await this.findOptimalRoute(senderId, recipient);
@@ -824,25 +934,25 @@ export class AgentCommunicationSystem {
   private async queueMessage(message: AgentMessage): Promise<void> {
     const priority = message.priority;
     const queueKey = `priority_${priority}`;
-    
+
     if (!this.messageQueue.has(queueKey)) {
       this.messageQueue.set(queueKey, []);
     }
-    
+
     const queue = this.messageQueue.get(queueKey)!;
     queue.push({
       message,
       queuedAt: new Date(),
       attempts: 0
     });
-    
+
     // Sort queue by priority and timestamp
     queue.sort((a, b) => {
       const priorityOrder = this.getPriorityOrder(a.message.priority) - this.getPriorityOrder(b.message.priority);
       if (priorityOrder !== 0) return priorityOrder;
       return a.queuedAt.getTime() - b.queuedAt.getTime();
     });
-    
+
     // Process queue
     this.processMessageQueue(queueKey);
   }
@@ -853,10 +963,10 @@ export class AgentCommunicationSystem {
   private async processMessageQueue(queueKey: string): Promise<void> {
     const queue = this.messageQueue.get(queueKey);
     if (!queue || queue.length === 0) return;
-    
+
     const queuedMessage = queue.shift();
     if (!queuedMessage) return;
-    
+
     try {
       await this.deliverMessage(queuedMessage.message);
       queuedMessage.message.delivery.status = 'delivered';
@@ -864,7 +974,7 @@ export class AgentCommunicationSystem {
     } catch (error) {
       queuedMessage.attempts++;
       queuedMessage.message.delivery.attempts = queuedMessage.attempts;
-      
+
       if (queuedMessage.attempts < this.config.maxRetries) {
         // Re-queue with exponential backoff
         setTimeout(() => {
@@ -888,7 +998,7 @@ export class AgentCommunicationSystem {
    */
   private async deliverMessage(message: AgentMessage): Promise<void> {
     const recipients = Array.isArray(message.recipientId) ? message.recipientId : [message.recipientId];
-    
+
     for (const recipientId of recipients) {
       const connection = this.connections.get(recipientId);
       if (connection && connection.status === 'connected') {
@@ -924,7 +1034,7 @@ export class AgentCommunicationSystem {
   ): Promise<boolean> {
     const limiter = this.rateLimiters.get(senderId);
     if (!limiter) return true;
-    
+
     return limiter.checkLimit(message);
   }
 
@@ -987,7 +1097,7 @@ export class AgentCommunicationSystem {
    */
   private getSessionMetrics(): SessionMetrics {
     const sessions = Array.from(this.activeSessions.values());
-    
+
     return {
       totalSessions: sessions.length,
       activeSessions: sessions.filter(s => s.state === 'active').length,
@@ -1005,7 +1115,7 @@ export class AgentCommunicationSystem {
     const recentAudits = this.auditTrail.filter(
       entry => entry.timestamp > new Date(Date.now() - 24 * 60 * 60 * 1000)
     );
-    
+
     return {
       totalMessages: this.metrics.getTotalMessages(),
       encryptedMessages: this.metrics.getEncryptedMessages(),
@@ -1092,7 +1202,7 @@ export class AgentCommunicationSystem {
     const priorityDelay = this.getPriorityDelay(message.priority);
     const processingTime = 100; // milliseconds
     const networkLatency = 50; // milliseconds
-    
+
     return new Date(baseTime + priorityDelay + processingTime + networkLatency);
   }
 
@@ -1146,7 +1256,7 @@ export class AgentCommunicationSystem {
   private initializeSecurity(): void {
     // Generate initial encryption keys
     this.generateInitialKeys();
-    
+
     // Set up security monitoring
     this.setupSecurityMonitoring();
   }
@@ -1172,7 +1282,7 @@ export class AgentCommunicationSystem {
       expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
       version: '1.0'
     };
-    
+
     this.encryptionKeys.set('default', defaultKey);
   }
 
@@ -1197,7 +1307,7 @@ export class AgentCommunicationSystem {
    */
   private logAudit(entry: AuditEntry): void {
     this.auditTrail.push(entry);
-    
+
     // Keep audit trail size manageable
     if (this.auditTrail.length > 10000) {
       this.auditTrail = this.auditTrail.slice(-5000);
@@ -1209,7 +1319,7 @@ export class AgentCommunicationSystem {
    */
   private async getOrCreateKey(agentId: string): Promise<string> {
     let keyId = `${agentId}_key`;
-    
+
     if (!this.encryptionKeys.has(keyId)) {
       const newKey: EncryptionKey = {
         id: keyId,
@@ -1219,10 +1329,10 @@ export class AgentCommunicationSystem {
         expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
         version: '1.0'
       };
-      
+
       this.encryptionKeys.set(keyId, newKey);
     }
-    
+
     return keyId;
   }
 
@@ -1260,7 +1370,7 @@ export class AgentCommunicationSystem {
       participantId,
       timestamp: new Date()
     };
-    
+
     await this.sendMessage(initiatorId, participantId, 'system', invitation);
   }
 
@@ -1274,7 +1384,7 @@ export class AgentCommunicationSystem {
   ): Promise<void> {
     const session = this.activeSessions.get(sessionId);
     if (!session) return;
-    
+
     for (const participant of session.participants) {
       if (participant.status === 'connected') {
         await this.sendMessage('system', participant.id, 'system', {
@@ -1369,14 +1479,14 @@ export class AgentCommunicationSystem {
    */
   private async processTextMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle text message processing
     const result = {
       type: 'text_response',
       content: `Processed text message: ${message.content.data.text}`,
       timestamp: new Date()
     };
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1388,14 +1498,14 @@ export class AgentCommunicationSystem {
    */
   private async processTaskMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle task delegation
     const result = {
       type: 'task_result',
       content: `Task processed: ${message.content.data.task}`,
       timestamp: new Date()
     };
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1407,10 +1517,10 @@ export class AgentCommunicationSystem {
    */
   private async processCollaborationMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle collaboration request
     const result = await this.collaborationSystem.processCollaborationRequest(message);
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1422,10 +1532,10 @@ export class AgentCommunicationSystem {
    */
   private async processMarketplaceMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle marketplace transaction
     const result = await this.marketplaceEngine.processMarketplaceMessage(message);
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1437,7 +1547,7 @@ export class AgentCommunicationSystem {
    */
   private async processDiscoveryMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle agent discovery
     const result = {
       type: 'discovery_response',
@@ -1446,7 +1556,7 @@ export class AgentCommunicationSystem {
         timestamp: new Date()
       }
     };
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1458,7 +1568,7 @@ export class AgentCommunicationSystem {
    */
   private async processHeartbeatMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle heartbeat
     const result = {
       type: 'heartbeat_response',
@@ -1467,7 +1577,7 @@ export class AgentCommunicationSystem {
         timestamp: new Date()
       }
     };
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1479,14 +1589,14 @@ export class AgentCommunicationSystem {
    */
   private async processFileMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle file transfer
     const result = {
       type: 'file_response',
       content: `File processed: ${message.content.data.filename}`,
       timestamp: new Date()
     };
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1498,14 +1608,14 @@ export class AgentCommunicationSystem {
    */
   private async processMediaMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle voice/video communication
     const result = {
       type: 'media_response',
       content: `Media processed: ${message.type}`,
       timestamp: new Date()
     };
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1517,14 +1627,14 @@ export class AgentCommunicationSystem {
    */
   private async processDefaultMessage(message: AgentMessage): Promise<ProcessResult> {
     const startTime = Date.now();
-    
+
     // Handle unknown message type
     const result = {
       type: 'default_response',
       content: `Message processed: ${message.type}`,
       timestamp: new Date()
     };
-    
+
     return {
       data: result,
       processingTime: Date.now() - startTime
@@ -1559,7 +1669,7 @@ export class AgentCommunicationSystem {
    */
   private calculateAverageSessionQuality(sessions: CommunicationSession[]): number {
     if (sessions.length === 0) return 100;
-    
+
     const totalQuality = sessions.reduce((sum, session) => sum + session.quality.overall.value, 0);
     return totalQuality / sessions.length;
   }
@@ -1796,8 +1906,8 @@ interface RouteInfo {
  * Rate limiter
  */
 class RateLimiter {
-  constructor(private rule: any) {}
-  
+  constructor(private rule: any) { }
+
   checkLimit(message: AgentMessage): boolean {
     // In production, implement actual rate limiting
     return true;
@@ -1808,8 +1918,8 @@ class RateLimiter {
  * Spam filter
  */
 class SpamFilter {
-  constructor(private config: any) {}
-  
+  constructor(private config: any) { }
+
   async isSpam(message: AgentMessage): Promise<boolean> {
     // In production, implement actual spam filtering
     return false;
@@ -1891,51 +2001,51 @@ class CommunicationMetrics {
   private encryptedMessages: number = 0;
   private deliveryTimes: number[] = [];
   private errorCount: number = 0;
-  
+
   recordMessageSent(message: AgentMessage): void {
     this.messagesSent++;
     if (message.encrypted) this.encryptedMessages++;
   }
-  
+
   recordMessageReceived(message: AgentMessage): void {
     this.messagesReceived++;
     if (message.delivery.latency) {
       this.deliveryTimes.push(message.delivery.latency);
     }
   }
-  
+
   getTotalMessages(): number {
     return this.messagesSent + this.messagesReceived;
   }
-  
+
   getEncryptedMessages(): number {
     return this.encryptedMessages;
   }
-  
+
   getDeliveryRate(): number {
     const total = this.getTotalMessages();
     return total > 0 ? ((total - this.errorCount) / total) * 100 : 100;
   }
-  
+
   getAverageResponseTime(): number {
     if (this.deliveryTimes.length === 0) return 0;
     return this.deliveryTimes.reduce((sum, time) => sum + time, 0) / this.deliveryTimes.length;
   }
-  
+
   getErrorRate(): number {
     const total = this.getTotalMessages();
     return total > 0 ? (this.errorCount / total) * 100 : 0;
   }
-  
+
   getUserSatisfaction(): number {
     // In production, calculate from actual user feedback
     return 85;
   }
-  
+
   getSystemReliability(): number {
     return this.getDeliveryRate();
   }
-  
+
   getOverview(): any {
     return {
       messagesSent: this.messagesSent,
@@ -1961,7 +2071,7 @@ class PerformanceMonitor {
       uptime: 99.9
     };
   }
-  
+
   getNetworkQuality(): any {
     return {
       bandwidth: 1000,

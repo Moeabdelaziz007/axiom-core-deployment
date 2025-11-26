@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { D1Database } from '@cloudflare/workers-types';
+// import { D1Database } from '@cloudflare/workers-types';
 
 // Mock database for development - replace with actual D1 in production
 let mockTeams = [

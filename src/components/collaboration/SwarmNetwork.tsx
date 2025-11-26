@@ -117,7 +117,7 @@ const SwarmNetwork: React.FC = () => {
   const [metrics, setMetrics] = useState<SwarmMetrics | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [animatingMessage, setAnimatingMessage] = useState<string | null>(null);
-  
+
   const canvasRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
@@ -245,7 +245,7 @@ const SwarmNetwork: React.FC = () => {
 
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          
+
           switch (data.type) {
             case 'NETWORK_UPDATE':
               setNodes(data.nodes);
@@ -256,12 +256,12 @@ const SwarmNetwork: React.FC = () => {
               animateMessage(data.message.from, data.message.to);
               break;
             case 'NODE_UPDATE':
-              setNodes(prev => prev.map(node => 
+              setNodes(prev => prev.map(node =>
                 node.id === data.nodeId ? { ...node, ...data.updates } : node
               ));
               break;
             case 'EDGE_UPDATE':
-              setEdges(prev => prev.map(edge => 
+              setEdges(prev => prev.map(edge =>
                 edge.id === data.edgeId ? { ...edge, ...data.updates } : edge
               ));
               break;
@@ -338,12 +338,10 @@ const SwarmNetwork: React.FC = () => {
         <div className="col-span-9 bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden relative">
           <div className="absolute top-4 left-4 z-10 flex items-center gap-4">
             {/* Connection Status */}
-            <div className={`flex items-center gap-2 px-3 py-1 rounded-lg ${
-              isConnected ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-            }`}>
-              <div className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-green-400' : 'bg-red-400'
-              }`} />
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-lg ${isConnected ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+              }`}>
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'
+                }`} />
               <span className="text-sm font-medium">
                 {isConnected ? 'Connected' : 'Disconnected'}
               </span>
@@ -373,7 +371,7 @@ const SwarmNetwork: React.FC = () => {
           </div>
 
           {/* SVG Network */}
-          <div 
+          <div
             ref={canvasRef}
             className="w-full h-full relative"
             style={{ minHeight: '600px' }}
@@ -403,7 +401,7 @@ const SwarmNetwork: React.FC = () => {
               {edges.map(edge => {
                 const sourceNode = nodes.find(n => n.id === edge.source);
                 const targetNode = nodes.find(n => n.id === edge.target);
-                
+
                 if (!sourceNode || !targetNode) return null;
 
                 return (
@@ -418,7 +416,7 @@ const SwarmNetwork: React.FC = () => {
                       strokeOpacity={0.6}
                       strokeDasharray={edge.type === 'knowledge_sharing' ? '5,5' : '0'}
                     />
-                    
+
                     {/* Animated message pulse */}
                     {animatingMessage === `${edge.source}-${edge.target}` && (
                       <circle r="8" fill="#FFD700" opacity="0.8">
@@ -428,7 +426,6 @@ const SwarmNetwork: React.FC = () => {
                           path={`M${sourceNode.x},${sourceNode.y} L${targetNode.x},${targetNode.y}`}
                         />
                       </circle>
-                    </circle>
                     )}
                   </g>
                 );
@@ -451,7 +448,7 @@ const SwarmNetwork: React.FC = () => {
                     onTap={() => handleNodeClick(node.id)}
                     style={{ cursor: 'pointer' }}
                   />
-                  
+
                   {/* Agent icon */}
                   <text
                     x={node.x}
@@ -465,7 +462,7 @@ const SwarmNetwork: React.FC = () => {
                   >
                     {AGENT_CONFIG[node.type as keyof typeof AGENT_CONFIG]?.icon}
                   </text>
-                  
+
                   {/* Status indicator */}
                   <circle
                     cx={node.x + 15}
@@ -473,12 +470,12 @@ const SwarmNetwork: React.FC = () => {
                     r="5"
                     fill={
                       node.status === 'active' ? '#10B981' :
-                      node.status === 'busy' ? '#F59E0B' :
-                      node.status === 'idle' ? '#6B7280' : '#EF4444'
+                        node.status === 'busy' ? '#F59E0B' :
+                          node.status === 'idle' ? '#6B7280' : '#EF4444'
                     }
                     opacity="0.9"
                   />
-                  
+
                   {/* Reputation indicator */}
                   <text
                     x={node.x}
@@ -510,22 +507,21 @@ const SwarmNetwork: React.FC = () => {
                 <span>{AGENT_CONFIG[nodes.find(n => n.id === selectedNode)?.type as keyof typeof AGENT_CONFIG]?.icon}</span>
                 {nodes.find(n => n.id === selectedNode)?.name}
               </h3>
-              
+
               <div className="space-y-3">
                 <div>
                   <div className="text-sm text-gray-400">Status</div>
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      nodes.find(n => n.id === selectedNode)?.status === 'active' ? 'bg-green-400' :
-                      nodes.find(n => n.id === selectedNode)?.status === 'busy' ? 'bg-yellow-400' :
-                      'bg-gray-400'
-                    }`} />
+                    <div className={`w-2 h-2 rounded-full ${nodes.find(n => n.id === selectedNode)?.status === 'active' ? 'bg-green-400' :
+                        nodes.find(n => n.id === selectedNode)?.status === 'busy' ? 'bg-yellow-400' :
+                          'bg-gray-400'
+                      }`} />
                     <span className="text-sm capitalize">
                       {nodes.find(n => n.id === selectedNode)?.status}
                     </span>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm text-gray-400">Reputation</div>
                   <div className="flex items-center gap-2">
@@ -535,7 +531,7 @@ const SwarmNetwork: React.FC = () => {
                     <div className="text-xs text-gray-500">/100</div>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm text-gray-400">Capabilities</div>
                   <div className="flex flex-wrap gap-1">
@@ -546,14 +542,14 @@ const SwarmNetwork: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm text-gray-400">Active Connections</div>
                   <div className="text-lg font-semibold text-purple-400">
                     {nodes.find(n => n.id === selectedNode)?.activeConnections}
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm text-gray-400">Tasks Completed</div>
                   <div className="text-lg font-semibold text-green-400">
@@ -574,7 +570,7 @@ const SwarmNetwork: React.FC = () => {
               <MessageSquare className="w-5 h-5 text-green-400" />
               Recent Messages
             </h3>
-            
+
             <div className="space-y-2 max-h-64 overflow-y-auto">
               <AnimatePresence>
                 {messages.slice(0, 10).map((message, index) => (
@@ -586,12 +582,11 @@ const SwarmNetwork: React.FC = () => {
                     className="bg-gray-900/50 rounded-lg p-3 border border-gray-700"
                   >
                     <div className="flex items-start gap-2">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                        message.from === 'tajer' ? 'bg-purple-600' :
-                        message.from === 'aqar' ? 'bg-blue-600' :
-                        message.from === 'mawid' ? 'bg-green-600' :
-                        'bg-orange-600'
-                      }`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${message.from === 'tajer' ? 'bg-purple-600' :
+                          message.from === 'aqar' ? 'bg-blue-600' :
+                            message.from === 'mawid' ? 'bg-green-600' :
+                              'bg-orange-600'
+                        }`}>
                         {message.from.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
@@ -603,12 +598,11 @@ const SwarmNetwork: React.FC = () => {
                           <span className="text-xs text-gray-400">
                             {AGENT_CONFIG[message.to as keyof typeof AGENT_CONFIG]?.icon} {message.to}
                           </span>
-                          <span className={`ml-auto px-2 py-1 rounded text-xs ${
-                            message.priority === 'CRITICAL' ? 'bg-red-500/20 text-red-400' :
-                            message.priority === 'HIGH' ? 'bg-orange-500/20 text-orange-400' :
-                            message.priority === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-gray-500/20 text-gray-400'
-                          }`}>
+                          <span className={`ml-auto px-2 py-1 rounded text-xs ${message.priority === 'CRITICAL' ? 'bg-red-500/20 text-red-400' :
+                              message.priority === 'HIGH' ? 'bg-orange-500/20 text-orange-400' :
+                                message.priority === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-400' :
+                                  'bg-gray-500/20 text-gray-400'
+                            }`}>
                             {message.priority}
                           </span>
                         </div>
@@ -636,7 +630,7 @@ const SwarmNetwork: React.FC = () => {
               <Zap className="w-5 h-5 text-yellow-400" />
               Quick Actions
             </h3>
-            
+
             <div className="space-y-2">
               <button className="w-full bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 py-2 px-3 rounded-lg text-sm transition-colors flex items-center gap-2">
                 <GitBranch className="w-4 h-4" />

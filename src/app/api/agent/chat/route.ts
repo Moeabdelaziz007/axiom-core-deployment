@@ -62,10 +62,42 @@ const AGENT_TOOLS = {
             }
         ]
     },
+    mawid: {
+        name: 'Mawid Appointment Manager',
+        description: 'AI agent for scheduling, calendar management, and cultural timekeeping',
+        tools: [
+            {
+                name: 'hijri_calendar',
+                description: 'Convert dates between Gregorian and Hijri calendars, and get prayer times. Use this when users ask about Hijri dates, Ramadan, Eid, or prayer times.',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        action: { type: 'string', description: 'Action to perform: "convert_date" or "get_prayer_times"' },
+                        date: { type: 'string', description: 'Gregorian date to convert (YYYY-MM-DD)' },
+                        city: { type: 'string', description: 'City for prayer times' },
+                        country: { type: 'string', description: 'Country for prayer times' }
+                    },
+                    required: ['action']
+                }
+            }
+        ]
+    },
     tajer: {
         name: 'Tajer E-Commerce & DeFi Negotiator',
         description: 'AI agent for e-commerce negotiation, market analysis, and blockchain operations',
         tools: [
+            {
+                name: 'quran_search',
+                description: 'Search the Quran for verses related to ethics, finance, and guidance. Use this for questions about "Riba", "Halal investment", or ethical business practices.',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        keyword: { type: 'string', description: 'Search keyword (e.g., Riba, Trade, Debt)' },
+                        language: { type: 'string', description: 'Language for results (ar or en)' }
+                    },
+                    required: ['keyword']
+                }
+            },
             {
                 name: 'analyze_competitor',
                 description: 'Analyze competitor pricing and strategies',
@@ -160,6 +192,18 @@ const AGENT_TOOLS = {
         name: 'General Assistant',
         description: 'AI assistant for general tasks and calculations',
         tools: [
+            {
+                name: 'quran_search',
+                description: 'Search the Quran for verses related to ethics, finance, and guidance.',
+                parameters: {
+                    type: 'object',
+                    properties: {
+                        keyword: { type: 'string', description: 'Search keyword' },
+                        language: { type: 'string', description: 'Language for results (ar or en)' }
+                    },
+                    required: ['keyword']
+                }
+            },
             {
                 name: 'web_search',
                 description: 'Search the web for current information',
@@ -454,6 +498,14 @@ async function executeToolCalls(toolCalls: any[], solanaKit?: SolanaAgentKit | n
                     results[call.name] = await getBalance(call.args, solanaKit);
                     break;
 
+                case 'hijri_calendar':
+                    results[call.name] = await executeHijriCalendar(call.args);
+                    break;
+
+                case 'quran_search':
+                    results[call.name] = await executeQuranSearch(call.args);
+                    break;
+
                 default:
                     results[call.name] = `Tool ${call.name} not implemented yet`;
             }
@@ -701,9 +753,32 @@ async function getBalance(args: any, solanaKit?: SolanaAgentKit | null) {
         };
     } catch (error) {
         console.error('❌ Get balance error:', error);
-        return {
-            error: 'Failed to get balance',
-            details: error instanceof Error ? error.message : 'Unknown error'
-        };
+    }
+}
+
+// Helper functions for new tools
+async function executeHijriCalendar(args: any) {
+    try {
+        const response = await fetch('http://localhost:3000/api/agents/tools/hijri_calendar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(args)
+        });
+        return await response.json();
+    } catch (error) {
+        return { error: 'Failed to execute Hijri Calendar tool' };
+    }
+}
+
+async function executeQuranSearch(args: any) {
+    try {
+        const response = await fetch('http://localhost:3000/api/agents/tools/quran_search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(args)
+        });
+        return await response.json();
+    } catch (error) {
+        return { error: 'Failed to execute Quran Search tool' };
     }
 }

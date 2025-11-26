@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { D1Database } from '@cloudflare/workers-types';
+// import { D1Database } from '@cloudflare/workers-types';
 
 // Mock database for development - replace with actual D1 in production
 let mockSessions = [
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     // In production, this would query the D1 database
     // const db = (request as any).env.DB as D1Database;
     // const sessions = await db.prepare('SELECT * FROM collaboration_sessions ORDER BY created_at DESC').all();
-    
+
     return NextResponse.json({
       success: true,
       sessions: mockSessions

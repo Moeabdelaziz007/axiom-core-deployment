@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { D1Database } from '@cloudflare/workers-types';
+// import { D1Database } from '@cloudflare/workers-types';
 
 // Mock database for development - replace with actual D1 in production
 let mockTasks = [
@@ -102,14 +102,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
-      sessionId, 
-      title, 
-      description, 
-      assignedTo, 
-      assignedBy, 
+    const {
+      sessionId,
+      title,
+      description,
+      assignedTo,
+      assignedBy,
       priority = 'normal',
-      deadline 
+      deadline
     } = body;
 
     // Validate required fields

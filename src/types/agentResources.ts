@@ -12,20 +12,23 @@
 // CORE RESOURCE TYPES
 // ============================================================================
 
-export type ResourceType = 
-  | 'COMPUTE_MS'      // Worker execution time in milliseconds
-  | 'AI_TOKENS'       // LLM Token usage (Gemini, GPT, etc.)
-  | 'STORAGE_KB'      // D1/R2 Storage in kilobytes
-  | 'NETWORK_REQS'    // API Calls (Tavily, etc.)
-  | 'SOLANA_LAMPORTS'; // Blockchain transaction fees in lamports
+export const RESOURCE_TYPES = [
+  'COMPUTE_MS',
+  'AI_TOKENS',
+  'STORAGE_KB',
+  'NETWORK_REQS',
+  'SOLANA_LAMPORTS'
+] as const;
 
-export type ResourceTier = 
+export type ResourceType = typeof RESOURCE_TYPES[number];
+
+export type ResourceTier =
   | 'FREE'           // Free tier with basic limits
   | 'PRO'            // Professional tier with standard limits
   | 'ENTERPRISE'     // Enterprise tier with high limits
   | 'CUSTOM';         // Custom tier with negotiated limits
 
-export type ResourcePeriod = 
+export type ResourcePeriod =
   | 'SECONDLY'
   | 'MINUTELY'
   | 'HOURLY'
@@ -157,7 +160,7 @@ export interface OptimizationRule {
 /**
  * Optimization condition types
  */
-export type OptimizationCondition = 
+export type OptimizationCondition =
   | 'HIGH_USAGE'        // Resource usage above threshold
   | 'LOW_EFFICIENCY'    // Resource efficiency below threshold
   | 'BUDGET_RISK'       // Budget at risk of being exceeded
@@ -170,7 +173,7 @@ export type OptimizationCondition =
 /**
  * Optimization action types
  */
-export type OptimizationAction = 
+export type OptimizationAction =
   | 'THROTTLE'         // Throttle resource usage
   | 'SCALE_DOWN'        // Scale down resources
   | 'SCALE_UP'          // Scale up resources
@@ -196,7 +199,7 @@ export interface ResourceAllocationRequest {
   agentId: string;
   taskId?: string;
   sessionId?: string;
-  
+
   // Resource requirements
   requirements: {
     compute: {
@@ -225,7 +228,7 @@ export interface ResourceAllocationRequest {
       priority: 'slow' | 'standard' | 'fast';
     };
   };
-  
+
   // Allocation constraints
   constraints: {
     maxCostUSD?: number;
@@ -234,7 +237,7 @@ export interface ResourceAllocationRequest {
     allowOverage?: boolean;
     preferFreeQuota?: boolean;
   };
-  
+
   // Request metadata
   metadata: {
     requestId: string;
@@ -242,10 +245,10 @@ export interface ResourceAllocationRequest {
     purpose: string;
     tags?: string[];
   };
-  
+
   // Status
   status: 'pending' | 'approved' | 'allocated' | 'rejected' | 'completed' | 'failed';
-  
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;
@@ -259,7 +262,7 @@ export interface ResourceAllocationResponse {
   requestId: string;
   allocationId: string;
   status: 'approved' | 'partial' | 'rejected';
-  
+
   // Allocated resources
   allocated: {
     compute: {
@@ -286,7 +289,7 @@ export interface ResourceAllocationResponse {
       priority: string;
     };
   };
-  
+
   // Cost information
   cost: {
     estimatedCostUSD: number;
@@ -294,14 +297,14 @@ export interface ResourceAllocationResponse {
     currency: string;
     breakdown: ResourceCost[];
   };
-  
+
   // Time information
   timing: {
     allocatedAt: Date;
     expiresAt?: Date;
     duration: number; // milliseconds
   };
-  
+
   // Response metadata
   metadata: {
     message: string;
@@ -320,7 +323,7 @@ export interface ResourceAllocationResponse {
 export interface ResourceMetrics {
   agentId: string;
   timestamp: Date;
-  
+
   // Current usage
   current: {
     compute: {
@@ -349,7 +352,7 @@ export interface ResourceMetrics {
       utilizationPercent: number;
     };
   };
-  
+
   // Performance metrics
   performance: {
     responseTime: {
@@ -373,7 +376,7 @@ export interface ResourceMetrics {
       optimizationScore: number; // 0-100
     };
   };
-  
+
   // Cost metrics
   cost: {
     currentSpendUSD: number;
@@ -499,7 +502,7 @@ export const DEFAULT_TIERS: Record<ResourceTier, AgentTier> = {
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  
+
   PRO: {
     tier: 'PRO',
     name: 'Professional Tier',
@@ -583,7 +586,7 @@ export const DEFAULT_TIERS: Record<ResourceTier, AgentTier> = {
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  
+
   ENTERPRISE: {
     tier: 'ENTERPRISE',
     name: 'Enterprise Tier',
@@ -666,6 +669,30 @@ export const DEFAULT_TIERS: Record<ResourceTier, AgentTier> = {
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+
+  CUSTOM: {
+    tier: 'CUSTOM',
+    name: 'Custom Tier',
+    description: 'Custom resource allocation',
+    pricing: {
+      compute: { baseCostPerMS: 0, freeQuotaMS: 0 },
+      aiTokens: { baseCostPerToken: 0, freeQuotaTokens: 0 },
+      storage: { baseCostPerKB: 0, freeQuotaKB: 0 },
+      network: { baseCostPerReq: 0, freeQuotaReqs: 0 },
+      blockchain: { baseCostPerLamport: 0, freeQuotaLamports: 0 }
+    },
+    limits: {
+      compute: { maxMSPerPeriod: { SECONDLY: 0, MINUTELY: 0, HOURLY: 0, DAILY: 0, WEEKLY: 0, MONTHLY: 0 } },
+      aiTokens: { maxTokensPerPeriod: { SECONDLY: 0, MINUTELY: 0, HOURLY: 0, DAILY: 0, WEEKLY: 0, MONTHLY: 0 } },
+      storage: { maxKBPerPeriod: { SECONDLY: 0, MINUTELY: 0, HOURLY: 0, DAILY: 0, WEEKLY: 0, MONTHLY: 0 } },
+      network: { maxReqsPerPeriod: { SECONDLY: 0, MINUTELY: 0, HOURLY: 0, DAILY: 0, WEEKLY: 0, MONTHLY: 0 } },
+      blockchain: { maxLamportsPerPeriod: { SECONDLY: 0, MINUTELY: 0, HOURLY: 0, DAILY: 0, WEEKLY: 0, MONTHLY: 0 } }
+    },
+    features: ['Custom configuration'],
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 };
 
@@ -717,4 +744,3 @@ export const DEFAULT_OPTIMIZATION_RULES: OptimizationRule[] = [
   }
 ];
 
-export default ResourceType;

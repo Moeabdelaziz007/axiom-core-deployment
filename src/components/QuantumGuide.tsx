@@ -218,49 +218,36 @@ export function QuantumGuide() {
     };
 
     const speakResponse = async (text: string) => {
-        // Try Google Cloud TTS first, fallback to browser TTS
+        // Zero-Cost Launch: Use Browser TTS exclusively
         const language = detectLanguage(text);
 
-        try {
-            const response = await fetch('/api/tts/google', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    text: text,
-                    language: language === 'ar' ? 'ar-SA' : 'en-US',
-                    voiceGender: 'FEMALE'
-                })
-            });
+        if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
 
-            if (response.ok) {
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = language === 'ar' ? 'ar-SA' : 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
 
-                audio.onended = () => {
-                    setIsSpeaking(false);
-                    URL.revokeObjectURL(audioUrl);
-                };
+            // Select a better voice if available
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice =>
+                voice.lang.includes(language === 'ar' ? 'ar' : 'en') &&
+                (voice.name.includes('Google') || voice.name.includes('Samantha') || voice.name.includes('Maged'))
+            );
 
-                setIsSpeaking(true);
-                await audio.play();
-            } else {
-                throw new Error('Google TTS failed');
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
             }
-        } catch (error) {
-            console.log('🔄 Falling back to browser TTS');
-            // Fallback to browser TTS
-            if ('speechSynthesis' in window) {
-                setIsSpeaking(true);
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = language === 'ar' ? 'ar-SA' : 'en-US';
-                utterance.rate = 0.9;
 
-                utterance.onend = () => setIsSpeaking(false);
-                speechSynthesis.speak(utterance);
-            }
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = () => setIsSpeaking(false);
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            console.warn('Text-to-speech not supported in this browser');
         }
     };
 

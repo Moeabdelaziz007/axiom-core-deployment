@@ -11,7 +11,7 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { resourceManager, ResourceManager } from '@/infra/core/ResourceManager';
 import { resourceIntegration } from '@/infra/core/ResourceIntegration';
-import { ResourceType, ResourceQuota, ResourceUsageLog } from '@/types/resources';
+import { ResourceType, ResourceQuota, ResourceUsageLog } from '@/types/agentResources';
 
 // ============================================================================
 // TEST SETUP
@@ -62,7 +62,7 @@ describe('ResourceManager', () => {
       const amount = 1000; // 1 second
 
       const checkResult = await resourceManager.checkResourceQuota(testAgentId, resourceType, amount);
-      
+
       expect(checkResult.allowed).toBe(true);
       expect(checkResult.remainingQuota).toBe(3600000);
       expect(checkResult.costUSD).toBe(0.01); // 1000 * 0.00001
@@ -73,7 +73,7 @@ describe('ResourceManager', () => {
       const amount = 2000000; // 2M tokens (exceeds 1M limit)
 
       const checkResult = await resourceManager.checkResourceQuota(testAgentId, resourceType, amount);
-      
+
       expect(checkResult.allowed).toBe(false);
       expect(checkResult.reason).toContain('Insufficient quota');
     });
@@ -83,7 +83,7 @@ describe('ResourceManager', () => {
       const amount = 1024; // 1MB
 
       const allocation = await resourceManager.allocateResource(testAgentId, resourceType, amount);
-      
+
       expect(allocation.agentId).toBe(testAgentId);
       expect(allocation.resourceType).toBe(resourceType);
       expect(allocation.allocatedAmount).toBe(amount);
@@ -108,7 +108,7 @@ describe('ResourceManager', () => {
   describe('Quota Management', () => {
     it('should return correct quota information', async () => {
       const quota = await resourceManager.getAgentQuota(testAgentId);
-      
+
       expect(quota.agentId).toBe(testAgentId);
       expect(quota.tier).toBe('PRO');
       expect(quota.period).toBe('DAILY');
@@ -127,7 +127,7 @@ describe('ResourceManager', () => {
       jest.spyOn(resourceManager as any, 'resourceCache', 'get').mockReturnValue(new Map([[testAgentId, expiredQuota]]));
 
       const quota = await resourceManager.getAgentQuota(testAgentId);
-      
+
       // Usage should be reset to 0
       expect(quota.used['COMPUTE_MS']).toBe(0);
       expect(quota.used['AI_TOKENS']).toBe(0);
@@ -144,7 +144,7 @@ describe('ResourceManager', () => {
       const amount = 5000; // 5 seconds
 
       const checkResult = await resourceManager.checkResourceQuota(testAgentId, resourceType, amount);
-      
+
       expect(checkResult.costUSD).toBe(0.05); // 5000 * 0.00001
     });
 
@@ -154,7 +154,7 @@ describe('ResourceManager', () => {
       await resourceManager.allocateResource(testAgentId, 'AI_TOKENS', 1000);
 
       const costTracking = await resourceManager.getAgentCostTracking(testAgentId);
-      
+
       expect(costTracking.agentId).toBe(testAgentId);
       expect(costTracking.currency).toBe('USD');
       expect(costTracking.totalCost).toBeGreaterThan(0);
@@ -164,7 +164,7 @@ describe('ResourceManager', () => {
     it('should trigger budget alerts when threshold exceeded', async () => {
       // Simulate high usage that exceeds budget alert threshold
       const costTracking = await resourceManager.getAgentCostTracking(testAgentId);
-      
+
       // Mock high cost usage
       jest.spyOn(resourceManager as any, 'getAgentUsageLogs').mockResolvedValue([
         { costUSD: 8.50 }, // Exceeds 80% of $10 budget
@@ -172,7 +172,7 @@ describe('ResourceManager', () => {
       ]);
 
       const updatedCostTracking = await resourceManager.getAgentCostTracking(testAgentId);
-      
+
       expect(updatedCostTracking.isAlertTriggered).toBe(true);
     });
   });
@@ -216,7 +216,7 @@ describe('ResourceManager', () => {
       } as any);
 
       const analysis = await resourceManager.analyzePerformance(testAgentId);
-      
+
       expect(analysis.bottlenecks.length).toBeGreaterThan(0);
       expect(analysis.bottlenecks[0].resourceType).toBe('COMPUTE_MS');
       expect(analysis.bottlenecks[0].severity).toBe('critical');
@@ -255,7 +255,7 @@ describe('ResourceManager', () => {
       } as any);
 
       const analysis = await resourceManager.analyzePerformance(testAgentId);
-      
+
       expect(analysis.optimizationActions.length).toBeGreaterThan(0);
       expect(analysis.optimizationActions[0].type).toBeDefined();
       expect(analysis.optimizationActions[0].priority).toBeDefined();
@@ -300,7 +300,7 @@ describe('ResourceManager', () => {
       } as any);
 
       const scaling = await resourceManager.getResourceScaling(testAgentId);
-      
+
       expect(scaling.agentId).toBe(testAgentId);
       expect(scaling.scalingPolicies).toBeDefined();
       expect(scaling.scalingHistory).toBeDefined();
@@ -308,9 +308,9 @@ describe('ResourceManager', () => {
 
     it('should execute scaling based on policies', async () => {
       const executeScalingSpy = jest.spyOn(resourceManager, 'executeScaling');
-      
+
       await resourceManager.executeScaling(testAgentId);
-      
+
       expect(executeScalingSpy).toHaveBeenCalledWith(testAgentId);
     });
   });
@@ -322,7 +322,7 @@ describe('ResourceManager', () => {
   describe('Integration Tests', () => {
     it('should integrate with superpowers framework', async () => {
       const integrationSpy = jest.spyOn(resourceIntegration, 'trackSuperpowerExecution');
-      
+
       await resourceIntegration.trackSuperpowerExecution(
         testAgentId,
         'data_analysis',
@@ -331,7 +331,7 @@ describe('ResourceManager', () => {
           'AI_TOKENS': 500
         }
       );
-      
+
       expect(integrationSpy).toHaveBeenCalledWith(
         testAgentId,
         'data_analysis',
@@ -344,7 +344,7 @@ describe('ResourceManager', () => {
 
     it('should find marketplace deals', async () => {
       const deals = await resourceIntegration.findMarketplaceDeals(testAgentId);
-      
+
       expect(Array.isArray(deals)).toBe(true);
       if (deals.length > 0) {
         expect(deals[0]).toHaveProperty('type');
@@ -355,14 +355,14 @@ describe('ResourceManager', () => {
 
     it('should share resources between agents', async () => {
       const targetAgentId = `target_agent_${Date.now()}`;
-      
+
       await resourceIntegration.shareResources(
         testAgentId,
         'COMPUTE_MS',
         1000,
         targetAgentId
       );
-      
+
       const sharingPools = resourceIntegration.getSharingPools(testAgentId);
       expect(sharingPools.length).toBeGreaterThan(0);
       expect(sharingPools[0].resourceType).toBe('COMPUTE_MS');
@@ -420,9 +420,9 @@ describe('ResourceManager', () => {
 
     it('should handle large resource amounts efficiently', async () => {
       const startTime = Date.now();
-      
+
       await resourceManager.checkResourceQuota(testAgentId, 'AI_TOKENS', 1000000);
-      
+
       const endTime = Date.now();
       const duration = endTime - startTime;
 

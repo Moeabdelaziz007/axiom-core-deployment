@@ -19,7 +19,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resourceManager } from '@/infra/core/ResourceManager';
 import { resourceIntegration } from '@/infra/core/ResourceIntegration';
-import { ResourceType } from '@/types/resources';
+import { ResourceType, RESOURCE_TYPES } from '@/types/agentResources';
 
 // ============================================================================
 // MAIN API HANDLER
@@ -254,7 +254,7 @@ async function allocateResources(body: any): Promise<NextResponse> {
     }
 
     // Validate resource type
-    if (!Object.values(ResourceType).includes(resourceType)) {
+    if (!RESOURCE_TYPES.includes(resourceType as ResourceType)) {
       return NextResponse.json(
         { error: 'Invalid resource type' },
         { status: 400 }

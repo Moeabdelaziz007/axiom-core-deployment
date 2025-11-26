@@ -43,7 +43,7 @@ const axiomIdSystem = new AxiomIDSystem();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Parse query parameters
     const agentId = searchParams.get('agentId');
     const timeRange = searchParams.get('timeRange') || '24h';
@@ -52,19 +52,19 @@ export async function GET(request: NextRequest) {
     const metrics = searchParams.get('metrics')?.split(',') || [];
     const granularity = searchParams.get('granularity') || 'hour';
     const compareWith = searchParams.get('compareWith');
-    
+
     // Calculate date range
-    const { start, end } = calculateDateRange(timeRange, startDate, endDate);
-    
+    const { start, end } = calculateDateRange(timeRange, startDate || undefined, endDate || undefined);
+
     // Get comprehensive analytics
-    const analytics = await getComprehensiveAnalytics(agentId, start, end, granularity);
-    
+    const analytics = await getComprehensiveAnalytics(agentId || undefined, start, end, granularity || undefined);
+
     // Filter metrics if specified
     let filteredAnalytics = analytics;
     if (metrics.length > 0) {
       filteredAnalytics = filterAnalyticsByMetrics(analytics, metrics);
     }
-    
+
     // Add comparison data if requested
     let comparisonData = null;
     if (compareWith) {
@@ -72,14 +72,14 @@ export async function GET(request: NextRequest) {
         start, end, compareWith
       );
       comparisonData = await getComprehensiveAnalytics(
-        agentId, compareStart, compareEnd, granularity
+        agentId || undefined, compareStart, compareEnd, granularity || undefined
       );
     }
-    
+
     // Calculate insights and recommendations
     const insights = await generateAnalyticsInsights(filteredAnalytics, comparisonData);
     const recommendations = await generateRecommendations(filteredAnalytics, insights);
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       },
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error fetching analytics:', error);
     return NextResponse.json({
@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate request type
     if (!body.type) {
       return NextResponse.json({
@@ -130,30 +130,30 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 400 });
     }
-    
+
     let result;
-    
+
     switch (body.type) {
       case 'custom_report':
         result = await generateCustomReport(body.parameters);
         break;
-        
+
       case 'performance_audit':
         result = await performPerformanceAudit(body.parameters);
         break;
-        
+
       case 'security_scan':
         result = await performSecurityScan(body.parameters);
         break;
-        
+
       case 'quality_assessment':
         result = await performQualityAssessment(body.parameters);
         break;
-        
+
       case 'predictive_analysis':
         result = await performPredictiveAnalysis(body.parameters);
         break;
-        
+
       default:
         return NextResponse.json({
           success: false,
@@ -168,14 +168,14 @@ export async function POST(request: NextRequest) {
           timestamp: new Date().toISOString()
         }, { status: 400 });
     }
-    
+
     return NextResponse.json({
       success: true,
       data: result,
       type: body.type,
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error processing analytics request:', error);
     return NextResponse.json({
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     if (!body.configType) {
       return NextResponse.json({
         success: false,
@@ -203,26 +203,26 @@ export async function PUT(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 400 });
     }
-    
+
     let result;
-    
+
     switch (body.configType) {
       case 'alert_thresholds':
         result = await updateAlertThresholds(body.thresholds);
         break;
-        
+
       case 'monitoring_rules':
         result = await updateMonitoringRules(body.rules);
         break;
-        
+
       case 'dashboard_preferences':
         result = await updateDashboardPreferences(body.preferences);
         break;
-        
+
       case 'export_settings':
         result = await updateExportSettings(body.settings);
         break;
-        
+
       default:
         return NextResponse.json({
           success: false,
@@ -236,14 +236,14 @@ export async function PUT(request: NextRequest) {
           timestamp: new Date().toISOString()
         }, { status: 400 });
     }
-    
+
     return NextResponse.json({
       success: true,
       data: result,
       configType: body.configType,
       updatedAt: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error updating analytics configuration:', error);
     return NextResponse.json({
@@ -270,38 +270,43 @@ async function getComprehensiveAnalytics(
 ): Promise<any> {
   // Get communication metrics
   const communicationMetrics = monitoringSystem.getMonitoringReport(
-    startDate && endDate ? { start: startDate, end: endDate } : undefined
+    startDate && endDate ? { start: startDate, end: endDate } : {
+      start: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      end: new Date()
+    }
   );
-  
+
   // Get performance analytics
   const performanceAnalytics = await getPerformanceAnalytics(agentId, startDate, endDate);
-  
+
   // Get security analytics
   const securityAnalytics = await getSecurityAnalytics(agentId, startDate, endDate);
-  
+
   // Get quality metrics
   const qualityMetrics = await getQualityMetrics(agentId, startDate, endDate);
-  
+
   // Get usage analytics
   const usageAnalytics = await getUsageAnalytics(agentId, startDate, endDate, granularity);
-  
+
   // Get behavioral insights from DualityEngine
   let behavioralAnalytics = null;
   if (agentId) {
     const karmaBalance = dualityEngine.getKarmaBalance(agentId);
-    const behaviorHistory = dualityEngine.getBehaviorHistory(agentId, undefined, 100);
-    
+    // TODO: Implement getBehaviorHistory in DualityEngine
+    // const behaviorHistory = dualityEngine.getBehaviorHistory(agentId, undefined, 100);
+
     behavioralAnalytics = {
       karmaBalance,
-      behaviorPatterns: analyzeBehaviorPatterns(behaviorHistory),
-      virtueViceRatio: calculateVirtueViceRatio(behaviorHistory),
-      recentTrends: analyzeRecentTrends(behaviorHistory)
+      // TODO: Re-enable after implementing getBehaviorHistory
+      // behaviorPatterns: analyzeBehaviorPatterns(behaviorHistory),
+      // virtueViceRatio: calculateVirtueViceRatio(behaviorHistory),
+      // recentTrends: analyzeRecentTrends(behaviorHistory)
     };
   }
-  
+
   // Get network insights from AxiomID system
   const networkInsights = await getNetworkInsights(agentId, startDate, endDate);
-  
+
   return {
     communication: communicationMetrics,
     performance: performanceAnalytics,
@@ -571,17 +576,17 @@ function calculateDateRange(
   endDate?: string
 ): { start: Date; end: Date } {
   const now = new Date();
-  
+
   if (startDate && endDate) {
     return {
       start: new Date(startDate),
       end: new Date(endDate)
     };
   }
-  
+
   let start: Date;
   let end: Date = now;
-  
+
   switch (timeRange) {
     case '1h':
       start = new Date(now.getTime() - 60 * 60 * 1000);
@@ -598,7 +603,7 @@ function calculateDateRange(
     default:
       start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   }
-  
+
   return { start, end };
 }
 
@@ -611,7 +616,7 @@ function calculateComparisonRange(
   compareType: string
 ): { start: Date; end: Date } {
   const duration = currentEnd.getTime() - currentStart.getTime();
-  
+
   switch (compareType) {
     case 'previous_period':
       return {
@@ -633,13 +638,13 @@ function calculateComparisonRange(
  */
 function filterAnalyticsByMetrics(analytics: any, metrics: string[]): any {
   const filtered: any = {};
-  
+
   metrics.forEach(metric => {
     if (analytics[metric]) {
       filtered[metric] = analytics[metric];
     }
   });
-  
+
   return filtered;
 }
 
@@ -673,7 +678,7 @@ async function generateAnalyticsInsights(
   comparison?: any
 ): Promise<any[]> {
   const insights = [];
-  
+
   // Performance insights
   if (analytics.performance?.latency?.trend === 'improving') {
     insights.push({
@@ -685,7 +690,7 @@ async function generateAnalyticsInsights(
       actionable: false
     });
   }
-  
+
   // Security insights
   if (analytics.security?.threats?.critical > 0) {
     insights.push({
@@ -698,7 +703,7 @@ async function generateAnalyticsInsights(
       recommendations: ['Review security logs', 'Implement additional safeguards']
     });
   }
-  
+
   // Quality insights
   if (analytics.quality?.userSatisfaction?.averageRating < 4.0) {
     insights.push({
@@ -711,7 +716,7 @@ async function generateAnalyticsInsights(
       recommendations: ['Improve response times', 'Enhance feature set']
     });
   }
-  
+
   return insights;
 }
 
@@ -723,27 +728,27 @@ async function generateRecommendations(
   insights: any[]
 ): Promise<string[]> {
   const recommendations = [];
-  
+
   // Add insight-based recommendations
   insights.forEach(insight => {
     if (insight.recommendations) {
       recommendations.push(...insight.recommendations);
     }
   });
-  
+
   // Add analytics-based recommendations
   if (analytics.performance?.latency?.average > 200) {
     recommendations.push('Consider network optimization to reduce latency');
   }
-  
+
   if (analytics.security?.encryption?.endToEndEncrypted < 95) {
     recommendations.push('Increase end-to-end encryption coverage');
   }
-  
+
   if (analytics.usage?.sessions?.averageDuration < 10) {
     recommendations.push('Investigate reasons for short session durations');
   }
-  
+
   // Remove duplicates
   return [...new Set(recommendations)];
 }
@@ -756,7 +761,7 @@ function generateTimelineData(granularity: string): any[] {
   const now = new Date();
   let interval: number;
   let format: string;
-  
+
   switch (granularity) {
     case 'minute':
       interval = 60 * 1000;
@@ -782,7 +787,7 @@ function generateTimelineData(granularity: string): any[] {
       interval = 60 * 60 * 1000;
       format = 'YYYY-MM-DD HH:00';
   }
-  
+
   // Generate last 24 data points
   for (let i = 23; i >= 0; i--) {
     const timestamp = new Date(now.getTime() - i * interval);
@@ -792,7 +797,7 @@ function generateTimelineData(granularity: string): any[] {
       label: timestamp.toISOString()
     });
   }
-  
+
   return dataPoints;
 }
 
@@ -815,10 +820,10 @@ function analyzeBehaviorPatterns(behaviorHistory: any[]): any {
 function calculateVirtueViceRatio(behaviorHistory: any[]): any {
   const virtueEvents = behaviorHistory.filter(e => e.type === 'VIRTUE');
   const viceEvents = behaviorHistory.filter(e => e.type === 'VICE');
-  
+
   const totalVirtueScore = virtueEvents.reduce((sum, e) => sum + e.score, 0);
   const totalViceScore = viceEvents.reduce((sum, e) => sum + e.score, 0);
-  
+
   return {
     virtueScore: totalVirtueScore,
     viceScore: totalViceScore,

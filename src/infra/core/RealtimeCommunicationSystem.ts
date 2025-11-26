@@ -13,11 +13,11 @@
  * @version 1.0.0
  */
 
-import { 
-  RealtimeSession, 
-  SessionType, 
-  SessionState, 
-  Participant, 
+import {
+  RealtimeSession,
+  SessionType,
+  SessionState,
+  Participant,
   ParticipantRole,
   ParticipantPermissions,
   ParticipantStatus,
@@ -56,7 +56,7 @@ export class WebSocketConnectionManager {
   private rooms: Map<string, Set<string>> = new Map();
   private messageQueue: Map<string, QueuedMessage[]> = new Map();
   private heartbeatInterval: Map<string, NodeJS.Timeout> = new Map();
-  
+
   constructor(private config: WebSocketConfig) {
     this.initializeWebSocketServer();
   }
@@ -110,16 +110,16 @@ export class WebSocketConnectionManager {
 
       // Store connection
       this.connections.set(connectionId, connection);
-      
+
       // Start heartbeat
       this.startHeartbeat(connectionId);
-      
+
       // Send welcome message
       await this.sendWelcomeMessage(connectionId);
-      
+
       // Update connection state
       connection.state = 'connected';
-      
+
       return {
         success: true,
         connectionId,
@@ -158,22 +158,22 @@ export class WebSocketConnectionManager {
     try {
       // Stop heartbeat
       this.stopHeartbeat(connectionId);
-      
+
       // Leave all rooms
       await this.leaveAllRooms(connectionId);
-      
+
       // Update connection state
       connection.state = 'disconnected';
       connection.disconnectedAt = new Date();
       connection.disconnectionReason = reason;
       connection.disconnectionCode = code;
-      
+
       // Remove from active connections
       this.connections.delete(connectionId);
-      
+
       // Notify other agents
       await this.notifyDisconnection(connectionId, reason);
-      
+
       return {
         success: true,
         connectionId,
@@ -214,7 +214,7 @@ export class WebSocketConnectionManager {
       // Update activity
       connection.lastActivity = new Date();
       connection.messages.sent++;
-      
+
       // Prepare WebSocket message
       const wsMessage: WebSocketMessage = {
         id: this.generateMessageId(),
@@ -228,7 +228,7 @@ export class WebSocketConnectionManager {
 
       // Send message
       await this.sendWebSocketMessage(connectionId, wsMessage);
-      
+
       return {
         success: true,
         messageId: wsMessage.id,
@@ -276,7 +276,7 @@ export class WebSocketConnectionManager {
       if (connectionId !== excludeConnection) {
         const result = await this.sendMessage(connectionId, message, options);
         results.push(result);
-        
+
         if (result.success) {
           successCount++;
         } else {
@@ -320,9 +320,9 @@ export class WebSocketConnectionManager {
       if (!this.rooms.has(roomId)) {
         this.rooms.set(roomId, new Set());
       }
-      
+
       this.rooms.get(roomId)!.add(connectionId);
-      
+
       // Notify room members
       await this.notifyRoomMembers(roomId, {
         type: 'user_joined',
@@ -333,7 +333,7 @@ export class WebSocketConnectionManager {
           timestamp: new Date()
         }
       }, connectionId);
-      
+
       return {
         success: true,
         connectionId,
@@ -374,12 +374,12 @@ export class WebSocketConnectionManager {
     try {
       // Remove from room
       room.delete(connectionId);
-      
+
       // Clean up empty rooms
       if (room.size === 0) {
         this.rooms.delete(roomId);
       }
-      
+
       // Notify remaining room members
       await this.notifyRoomMembers(roomId, {
         type: 'user_left',
@@ -388,7 +388,7 @@ export class WebSocketConnectionManager {
           timestamp: new Date()
         }
       });
-      
+
       return {
         success: true,
         connectionId,
@@ -412,13 +412,13 @@ export class WebSocketConnectionManager {
    */
   private async leaveAllRooms(connectionId: string): Promise<void> {
     const roomsToLeave: string[] = [];
-    
+
     for (const [roomId, members] of this.rooms.entries()) {
       if (members.has(connectionId)) {
         roomsToLeave.push(roomId);
       }
     }
-    
+
     for (const roomId of roomsToLeave) {
       await this.leaveRoom(connectionId, roomId);
     }
@@ -431,7 +431,7 @@ export class WebSocketConnectionManager {
     const interval = setInterval(() => {
       this.sendHeartbeat(connectionId);
     }, this.config.heartbeatInterval);
-    
+
     this.heartbeatInterval.set(connectionId, interval);
   }
 
@@ -462,7 +462,7 @@ export class WebSocketConnectionManager {
   private async sendWelcomeMessage(connectionId: string): Promise<void> {
     const connection = this.connections.get(connectionId);
     if (!connection) return;
-    
+
     await this.sendMessage(connectionId, {
       type: 'welcome',
       connectionId,
@@ -494,7 +494,7 @@ export class WebSocketConnectionManager {
   ): Promise<void> {
     const connection = this.connections.get(connectionId);
     if (!connection) return;
-    
+
     // Notify all rooms the connection was in
     for (const [roomId, members] of this.rooms.entries()) {
       if (members.has(connectionId)) {
@@ -558,7 +558,7 @@ export class WebSocketConnectionManager {
   getConnectionStats(connectionId: string): ConnectionStats | null {
     const connection = this.connections.get(connectionId);
     if (!connection) return null;
-    
+
     return {
       connectionId,
       agentId: connection.agentId,
@@ -579,13 +579,13 @@ export class WebSocketConnectionManager {
   getRoomStats(roomId: string): RoomStats | null {
     const room = this.rooms.get(roomId);
     if (!room) return null;
-    
+
     const members: ConnectionStats[] = [];
     for (const connectionId of room) {
       const stats = this.getConnectionStats(connectionId);
       if (stats) members.push(stats);
     }
-    
+
     return {
       roomId,
       memberCount: room.size,
@@ -602,7 +602,7 @@ export class WebSocketConnectionManager {
   getAllStats(): AllStats {
     const connections = Array.from(this.connections.values());
     const rooms = Array.from(this.rooms.keys());
-    
+
     return {
       totalConnections: connections.length,
       activeConnections: connections.filter(c => c.state === 'connected').length,
@@ -634,7 +634,7 @@ export class WebSocketConnectionManager {
 export class SSEManager {
   private connections: Map<string, SSEConnection> = new Map();
   private eventQueues: Map<string, SSEEvent[]> = new Map();
-  
+
   constructor(private config: SSEConfig) {
     this.initializeSSEServer();
   }
@@ -681,7 +681,7 @@ export class SSEManager {
 
       // Store connection
       this.connections.set(connectionId, connection);
-      
+
       // Send initial connection event
       await this.sendEvent(connectionId, {
         id: this.generateEventId(),
@@ -697,7 +697,7 @@ export class SSEManager {
 
       // Update connection state
       connection.state = 'connected';
-      
+
       return {
         success: true,
         connectionId,
@@ -737,17 +737,17 @@ export class SSEManager {
       // Update activity
       connection.lastActivity = new Date();
       connection.events.sent++;
-      
+
       // Format SSE event
       const sseEvent = this.formatSSEEvent(event);
-      
+
       // Send event
       await this.sendSSEEvent(connectionId, sseEvent);
-      
+
       // Update metrics
       connection.events.delivered++;
       connection.quality.deliveryRate = (connection.events.delivered / connection.events.sent) * 100;
-      
+
       return {
         success: true,
         eventId: event.id,
@@ -758,7 +758,7 @@ export class SSEManager {
     } catch (error) {
       connection.events.failed++;
       connection.retryCount++;
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -784,7 +784,7 @@ export class SSEManager {
       if (connection.channels.has(channel) && connectionId !== excludeConnection) {
         const result = await this.sendEvent(connectionId, event);
         results.push(result);
-        
+
         if (result.success) {
           successCount++;
         } else {
@@ -825,7 +825,7 @@ export class SSEManager {
 
     try {
       connection.channels.add(channel);
-      
+
       // Send subscription confirmation
       await this.sendEvent(connectionId, {
         id: this.generateEventId(),
@@ -837,7 +837,7 @@ export class SSEManager {
         },
         timestamp: new Date()
       });
-      
+
       return {
         success: true,
         connectionId,
@@ -876,7 +876,7 @@ export class SSEManager {
 
     try {
       connection.channels.delete(channel);
-      
+
       // Send unsubscription confirmation
       await this.sendEvent(connectionId, {
         id: this.generateEventId(),
@@ -888,7 +888,7 @@ export class SSEManager {
         },
         timestamp: new Date()
       });
-      
+
       return {
         success: true,
         connectionId,
@@ -919,7 +919,7 @@ export class SSEManager {
       '',
       '' // Double newline to signal end of event
     ];
-    
+
     return lines.join('\n');
   }
 
@@ -947,7 +947,7 @@ export class SSEManager {
   getConnectionStats(connectionId: string): SSEConnectionStats | null {
     const connection = this.connections.get(connectionId);
     if (!connection) return null;
-    
+
     return {
       connectionId,
       agentId: connection.agentId,
@@ -968,9 +968,9 @@ export class SSEManager {
   getChannelStats(channel: string): ChannelStats | null {
     const connections = Array.from(this.connections.values())
       .filter(c => c.channels.has(channel));
-    
+
     if (connections.length === 0) return null;
-    
+
     return {
       channel,
       subscriberCount: connections.length,
@@ -999,7 +999,7 @@ export class RealtimeCommunicationSystem {
   private readReceipts: Map<string, ReadReceipt[]> = new Map();
   private fileTransfers: Map<string, FileTransfer> = new Map();
   private mediaStreams: Map<string, MediaStream> = new Map();
-  
+
   constructor(
     private config: RealtimeConfig = {}
   ) {
@@ -1019,7 +1019,7 @@ export class RealtimeCommunicationSystem {
     sessionConfig: SessionConfig = {}
   ): Promise<SessionCreationResult> {
     const sessionId = this.generateSessionId();
-    
+
     try {
       const session: RealtimeSession = {
         id: sessionId,
@@ -1041,6 +1041,7 @@ export class RealtimeCommunicationSystem {
               network: { bandwidth: { upload: 10, download: 50, available: 40 }, latency: 50, jitter: 5, packetLoss: 0.1, connectionType: 'wifi', stable: true },
               storage: { available: 100, total: 500, type: 'local', speed: 100 },
               processing: { cpu: 'Intel i7', cores: 8, memory: 16, threads: 16, architecture: 'x64' }
+            },
           },
           network: {
             connectionType: 'wifi',
@@ -1096,12 +1097,12 @@ export class RealtimeCommunicationSystem {
 
       // Store session
       this.sessions.set(sessionId, session);
-      
+
       // Send invitations to participants
       for (const participantId of participants) {
         await this.sendSessionInvitation(sessionId, initiatorId, participantId);
       }
-      
+
       return {
         success: true,
         sessionId,
@@ -1173,15 +1174,15 @@ export class RealtimeCommunicationSystem {
       };
 
       session.participants.push(participant);
-      
+
       // Update session state
       if (session.participants.length >= 2) {
         session.state = 'active';
       }
-      
+
       // Notify other participants
       await this.notifySessionParticipants(sessionId, 'participant_joined', { participantId });
-      
+
       return {
         success: true,
         sessionId,
@@ -1208,14 +1209,14 @@ export class RealtimeCommunicationSystem {
     isTyping: boolean
   ): Promise<TypingResult> {
     const indicators = this.typingIndicators.get(sessionId) || [];
-    
+
     try {
       // Remove existing indicator for participant
       const existingIndex = indicators.findIndex(ind => ind.participantId === participantId);
       if (existingIndex !== -1) {
         indicators.splice(existingIndex, 1);
       }
-      
+
       // Add new indicator
       if (isTyping) {
         indicators.push({
@@ -1224,15 +1225,15 @@ export class RealtimeCommunicationSystem {
           lastUpdate: new Date()
         });
       }
-      
+
       this.typingIndicators.set(sessionId, indicators);
-      
+
       // Notify other participants
       await this.notifySessionParticipants(sessionId, 'typing_indicator', {
         participantId,
         isTyping
       });
-      
+
       return {
         success: true,
         sessionId,
@@ -1261,7 +1262,7 @@ export class RealtimeCommunicationSystem {
     messageId: string
   ): Promise<ReadReceiptResult> {
     const receipts = this.readReceipts.get(sessionId) || [];
-    
+
     try {
       // Add read receipt
       receipts.push({
@@ -1270,16 +1271,16 @@ export class RealtimeCommunicationSystem {
         readAt: new Date(),
         confirmed: false
       });
-      
+
       this.readReceipts.set(sessionId, receipts);
-      
+
       // Notify message sender
       await this.notifySessionParticipants(sessionId, 'read_receipt', {
         messageId,
         participantId,
         readAt: new Date()
       });
-      
+
       return {
         success: true,
         sessionId,
@@ -1308,7 +1309,7 @@ export class RealtimeCommunicationSystem {
     file: FileShare
   ): Promise<FileShareResult> {
     const transferId = this.generateTransferId();
-    
+
     try {
       const transfer: FileTransfer = {
         id: transferId,
@@ -1320,12 +1321,12 @@ export class RealtimeCommunicationSystem {
         startedAt: new Date(),
         participants: []
       };
-      
+
       this.fileTransfers.set(transferId, transfer);
-      
+
       // Start file transfer
       await this.startFileTransfer(transfer);
-      
+
       // Notify session participants
       await this.notifySessionParticipants(sessionId, 'file_share', {
         transferId,
@@ -1336,7 +1337,7 @@ export class RealtimeCommunicationSystem {
           type: file.type
         }
       });
-      
+
       return {
         success: true,
         transferId,
@@ -1367,7 +1368,7 @@ export class RealtimeCommunicationSystem {
     config: MediaStreamConfig
   ): Promise<MediaStreamResult> {
     const streamId = this.generateStreamId();
-    
+
     try {
       const stream: MediaStream = {
         id: streamId,
@@ -1385,15 +1386,15 @@ export class RealtimeCommunicationSystem {
         },
         startedAt: new Date()
       };
-      
+
       this.mediaStreams.set(streamId, stream);
-      
+
       // Start media stream
       await this.initializeMediaStream(stream);
-      
+
       // Update stream state
       stream.state = 'active';
-      
+
       return {
         success: true,
         streamId,
@@ -1496,7 +1497,7 @@ export class RealtimeCommunicationSystem {
   ): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     for (const participant of session.participants) {
       if (participant.status === 'connected') {
         await this.wsManager.sendMessage(participant.id, {
@@ -1525,7 +1526,7 @@ export class RealtimeCommunicationSystem {
       canMute: true,
       canControl: true
     };
-    
+
     const participantPermissions: ParticipantPermissions = {
       canSpeak: true,
       canVideo: true,
@@ -1537,7 +1538,7 @@ export class RealtimeCommunicationSystem {
       canMute: false,
       canControl: false
     };
-    
+
     return role === 'host' ? hostPermissions : participantPermissions;
   }
 
@@ -1548,17 +1549,17 @@ export class RealtimeCommunicationSystem {
     // Update transfer status
     transfer.status = 'transferring';
     transfer.progress = 0;
-    
+
     // Simulate file transfer progress
     const progressInterval = setInterval(() => {
       transfer.progress += 10;
       transfer.lastUpdate = new Date();
-      
+
       if (transfer.progress >= 100) {
         transfer.status = 'completed';
         transfer.completedAt = new Date();
         clearInterval(progressInterval);
-        
+
         // Notify completion
         this.notifySessionParticipants(transfer.sessionId, 'file_transfer_completed', {
           transferId: transfer.id,
@@ -1574,7 +1575,7 @@ export class RealtimeCommunicationSystem {
   private async initializeMediaStream(stream: MediaStream): Promise<void> {
     // Update stream state
     stream.state = 'initializing';
-    
+
     // Simulate stream initialization
     setTimeout(() => {
       stream.state = 'active';
@@ -1585,7 +1586,7 @@ export class RealtimeCommunicationSystem {
         latency: 50,
         packetLoss: 0.1
       };
-      
+
       // Notify stream ready
       this.notifySessionParticipants(stream.sessionId, 'media_stream_ready', {
         streamId: stream.id,
@@ -2107,13 +2108,13 @@ export interface ReadReceipt {
  * Message persistence
  */
 class MessagePersistence {
-  constructor(private config: PersistenceConfig) {}
-  
+  constructor(private config: PersistenceConfig) { }
+
   async saveMessage(message: AgentMessage): Promise<void> {
     // In production, save to database or file
     console.log('💾 Saving message:', message.id);
   }
-  
+
   async getMessages(
     sessionId: string,
     limit?: number,
@@ -2123,7 +2124,7 @@ class MessagePersistence {
     console.log(`📋 Getting messages for session ${sessionId}`);
     return [];
   }
-  
+
   async deleteMessages(sessionId: string): Promise<void> {
     // In production, delete from database or file
     console.log(`🗑️ Deleting messages for session ${sessionId}`);

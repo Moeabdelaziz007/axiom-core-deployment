@@ -26,12 +26,12 @@ const AgentIdSchema = z.object({
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Validate agent ID
-    const { id: agentId } = AgentIdSchema.parse(params);
-    
+    const { id: agentId } = AgentIdSchema.parse(await params);
+
     // Parallel data fetching from multiple sources
     const [
       agentStatus,
@@ -46,7 +46,7 @@ export async function GET(
       getPerformanceMetrics(agentId),
       getSystemHealth()
     ]);
-    
+
     // Aggregate the data
     const dashboardData = {
       agent: {
@@ -66,24 +66,24 @@ export async function GET(
         systemHealth.status === 'rejected' ? systemHealth.reason : null
       ].filter(Boolean)
     };
-    
+
     return NextResponse.json({
       success: true,
       data: dashboardData
     });
-    
+
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Validation failed', 
-        details: error.errors 
+      return NextResponse.json({
+        error: 'Validation failed',
+        details: error.issues
       }, { status: 400 });
     }
-    
-    return NextResponse.json({ 
-      error: 'Internal server error' 
+
+    return NextResponse.json({
+      error: 'Internal server error'
     }, { status: 500 });
   }
 }
@@ -99,21 +99,21 @@ async function getAgentStatus(agentId: string) {
   try {
     // In production, this would call the Fleet Monitor Durable Object
     const fleetMonitorUrl = process.env.FLEET_MONITOR_URL || 'https://fleet-monitor-production.amrikyy.workers.dev';
-    
+
     const response = await fetch(`${fleetMonitorUrl}/health`);
     if (!response.ok) {
       throw new Error(`Fleet Monitor error: ${response.status}`);
     }
-    
+
     const fleetData = await response.json();
-    
+
     // Find the specific agent
     const agent = fleetData.agents?.find((a: any) => a.id === agentId);
-    
+
     if (!agent) {
       throw new Error(`Agent ${agentId} not found in fleet monitor`);
     }
-    
+
     return {
       id: agent.id,
       name: agent.name,
@@ -128,7 +128,7 @@ async function getAgentStatus(agentId: string) {
       predictionStatus: agent.predictionStatus,
       predictionColor: agent.predictionColor
     };
-    
+
   } catch (error) {
     console.error('Error fetching agent status:', error);
     throw error;
@@ -142,7 +142,7 @@ async function getAgentSkills(agentId: string) {
   try {
     // In production, this would query the D1 database
     // For now, return mock data that matches the expected structure
-    
+
     // Mock D1 query for agent stats
     const agentStats = {
       level: 5,
@@ -151,7 +151,7 @@ async function getAgentSkills(agentId: string) {
       energy: 85,
       reputation: 92
     };
-    
+
     // Mock D1 query for agent skills
     const agentSkills = [
       {
@@ -184,14 +184,14 @@ async function getAgentSkills(agentId: string) {
         }
       }
     ];
-    
+
     return {
       stats: agentStats,
       skills: agentSkills,
       availableSkills: 12,
       masteredSkills: 2
     };
-    
+
   } catch (error) {
     console.error('Error fetching agent skills:', error);
     throw error;
@@ -205,7 +205,7 @@ async function getRecentTransactions(agentId: string) {
   try {
     // In production, this would query Solana transaction history
     // For now, return mock data
-    
+
     const transactions = [
       {
         id: 'tx_1',
@@ -232,13 +232,13 @@ async function getRecentTransactions(agentId: string) {
         description: 'Performance bonus for high satisfaction rating'
       }
     ];
-    
+
     return {
       transactions: transactions.slice(0, 10), // Last 10 transactions
       totalVolume: transactions.reduce((sum, tx) => sum + tx.amount, 0),
       successRate: 100
     };
-    
+
   } catch (error) {
     console.error('Error fetching transactions:', error);
     throw error;
@@ -252,7 +252,7 @@ async function getPerformanceMetrics(agentId: string) {
   try {
     // In production, this would query the performance metrics system
     // For now, return mock data
-    
+
     const metrics = {
       overview: {
         overallScore: 87,
@@ -285,9 +285,9 @@ async function getPerformanceMetrics(agentId: string) {
         }
       ]
     };
-    
+
     return metrics;
-    
+
   } catch (error) {
     console.error('Error fetching performance metrics:', error);
     throw error;
@@ -312,7 +312,7 @@ async function getSystemHealth() {
       lastRestart: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
       version: '1.0.0'
     };
-    
+
   } catch (error) {
     console.error('Error fetching system health:', error);
     throw error;

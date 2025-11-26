@@ -19,7 +19,7 @@ import { AgentSuperpowersFramework } from './AgentSuperpowersFramework';
 import { PerformanceAnalyticsEngine } from './PerformanceAnalyticsEngine';
 import { AgentMarketplaceEngine } from './AgentMarketplaceEngine';
 import { AgentCollaborationSystem } from './AgentCollaborationSystem';
-import { ResourceType } from '@/types/resources';
+import { ResourceType } from '@/types/agentResources';
 
 // ============================================================================
 // INTEGRATION INTERFACES
@@ -109,10 +109,10 @@ export class ResourceIntegration {
       );
 
       const allocations = await Promise.all(allocationPromises);
-      
+
       // Log to AgentSuperpowersFramework
       await this.logSuperpowerResourceUsage(agentId, superpowerId, allocations);
-      
+
       console.log(`Tracked resource usage for ${agentId} superpower ${superpowerId}:`, allocations);
     } catch (error) {
       console.error(`Failed to track superpower execution:`, error);
@@ -135,7 +135,7 @@ export class ResourceIntegration {
     for (const superpower of superpowers) {
       const usage = await this.getSuperpowerResourceUsage(agentId, superpower.id);
       const metrics = await resourceManager.getResourceMetrics(agentId);
-      
+
       efficiency.push({
         superpowerId: superpower.id,
         efficiency: this.calculateEfficiency(usage, metrics),
@@ -162,13 +162,13 @@ export class ResourceIntegration {
     try {
       const resourceMetrics = await resourceManager.getResourceMetrics(agentId);
       const performanceData = await this.getPerformanceData(agentId);
-      
+
       // Enhance metrics with performance data
       const enhancedMetrics = this.mergePerformanceData(resourceMetrics, performanceData);
-      
+
       // Store enhanced metrics in PerformanceAnalyticsEngine
       await this.storeEnhancedMetrics(agentId, enhancedMetrics);
-      
+
       return enhancedMetrics;
     } catch (error) {
       console.error(`Failed to enhance performance analytics:`, error);
@@ -274,7 +274,7 @@ export class ResourceIntegration {
 
       // Process purchase through marketplace
       const purchaseResult = await this.processMarketplacePurchase(listingId, amount, agentId);
-      
+
       // Allocate purchased resources
       const allocation = await resourceManager.allocateResource(
         agentId,
@@ -388,10 +388,10 @@ export class ResourceIntegration {
       // Get comprehensive metrics
       const metrics = await resourceManager.getResourceMetrics(agentId);
       const recommendations = await this.getResourcePerformanceRecommendations(agentId);
-      
+
       // Execute high-priority recommendations automatically
       const autoExecutables = recommendations.filter(r => r.priority === 'critical');
-      
+
       for (const recommendation of autoExecutables) {
         await this.executeRecommendation(recommendation);
       }
@@ -476,15 +476,15 @@ export class ResourceIntegration {
 
   private generateSuperpowerRecommendations(usage: ResourceAllocation[], metrics: ResourceMetrics): string[] {
     const recommendations = [];
-    
+
     if (metrics.performance.efficiency.costPerTask > 0.10) {
       recommendations.push('Optimize prompts to reduce token usage');
     }
-    
+
     if (metrics.current.compute.utilizationPercent > 80) {
       recommendations.push('Consider caching results to reduce compute usage');
     }
-    
+
     return recommendations;
   }
 

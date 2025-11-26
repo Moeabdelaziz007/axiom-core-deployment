@@ -14,14 +14,14 @@
  * @version 1.0.0
  */
 
-import { 
-  ResourceType, 
-  ResourceQuota, 
-  ResourceUsageLog, 
+import {
+  ResourceType,
+  ResourceQuota,
+  ResourceUsageLog,
   OptimizationRule,
   ResourceTier,
   ResourcePeriod
-} from '@/types/resources';
+} from '@/types/agentResources';
 
 // ============================================================================
 // CORE INTERFACES
@@ -150,20 +150,20 @@ export class ResourceManager {
    * Check if an agent has sufficient quota for a resource request
    */
   public async checkResourceQuota(
-    agentId: string, 
-    resourceType: ResourceType, 
+    agentId: string,
+    resourceType: ResourceType,
     requestedAmount: number
   ): Promise<ResourceCheckResult> {
     const quota = await this.getAgentQuota(agentId);
     const currentUsage = quota.used[resourceType] || 0;
     const limit = quota.limits[resourceType] || 0;
     const remainingQuota = Math.max(0, limit - currentUsage);
-    
+
     // Calculate cost based on resource type
     const costUSD = this.calculateResourceCost(resourceType, requestedAmount);
-    
+
     const allowed = currentUsage + requestedAmount <= limit;
-    
+
     return {
       allowed,
       remainingQuota,
@@ -191,7 +191,7 @@ export class ResourceManager {
     const quota = await this.getAgentQuota(agentId);
     quota.used[resourceType] = (quota.used[resourceType] || 0) + amount;
     quota.updatedAt = new Date();
-    
+
     // Log the usage
     const usageLog: ResourceUsageLog = {
       id: this.generateId(),
@@ -274,7 +274,7 @@ export class ResourceManager {
 
     quota.resetAt = this.calculateResetTime(quota.period);
     quota.updatedAt = new Date();
-    
+
     this.resourceCache.set(agentId, quota);
   }
 
@@ -293,7 +293,7 @@ export class ResourceManager {
       'NETWORK_REQS': 0.001,       // $0.001 per request
       'SOLANA_LAMPORTS': 0.000001  // $0.000001 per lamport
     };
-    
+
     return amount * (costs[resourceType] || 0);
   }
 
@@ -487,7 +487,7 @@ export class ResourceManager {
    */
   public async executeScaling(agentId: string): Promise<void> {
     const scaling = await this.getResourceScaling(agentId);
-    
+
     for (const policy of scaling.scalingPolicies) {
       if (!policy.isActive) continue;
 
@@ -576,16 +576,16 @@ export class ResourceManager {
     // Mock performance metrics
     const performance = {
       responseTime: { avg: 150, p95: 250, p99: 400 },
-      throughput: { 
-        requestsPerSecond: 10, 
-        tokensPerSecond: 50, 
-        computeMSPerSecond: 1000 
+      throughput: {
+        requestsPerSecond: 10,
+        tokensPerSecond: 50,
+        computeMSPerSecond: 1000
       },
       errorRate: { percentage: 2, count: 5, totalRequests: 250 },
-      efficiency: { 
-        costPerTask: costTracking.totalCost / Math.max(usageLogs.length, 1), 
-        resourceWastePercent: 15, 
-        optimizationScore: 85 
+      efficiency: {
+        costPerTask: costTracking.totalCost / Math.max(usageLogs.length, 1),
+        resourceWastePercent: 15,
+        optimizationScore: 85
       }
     };
 
@@ -729,8 +729,8 @@ export class ResourceManager {
    * Evaluate condition for scaling
    */
   private evaluateCondition(
-    currentValue: number, 
-    operator: '>' | '<' | '=' | '>=' | '<=', 
+    currentValue: number,
+    operator: '>' | '<' | '=' | '>=' | '<=',
     threshold: number
   ): boolean {
     switch (operator) {
@@ -753,8 +753,8 @@ export class ResourceManager {
    * Apply scaling action
    */
   private async applyScalingAction(
-    agentId: string, 
-    action: 'scale_up' | 'scale_down', 
+    agentId: string,
+    action: 'scale_up' | 'scale_down',
     metric: string
   ): Promise<void> {
     console.log(`Applying ${action} for agent ${agentId} based on ${metric}`);

@@ -281,7 +281,7 @@ export async function READ(request: NextRequest) {
  * GET /api/communication/messages/delivery/:messageId
  * Get delivery status for a specific message
  */
-export async function GET_DELIVERY(request: NextRequest, { params }: { params: { messageId: string } }) {
+export async function GET_DELIVERY(request: NextRequest, { params }: { params: Promise<{ messageId: string }> }) {
   try {
     const { searchParams } = new URL(request.url);
     const agentId = searchParams.get('agentId');
@@ -293,8 +293,9 @@ export async function GET_DELIVERY(request: NextRequest, { params }: { params: {
       );
     }
 
+    const { messageId } = await params;
     const validation = GetDeliveryStatusSchema.safeParse({
-      messageId: params.messageId,
+      messageId,
       agentId
     });
 
@@ -339,7 +340,7 @@ export async function GET_DELIVERY(request: NextRequest, { params }: { params: {
  * DELETE /api/communication/messages/:messageId
  * Delete a message
  */
-export async function DELETE(request: NextRequest, { params }: { params: { messageId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<any> }) {
   try {
     const { searchParams } = new URL(request.url);
     const agentId = searchParams.get('agentId');
@@ -351,8 +352,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { messa
       );
     }
 
+    const { messageId } = await params;
     const result = await communicationSystem.deleteMessage(
-      params.messageId,
+      messageId,
       agentId
     );
 
@@ -379,14 +381,15 @@ export async function DELETE(request: NextRequest, { params }: { params: { messa
  * GET /api/communication/messages/queue/:agentId
  * Get message queue for an agent
  */
-export async function GET_QUEUE(request: NextRequest, { params }: { params: { agentId: string } }) {
+export async function GET_QUEUE(request: NextRequest, { params }: { params: Promise<{ agentId: string }> }) {
   try {
     const { searchParams } = new URL(request.url);
     const priority = searchParams.get('priority');
     const limit = searchParams.get('limit');
 
+    const { agentId } = await params;
     const queue = await communicationSystem.getMessageQueue(
-      params.agentId,
+      agentId,
       {
         priority: priority as any,
         limit: limit ? parseInt(limit) : undefined
@@ -396,7 +399,7 @@ export async function GET_QUEUE(request: NextRequest, { params }: { params: { ag
     return NextResponse.json({
       success: true,
       data: {
-        agentId: params.agentId,
+        agentId,
         queue,
         total: queue.length,
         filters: {
@@ -523,14 +526,15 @@ export async function GET_SEARCH(request: NextRequest) {
  * GET /api/communication/messages/stats/:agentId
  * Get message statistics for an agent
  */
-export async function GET_STATS(request: NextRequest, { params }: { params: { agentId: string } }) {
+export async function GET_STATS(request: NextRequest, { params }: { params: Promise<{ agentId: string }> }) {
   try {
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period'); // day, week, month, year
     const messageType = searchParams.get('messageType');
 
+    const { agentId } = await params;
     const stats = await communicationSystem.getMessageStats(
-      params.agentId,
+      agentId,
       {
         period: period as any,
         messageType: messageType as any
@@ -540,7 +544,7 @@ export async function GET_STATS(request: NextRequest, { params }: { params: { ag
     return NextResponse.json({
       success: true,
       data: {
-        agentId: params.agentId,
+        agentId,
         period,
         stats,
         filters: {
