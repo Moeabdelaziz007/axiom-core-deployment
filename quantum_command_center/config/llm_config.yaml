@@ -1,0 +1,17 @@
+# /config/llm_config.yaml
+
+# Configuration for the Zero-Cost LLM Inference
+# We will use the local GGUF model via Ollama/llama.cpp in later phases.
+# For Phase 1, we use a mock/placeholder to test logic.
+
+default_config:
+  # The actual model to be used in production (e.g., Llama 3 8B GGUF)
+  # For AutoGen, we set a default to pass configuration checks.
+  model: "mock-llm-model"
+  api_key: "MOCK_KEY"
+  base_url: "http://localhost:11434/v1" # Example Ollama endpoint
+
+config_list:
+  - model: "mock-llm-model"
+    api_key: "MOCK_KEY"
+    base_url: "MOCK_BASE_URL" # Placeholder
