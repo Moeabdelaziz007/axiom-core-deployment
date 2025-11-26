@@ -1728,17 +1728,20 @@ export interface MessageResult {
   result?: any;
   error?: string;
   estimatedDelivery?: Date;
+  queuePosition?: number;
 }
 
 /**
  * Broadcast result
  */
 export interface BroadcastResult {
+  success: boolean;
   totalRecipients: number;
   successCount: number;
   failureCount: number;
   results: MessageResult[];
   timestamp: Date;
+  error?: string;
 }
 
 /**

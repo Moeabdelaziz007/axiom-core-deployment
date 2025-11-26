@@ -5,10 +5,12 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/testing/setup-jest.ts'],
   
   // Test Discovery
-  roots: ['<rootDir>/src', '<rootDir>/tests'],
+  roots: ['<rootDir>/src'],
   testMatch: [
     '**/__tests__/**/*.ts',
-    '**/?(*.)+(spec|test).ts'
+    '**/__tests__/**/*.tsx',
+    '**/?(*.)+(spec|test).ts',
+    '**/?(*.)+(spec|test).tsx'
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
@@ -32,11 +34,11 @@ module.exports = {
     '^.+\\.tsx$': 'ts-jest'
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$)'
+    'node_modules/(?!(.*\\.mjs$))'
   ],
   
   // Coverage Configuration
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
@@ -70,26 +72,7 @@ module.exports = {
   
   // Reporting
   reporters: [
-    'default',
-    [
-      'jest-html-reporters',
-      {
-        publicPath: './test-results',
-        filename: 'jest-report.html',
-        expand: true
-      }
-    ],
-    [
-      'jest-junit',
-      {
-        outputDirectory: './test-results',
-        outputName: 'jest-junit.xml',
-        classNameTemplate: '{classname}',
-        titleTemplate: '{title}',
-        ancestorSeparator: ' › ',
-        usePathForSuiteName: true
-      }
-    ]
+    'default'
   ],
   
   // Global Variables

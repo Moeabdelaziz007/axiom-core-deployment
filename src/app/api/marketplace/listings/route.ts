@@ -125,16 +125,54 @@ export async function POST(request: NextRequest) {
     // Validate agent data
     const agentData = {
       name: body.name,
+      role: body.role || 'assistant',
       description: body.description,
+      price: body.price || 0,
+      rating: body.rating || 0,
+      reviews: body.reviews || 0,
+      imageUrl: body.imageUrl || '',
+      avatar: body.avatar || '',
       category: body.category,
       subcategory: body.subcategory,
       tags: body.tags || [],
-      capabilities: body.capabilities || [],
       superpowers: body.superpowers || [],
+      reviewCount: body.reviewCount || 0,
+      reputation: body.reputation || {
+        overall: 0,
+        reliability: 0,
+        performance: 0,
+        communication: 0,
+        innovation: 0,
+        trustScore: 0,
+        disputeResolution: {
+          resolved: 0,
+          total: 0,
+          successRate: 0
+        }
+      },
+      performance: body.performance || {
+        totalDeployments: 0,
+        activeDeployments: 0,
+        averageUptime: 0,
+        averageResponseTime: 0,
+        successRate: 0,
+        errorRate: 0,
+        userSatisfaction: 0,
+        taskCompletionRate: 0,
+        averageCpuUsage: 0,
+        averageMemoryUsage: 0,
+        costEfficiency: 0,
+        performanceTrend: 'stable',
+        popularityTrend: 'stable'
+      },
       pricing: body.pricing,
       availability: body.availability,
       deploymentOptions: body.deploymentOptions || [],
-      developer: body.developer
+      developer: body.developer,
+      version: body.version || '1.0.0',
+      featured: body.featured || false,
+      verified: body.verified || false,
+      capabilities: body.capabilities || []
     };
     
     // Register agent in marketplace

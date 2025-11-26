@@ -24,7 +24,7 @@ const CreateTransactionSchema = z.object({
   agentId: z.string().min(1),
   amount: z.number().min(0),
   currency: z.enum(['SOL', 'USDC', 'AXIOM']).default('SOL'),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.any()).optional()
 });
 
 const TransactionIdSchema = z.object({
@@ -34,7 +34,7 @@ const TransactionIdSchema = z.object({
 const UpdateTransactionSchema = z.object({
   id: z.string().min(1),
   status: z.enum(['pending', 'processing', 'completed', 'failed', 'cancelled', 'refunded', 'disputed']).optional(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.string(), z.any()).optional()
 });
 
 /**

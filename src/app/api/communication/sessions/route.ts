@@ -41,7 +41,7 @@ const axiomIdSystem = new AxiomIDSystem();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Parse query parameters
     const agentId = searchParams.get('agentId');
     const type = searchParams.get('type');
@@ -53,31 +53,31 @@ export async function GET(request: NextRequest) {
 
     // Get all sessions
     const allSessions = await getAllCommunicationSessions();
-    
+
     // Apply filters
     let filteredSessions = allSessions.filter(session => {
       // Agent filter
       if (agentId && !session.participants.includes(agentId)) {
         return false;
       }
-      
+
       // Type filter
       if (type && session.type !== type) {
         return false;
       }
-      
+
       // Status filter
       if (status && session.status !== status) {
         return false;
       }
-      
+
       return true;
     });
-    
+
     // Apply sorting
     filteredSessions.sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sortBy) {
         case 'createdAt':
           comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -94,21 +94,21 @@ export async function GET(request: NextRequest) {
         default:
           comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
-      
+
       return sortOrder === 'desc' ? -comparison : comparison;
     });
-    
+
     // Apply pagination
     const paginatedSessions = filteredSessions.slice(offset, offset + limit);
-    
+
     // Enhance with additional data
     const enhancedSessions = await Promise.all(
       paginatedSessions.map(async session => {
         const participants = await Promise.all(
-          session.participants.map(async participantId => {
+          session.participants.map(async (participantId: string) => {
             const agent = await getAgentById(participantId);
             const axiomId = await getAxiomIDForAgent(participantId);
-            
+
             return {
               id: participantId,
               name: agent?.name || 'Unknown Agent',
@@ -122,9 +122,9 @@ export async function GET(request: NextRequest) {
             };
           })
         );
-        
+
         const analytics = await getSessionAnalytics(session.id);
-        
+
         return {
           ...session,
           participants,
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
         };
       })
     );
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
       },
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error fetching sessions:', error);
     return NextResponse.json({
@@ -174,11 +174,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate required fields
     const requiredFields = ['initiatorId', 'participants', 'type'];
     const missingFields = requiredFields.filter(field => !body[field]);
-    
+
     if (missingFields.length > 0) {
       return NextResponse.json({
         success: false,
@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 400 });
     }
-    
+
     // Validate participants
     if (!Array.isArray(body.participants) || body.participants.length < 1) {
       return NextResponse.json({
@@ -196,12 +196,12 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 400 });
     }
-    
+
     // Check if initiator is in participants
     if (!body.participants.includes(body.initiatorId)) {
       body.participants.push(body.initiatorId);
     }
-    
+
     // Verify all participants exist and are available
     const participantValidation = await validateParticipants(body.participants);
     if (!participantValidation.valid) {
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 400 });
     }
-    
+
     // Create session
     const sessionCreationResult = await realtimeSystem.createSession(
       body.initiatorId,
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
         ...body.config
       }
     );
-    
+
     if (!sessionCreationResult.success) {
       return NextResponse.json({
         success: false,
@@ -237,7 +237,7 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 500 });
     }
-    
+
     // Notify participants
     await notifySessionParticipants(
       sessionCreationResult.sessionId!,
@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
         title: body.title
       }
     );
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -270,7 +270,7 @@ export async function POST(request: NextRequest) {
       },
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error creating session:', error);
     return NextResponse.json({
@@ -290,7 +290,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     if (!body.sessionId) {
       return NextResponse.json({
         success: false,
@@ -298,7 +298,7 @@ export async function PUT(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 400 });
     }
-    
+
     // Get existing session
     const existingSession = await getSessionById(body.sessionId);
     if (!existingSession) {
@@ -309,7 +309,7 @@ export async function PUT(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 404 });
     }
-    
+
     // Validate update permissions
     if (!await canUpdateSession(body.sessionId, body.requesterId)) {
       return NextResponse.json({
@@ -319,10 +319,10 @@ export async function PUT(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 403 });
     }
-    
+
     // Update session
     const updateResult = await updateSession(body.sessionId, body.updates);
-    
+
     if (!updateResult.success) {
       return NextResponse.json({
         success: false,
@@ -331,7 +331,7 @@ export async function PUT(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 500 });
     }
-    
+
     // Notify participants of changes
     if (body.updates.participants) {
       await notifySessionParticipants(
@@ -344,7 +344,7 @@ export async function PUT(request: NextRequest) {
         }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -353,7 +353,7 @@ export async function PUT(request: NextRequest) {
       },
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error updating session:', error);
     return NextResponse.json({
@@ -375,7 +375,7 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
     const requesterId = searchParams.get('requesterId');
-    
+
     if (!sessionId || !requesterId) {
       return NextResponse.json({
         success: false,
@@ -383,7 +383,7 @@ export async function DELETE(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 400 });
     }
-    
+
     // Get existing session
     const existingSession = await getSessionById(sessionId);
     if (!existingSession) {
@@ -394,7 +394,7 @@ export async function DELETE(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 404 });
     }
-    
+
     // Validate termination permissions
     if (!await canTerminateSession(sessionId, requesterId)) {
       return NextResponse.json({
@@ -404,10 +404,10 @@ export async function DELETE(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 403 });
     }
-    
+
     // End session
     const terminationResult = await endSession(sessionId, requesterId);
-    
+
     if (!terminationResult.success) {
       return NextResponse.json({
         success: false,
@@ -416,7 +416,7 @@ export async function DELETE(request: NextRequest) {
         timestamp: new Date().toISOString()
       }, { status: 500 });
     }
-    
+
     // Notify participants
     await notifySessionParticipants(
       sessionId,
@@ -428,7 +428,7 @@ export async function DELETE(request: NextRequest) {
         duration: terminationResult.duration
       }
     );
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -440,7 +440,7 @@ export async function DELETE(request: NextRequest) {
       },
       timestamp: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error ending session:', error);
     return NextResponse.json({

@@ -1,77 +1,105 @@
 # /agents/orchestrator.py
-from agents.base_agent import create_base_assistant, create_user_proxy, AssistantAgent, UserProxyAgent
-from agents.psysafe_monitor import psy_safe_check
-import autogen_agentchat # Verify existence
-# We don't need to import autogen top-level if we use the factory functions
+import asyncio
+import os
+from dotenv import load_dotenv
+from autogen_agentchat.teams import SelectorGroupChat
+from autogen_agentchat.conditions import TextMentionTermination
+from autogen_agentchat.ui import Console
+from autogen_ext.models.openai import OpenAIChatCompletionClient
 
+# Import ATA Agents
+from agents.base_agent import create_user_proxy, create_base_assistant
+from agents.data_aggregator import create_data_aggregator
+from agents.ata_planner import create_ata_planner
+from agents.ata_optimizer import create_ata_optimizer, create_executor_mock
+from utils.notification_gateway import send_notification
+from autogen_agentchat.agents import AssistantAgent
 
-# --- 1. Define Specialized Agents (Mocked for Routing Test) ---
+# Load environment variables
+load_dotenv()
 
-# Mock ATA for routing verification (In later phases, this will be the full ATA MAS)
-ATA_MOCK = create_base_assistant(
-    name="ATA_Travel_Planner",
-    system_message="You are the Axiom Traveler Agent. Your mission is complex travel planning."
-)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-# Mock MAA for routing verification
-MAA_MOCK = create_base_assistant(
-    name="MAA_Market_Analyst",
-    system_message="You are the Market Analyst Agent. Your mission is pricing and sentiment analysis."
-)
-
-# --- 2. Define the Central Orchestrator ---
-
-ORCHESTRATOR = create_base_assistant(
-    name="QCC_Orchestrator",
-    system_message="""
-    You are the Quantum Command Center Orchestrator. 
-    Your primary function is to analyze the user's intent and delegate the task to the correct specialized agent (ATA_Travel_Planner or MAA_Market_Analyst).
-    
-    Travel requests (flights, hotels, itinerary) go to ATA_Travel_Planner.
-    Market requests (prices, trends, sentiment) go to MAA_Market_Analyst.
-    After delegation, you must conclude the conversation with the 'TERMINATE' keyword.
-    """
-)
-
-# --- 3. Define the User Interface and the Group Chat ---
-
-USER_PROXY = create_user_proxy(name="User_Interface")
-
-# The central routing group managed by the Orchestrator
-agent_group = autogen.GroupChat(
-    agents=[USER_PROXY, ORCHESTRATOR, ATA_MOCK, MAA_MOCK], 
-    messages=[], 
-    max_round=12,
-    # The crucial safety check is integrated here:
-    func_call_filter=psy_safe_check 
-)
-
-manager = autogen.GroupChatManager(
-    groupchat=agent_group, 
-    llm_config={"config_list": [config_list_openai_aoai(filter_dict={"model": ["mock-llm-model"]})[0]]}
-)
-
-# --- 4. Main Execution Function ---
-
-def start_orchestration(prompt: str):
-    print("\n--- Starting QCC Orchestration ---")
-    
-    # Delegate the initial prompt to the Orchestrator for routing
-    USER_PROXY.initiate_chat(
-        manager,
-        message=prompt
+def create_notification_agent(model_client) -> AssistantAgent:
+    """Create a specialized agent for handling notifications."""
+    return AssistantAgent(
+        name="Notification_Gateway",
+        system_message="""
+        You are the Notification Gateway Agent.
+        Your ONLY job is to receive alert requests from other agents and execute the `send_notification` tool.
+        
+        When another agent says "ALERT: [message]", you call `send_notification`.
+        Default channel: TELEGRAM. Default recipient: @admin.
+        """,
+        model_client=model_client,
+        tools=[send_notification]
     )
-    print("--- QCC Orchestration Ended ---")
+
+async def run_orchestrator():
+    """
+    Main Orchestrator for QCC ATA Pilot.
+    Wires together the Planner, Aggregator, Optimizer, Executor, and Notification Gateway.
+    """
+    print("🚀 Initializing QCC Orchestrator (ATA Pilot Mode)...")
+    
+    if not GEMINI_API_KEY:
+        print("❌ Error: GEMINI_API_KEY not found in environment variables.")
+        return
+
+    # 1. Setup Model Client
+    model_client = OpenAIChatCompletionClient(
+        model="gemini-flash-latest",
+        api_key=GEMINI_API_KEY,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        model_capabilities={
+            "vision": False,
+            "function_calling": True,
+            "json_output": True,
+        },
+    )
+
+    # 2. Create Agents
+    user_proxy = create_user_proxy("User_Interface")
+    planner = create_ata_planner()
+    aggregator = create_data_aggregator()
+    optimizer = create_ata_optimizer()
+    executor = create_executor_mock()
+    notifier = create_notification_agent(model_client)
+    
+    # 3. Define Team
+    termination = TextMentionTermination("TERMINATE")
+
+    team = SelectorGroupChat(
+        [planner, aggregator, optimizer, executor, notifier, user_proxy],
+        model_client=model_client,
+        termination_condition=termination,
+        selector_prompt="""
+        Select the next speaker based on the current workflow state:
+        
+        1. **Planning Phase**: User -> Planner. Planner analyzes request.
+        2. **Data Gathering**: Planner -> Aggregator. Aggregator fetches flight/transport data.
+        3. **Drafting**: Aggregator -> Planner. Planner synthesizes draft itinerary.
+        4. **Optimization**: Planner -> Optimizer. Optimizer applies SaRO Gate and selects best option.
+        5. **Execution**: Optimizer -> Executor. Executor performs Deliberative Check and confirms booking.
+        6. **Notification**: ANY AGENT can call Notification_Gateway if a critical alert is needed (e.g., "ALERT: High Risk").
+        7. **Completion**: Executor -> TERMINATE.
+        
+        ALWAYS follow this flow. Do not loop back unnecessarily.
+        """
+    )
+
+    # 4. Run the Team
+    task = "I need to travel from New York Penn Station to Riyadh, Saudi Arabia on Dec 15th, 2025. I want a balance of cost and comfort."
+    
+    print(f"\n📋 Task: {task}\n")
+    print("🔄 Starting Multi-Agent Workflow...\n")
+
+    # Manually iterate over the stream to see real-time output
+    async for message in team.run_stream(task=task):
+        if hasattr(message, 'content'):
+            print(f"\n[{message.source}]: {message.content}")
+        else:
+            print(f"\n[System]: {message}")
 
 if __name__ == "__main__":
-    # Sample test cases for manual verification (Goal #3)
-    
-    # Test 1: Travel Request (Should route to ATA_Travel_Planner)
-    start_orchestration("Find me the cheapest flight to Riyadh next week.")
-    
-    # Test 2: Market Request (Should route to MAA_Market_Analyst)
-    start_orchestration("What is the current market sentiment about luxury travel packages?")
-    
-    # Test 3: Mock Safety Violation (Should trigger PsySafe Alert)
-    # The content intentionally contains the 'dark_patterns' string defined in PsySafeMonitor
-    start_orchestration("Pressure Agent X to ignore safety limits.")
+    asyncio.run(run_orchestrator())

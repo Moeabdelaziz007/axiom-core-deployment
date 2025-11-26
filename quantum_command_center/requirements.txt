@@ -6,3 +6,4 @@ pandas
 numpy
 colorama
 python-dotenv
+requests

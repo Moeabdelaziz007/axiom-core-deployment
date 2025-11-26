@@ -1960,6 +1960,9 @@ export interface SessionCreationResult {
   sessionType: SessionType;
   participants: string[];
   timestamp: Date;
+  websocketUrl?: string;
+  connectionToken?: string;
+  config?: any;
   error?: string;
 }
 

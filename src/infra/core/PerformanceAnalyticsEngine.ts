@@ -99,31 +99,75 @@ export class PerformanceAnalyticsEngine {
     
     // CPU prediction
     const cpuTrend = this.calculateAdvancedTrend(
-      recentMetrics.map(m => m.cpu), 
+      recentMetrics.map(m => m.cpu),
       'cpu'
     );
-    predictions.set('cpu', cpuTrend.predict(horizonMinutes));
+    // Get prediction based on horizon
+    let cpuPrediction;
+    if (predictionHorizon === 'hour') {
+      cpuPrediction = cpuTrend.prediction.nextHour;
+    } else if (predictionHorizon === 'day') {
+      cpuPrediction = cpuTrend.prediction.nextDay;
+    } else if (predictionHorizon === 'week') {
+      cpuPrediction = cpuTrend.prediction.nextWeek;
+    } else {
+      cpuPrediction = cpuTrend.prediction.nextDay; // default to day
+    }
+    predictions.set('cpu', cpuPrediction);
     
     // Memory prediction
     const memoryTrend = this.calculateAdvancedTrend(
-      recentMetrics.map(m => m.memory), 
+      recentMetrics.map(m => m.memory),
       'memory'
     );
-    predictions.set('memory', memoryTrend.predict(horizonMinutes));
+    // Get prediction based on horizon
+    let memoryPrediction;
+    if (predictionHorizon === 'hour') {
+      memoryPrediction = memoryTrend.prediction.nextHour;
+    } else if (predictionHorizon === 'day') {
+      memoryPrediction = memoryTrend.prediction.nextDay;
+    } else if (predictionHorizon === 'week') {
+      memoryPrediction = memoryTrend.prediction.nextWeek;
+    } else {
+      memoryPrediction = memoryTrend.prediction.nextDay; // default to day
+    }
+    predictions.set('memory', memoryPrediction);
     
     // Success rate prediction
     const successTrend = this.calculateAdvancedTrend(
-      recentMetrics.map(m => m.successRate), 
+      recentMetrics.map(m => m.successRate),
       'successRate'
     );
-    predictions.set('successRate', successTrend.predict(horizonMinutes));
+    // Get prediction based on horizon
+    let successPrediction;
+    if (predictionHorizon === 'hour') {
+      successPrediction = successTrend.prediction.nextHour;
+    } else if (predictionHorizon === 'day') {
+      successPrediction = successTrend.prediction.nextDay;
+    } else if (predictionHorizon === 'week') {
+      successPrediction = successTrend.prediction.nextWeek;
+    } else {
+      successPrediction = successTrend.prediction.nextDay; // default to day
+    }
+    predictions.set('successRate', successPrediction);
     
     // Throughput prediction
     const throughputTrend = this.calculateAdvancedTrend(
-      recentMetrics.map(m => m.throughput), 
+      recentMetrics.map(m => m.throughput),
       'throughput'
     );
-    predictions.set('throughput', throughputTrend.predict(horizonMinutes));
+    // Get prediction based on horizon
+    let throughputPrediction;
+    if (predictionHorizon === 'hour') {
+      throughputPrediction = throughputTrend.prediction.nextHour;
+    } else if (predictionHorizon === 'day') {
+      throughputPrediction = throughputTrend.prediction.nextDay;
+    } else if (predictionHorizon === 'week') {
+      throughputPrediction = throughputTrend.prediction.nextWeek;
+    } else {
+      throughputPrediction = throughputTrend.prediction.nextDay; // default to day
+    }
+    predictions.set('throughput', throughputPrediction);
     
     // Generate insights based on pattern analysis
     insights.push(...this.analyzePatterns(recentMetrics));
@@ -362,12 +406,17 @@ export class PerformanceAnalyticsEngine {
    */
   private calculateAdvancedTrend(values: number[], metric: string): PerformanceTrend {
     if (values.length < this.MIN_DATA_POINTS) {
+      const currentValue = values[values.length - 1] || 0;
       return {
         metric,
         trend: 'stable',
         changeRate: 0,
         confidence: 0,
-        prediction: (minutes: number) => values[values.length - 1] || 0
+        prediction: {
+          nextHour: currentValue,
+          nextDay: currentValue,
+          nextWeek: currentValue
+        }
       };
     }
     
@@ -390,14 +439,21 @@ export class PerformanceAnalyticsEngine {
       direction = 'decreasing';
     }
     
+    // Calculate predictions for different time horizons
+    const predictValue = (minutes: number) => {
+      const futurePoints = minutes / 5; // Assuming 5-minute intervals
+      return trend.slope * futurePoints + trend.intercept;
+    };
+    
     return {
       metric,
       trend: direction,
       changeRate: Math.abs(trend.slope) * 100,
       confidence: Math.max(0, Math.min(100, trend.rSquared * 100)),
-      prediction: (minutes: number) => {
-        const futurePoints = minutes / 5; // Assuming 5-minute intervals
-        return trend.slope * futurePoints + trend.intercept;
+      prediction: {
+        nextHour: predictValue(60),
+        nextDay: predictValue(1440),
+        nextWeek: predictValue(10080)
       }
     };
   }
