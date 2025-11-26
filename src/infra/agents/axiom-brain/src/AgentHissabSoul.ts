@@ -144,8 +144,8 @@ export class AgentHissabSoul {
                 Chat: END
             })
 
-            .addEdge("TrendSurfer", "Supervisor"); // Loop back
-            .addEdge("Tajer", "Supervisor"); // Loop back
+            .addEdge("TrendSurfer", "Supervisor") // Loop back
+            .addEdge("Tajer", "Supervisor") // Loop back
 
         return workflow.compile();
     }

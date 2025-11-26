@@ -1,0 +1,23 @@
+{
+  "name": "axiom-staking",
+  "version": "0.1.0",
+  "description": "AXIOM Staking Program for Agent Deployment",
+  "main": "lib.js",
+  "scripts": {
+    "build": "anchor build",
+    "test": "anchor test",
+    "deploy": "anchor deploy",
+    "deploy-local": "anchor deploy --provider.cluster localnet"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/spl-token": "^0.3.8",
+    "@solana/web3.js": "^1.87.6"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "chai": "^4.5.0",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^4.9.5"
+  }
+}

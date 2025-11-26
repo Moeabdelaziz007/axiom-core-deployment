@@ -1,0 +1,96 @@
+name = "axiom-performance-metrics"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "axiom-performance-metrics"
+routes = [
+  { pattern = "api/performance/metrics/*", zone_name = "axiom-api" },
+  { pattern = "api/analytics/*", zone_name = "axiom-api" },
+  { pattern = "ws/performance/*", zone_name = "axiom-websockets" }
+]
+
+[env.development]
+name = "axiom-performance-metrics-dev"
+routes = [
+  { pattern = "api/performance/metrics/*", zone_name = "axiom-api-dev" },
+  { pattern = "api/analytics/*", zone_name = "axiom-api-dev" },
+  { pattern = "ws/performance/*", zone_name = "axiom-websockets-dev" }
+]
+
+# Durable Object bindings
+[[durable_objects.bindings]]
+name = "PERFORMANCE_METRICS_DO"
+class_name = "PerformanceMetricsDO"
+script_name = "src/index.ts"
+
+[[durable_objects.bindings]]
+name = "ANALYTICS_DO"
+class_name = "PerformanceAnalyticsDO"
+script_name = "src/analytics.ts"
+
+[[durable_objects.bindings]]
+name = "ALERTS_DO"
+class_name = "PerformanceAlertsDO"
+script_name = "src/alerts.ts"
+
+# KV storage for configuration and caching
+[[kv_namespaces]]
+binding = "PERFORMANCE_CONFIG"
+id = "axiom-performance-config"
+preview_id = "axiom-performance-config-preview"
+
+[[kv_namespaces]]
+binding = "PERFORMANCE_CACHE"
+id = "axiom-performance-cache"
+preview_id = "axiom-performance-cache-preview"
+
+# D1 Database bindings
+[[d1_databases]]
+binding = "PERFORMANCE_DB"
+database_name = "axiom-performance"
+database_id = "axiom-performance-db"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+LOG_LEVEL = "info"
+METRICS_RETENTION_HOURS = "168"
+ANOMALY_SENSITIVITY = "2.5"
+ALERT_COOLDOWN_MINUTES = "5"
+
+# R2 storage for large data exports
+[[r2_buckets]]
+binding = "PERFORMANCE_EXPORTS"
+bucket_name = "axiom-performance-exports"
+
+# Queue for processing alerts
+[[queues.producers]]
+binding = "ALERT_QUEUE"
+queue_name = "axiom-performance-alerts"
+
+# Cron triggers for periodic tasks
+[[triggers]]
+crons = ["*/5 * * * *"] # Every 5 minutes
+schedule = "aggregation"
+
+[[triggers]]
+crons = ["0 * * * *"] # Every hour
+schedule = "cleanup"
+
+[[triggers]]
+crons = ["* * * * *"] # Every minute
+schedule = "score_calculation"
+
+# Limits and configuration
+[limits]
+cpu_ms = 50000 # 50 seconds
+memory_mb = 128
+
+# Compatibility flags
+compatibility_flags = ["nodejs_compat"]
+
+# Build configuration
+[build]
+command = "npm run build"
+watch_dir = "src"

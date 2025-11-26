@@ -11,6 +11,7 @@ import { AuthModal } from '@/components/AuthModal';
 import { AgentChat } from '@/components/AgentChat';
 import { fintechClient } from '@/lib/fintech-client';
 import { useAxiomVoice } from '@/hooks/useAxiomVoice';
+import { useFleetMonitor } from '@/hooks/useFleetMonitor';
 import {
   Activity, DollarSign, Users, TrendingUp,
   Zap, Cpu, Bot, Globe, Shield, Radio, Server, Wallet, Mic,
@@ -207,6 +208,20 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-3">
+          {/* مؤشر الاتصال الحي (لمسة احترافية) */}
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+            <div className={`w-2 h-2 rounded-full ${
+              connectionStatus === 'connected' ? 'bg-green-500 animate-pulse' :
+              connectionStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' :
+              'bg-red-500'
+            }`} />
+            <span className="text-xs text-gray-400 font-mono">
+              {connectionStatus === 'connected' ? 'LIVE UPLINK' :
+               connectionStatus === 'connecting' ? 'CONNECTING...' :
+               'UPLINK LOST'}
+            </span>
+          </div>
+
           <NeonButton
             icon={Mic}
             variant={isPlaying ? "success" : "secondary"}
@@ -303,22 +318,22 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {agents.map(agent => (
+            {/* نستخدم liveAgents إذا كانت موجودة، وإلا نستخدم البيانات الافتراضية للتحميل */}
+            {(liveAgents.length > 0 ? liveAgents : agents).map(agent => (
               <QuantumCard
                 key={agent.id}
                 className="hover:bg-white/5 cursor-pointer group transition-all duration-300 hover:-translate-y-1"
                 glow={agent.status === 'active' ? 'green' : agent.status === 'flagged' ? 'none' : 'cyan'}
-                onClick={() => handleAgentChat(agent)}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 overflow-hidden ${agent.status === 'active' ? 'border-primary shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-white/10'}`}>
-                      <img src={agent.avatar} alt={agent.name} className="w-full h-full object-cover" />
+                      <img src={`/agents/${agent.id}.png`} alt={agent.name} className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <h3 className="font-bold text-white group-hover:text-primary transition-colors">{agent.name}</h3>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-400">{agent.role}</span>
+                        <span className="text-xs text-gray-400">{agent.type}</span>
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 font-mono">{agent.type}</span>
                       </div>
                     </div>
@@ -326,27 +341,32 @@ export default function DashboardPage() {
                   <StatusBadge status={agent.status as any} />
                 </div>
 
-                {/* Superpower Visualization */}
+                {/* Prediction Status */}
                 <div className="mb-3 flex items-center justify-between bg-white/5 p-2 rounded border border-white/10">
                   <div className="flex items-center gap-2">
                     <Zap className="w-3 h-3 text-primary" />
-                    <span className="text-[10px] font-mono text-gray-300 uppercase tracking-wider">{agent.superpower}</span>
+                    <span className="text-[10px] font-mono text-gray-300 uppercase tracking-wider">Live Status</span>
                   </div>
-                  <span className={`text-[9px] font-bold ${agent.predictionColor} animate-pulse flex items-center gap-1`}>
+                  <span className={`text-[9px] font-bold ${agent.predictionColor || 'text-primary'} animate-pulse flex items-center gap-1`}>
                     <Activity className="w-2 h-2" />
-                    {agent.predictionStatus}
+                    {agent.predictionStatus || `${agent.activeConnections || 0} Connections`}
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  <StatBar label="Health" value={agent.health} color={agent.health < 50 ? 'bg-red-500' : 'bg-primary'} />
-                  <StatBar label="Processing" value={agent.cpu} color="bg-primary" />
+                  <StatBar label="System Health" value={agent.health} color={agent.health < 50 ? 'bg-red-500' : 'bg-primary'} />
+                  <StatBar label="Processing Load" value={agent.cpu} color="bg-primary" />
                 </div>
-                {/* Persona Description */}
-                <div className="mt-4 pt-3 border-t border-white/5">
-                  <p className="text-[10px] text-gray-400 italic font-mono leading-relaxed">
-                    {agent.description}
-                  </p>
+                {/* Live Metrics */}
+                <div className="mt-4 pt-3 border-t border-white/5 space-y-2">
+                  <div className="flex justify-between text-[10px] text-gray-400">
+                    <span>Response Time</span>
+                    <span className="font-mono">{agent.responseTime || 0}ms</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] text-gray-400">
+                    <span>Tasks Processed</span>
+                    <span className="font-mono">{agent.tasksProcessed || 0}</span>
+                  </div>
                 </div>
               </QuantumCard>
             ))}

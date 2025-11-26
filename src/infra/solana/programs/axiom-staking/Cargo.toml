@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "programs/axiom-staking"
+]
+resolver = "2"
+
+[profile.release]
+overflow-checks = true

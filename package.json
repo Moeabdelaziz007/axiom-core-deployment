@@ -6,7 +6,55 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        
+        " Deployment Scripts "
+        "deploy:prod": "chmod +x scripts/deploy-production.sh && ./scripts/deploy-production.sh",
+        "deploy:staking": "cd src/infra/solana/programs/axiom-staking && anchor build && npx ts-node scripts/deploy-staking-mainnet.ts",
+        
+        " Legacy Testing Scripts "
+        "test:staking": "cd src/infra/solana/programs/axiom-staking && anchor test",
+        "test:prod": "NODE_ENV=production npm run test:staking",
+        "test:e2e": "npx ts-node scripts/test-staking-e2e.ts",
+        
+        " Comprehensive Testing Framework "
+        "test": "npx ts-node scripts/run-comprehensive-tests.ts",
+        "test:unit": "TEST_TYPE=unit npx ts-node scripts/run-comprehensive-tests.ts",
+        "test:integration": "TEST_TYPE=integration npx ts-node scripts/run-comprehensive-tests.ts",
+        "test:performance": "TEST_TYPE=performance npx ts-node scripts/run-comprehensive-tests.ts",
+        "test:security": "TEST_TYPE=security npx ts-node scripts/run-comprehensive-tests.ts",
+        "test:validation": "TEST_TYPE=validation npx ts-node scripts/run-comprehensive-tests.ts",
+        "test:ci": "FAIL_FAST=true GENERATE_REPORTS=true npx ts-node scripts/run-comprehensive-tests.ts",
+        
+        " Test Environment Management "
+        "test:env:setup": "npx ts-node scripts/setup-test-env.ts setup",
+        "test:env:cleanup": "npx ts-node scripts/setup-test-env.ts cleanup",
+        "test:env:validate": "npx ts-node scripts/setup-test-env.ts validate",
+        
+        " Security and Quality Assurance "
+        "audit:security": "npx ts-node scripts/security-audit.ts",
+        "audit:comprehensive": "TEST_TYPE=security npx ts-node scripts/run-comprehensive-tests.ts",
+        "quality:check": "TEST_TYPE=all GENERATE_REPORTS=true npx ts-node scripts/run-comprehensive-tests.ts",
+        
+        " Monitoring and Operations "
+        "monitor:prod": "NODE_ENV=production npm run start",
+        "monitor:tests": "npx ts-node scripts/monitor-test-performance.ts",
+        
+        " Rollback and Recovery "
+        "rollback:create": "npx ts-node scripts/rollback-procedures.ts create",
+        "rollback:execute": "npx ts-node scripts/rollback-procedures.ts execute",
+        "rollback:emergency": "npx ts-node scripts/rollback-procedures.ts emergency",
+        "rollback:list": "npx ts-node scripts/rollback-procedures.ts list",
+        "backup:create": "npx ts-node scripts/rollback-procedures.ts backup",
+        
+        " Pre-deployment Validation "
+        "validate:pre-deploy": "TEST_TYPE=validation SECURITY_SCANNING=true npx ts-node scripts/run-comprehensive-tests.ts",
+        "validate:agent": "npx ts-node scripts/validate-agent-deployment.ts",
+        
+        " Coverage and Reporting "
+        "coverage:generate": "GENERATE_COVERAGE=true npx ts-node scripts/run-comprehensive-tests.ts",
+        "coverage:report": "npx ts-node scripts/generate-coverage-report.ts",
+        "report:quality": "npx ts-node scripts/generate-quality-report.ts"
     },
     "dependencies": {
         "@coral-xyz/anchor": "^0.32.1",
@@ -37,6 +85,60 @@
         "postcss": "^8.4.35",
         "tailwindcss": "^3.4.1",
         "tailwindcss-animate": "^1.0.7",
-        "typescript": "^5"
+        "typescript": "^5",
+        
+        "# Testing Framework Dependencies": "",
+        "@vitest/coverage-v8": "^1.0.0",
+        "@vitest/ui": "^1.0.0",
+        "vitest": "^1.0.0",
+        "jest": "^29.7.0",
+        "@types/jest": "^29.5.0",
+        "ts-jest": "^29.1.0",
+        "jest-environment-node": "^29.7.0",
+        
+        "# Performance Testing": "",
+        "k6": "^0.45.0",
+        "artillery": "^2.0.0",
+        "@types/artillery": "^2.0.0",
+        
+        "# Security Testing": "",
+        "semgrep": "^1.45.0",
+        "snyk": "^1.1200.0",
+        "npm-audit-ci": "^1.0.0",
+        "gitleaks": "^8.18.0",
+        
+        "# Code Quality and Analysis": "",
+        "eslint": "^8.55.0",
+        "@typescript-eslint/eslint-plugin": "^6.14.0",
+        "@typescript-eslint/parser": "^6.14.0",
+        "prettier": "^3.1.0",
+        "husky": "^8.0.0",
+        "lint-staged": "^15.2.0",
+        
+        "# Test Utilities and Mocking": "",
+        "msw": "^2.0.0",
+        "@mswjs/data": "^0.16.0",
+        "faker": "^6.6.6",
+        "@types/faker": "^6.6.9",
+        "sinon": "^17.0.0",
+        "@types/sinon": "^17.0.0",
+        
+        "# Reporting and Documentation": "",
+        "allure-js-commons": "^2.6.0",
+        "allure-vitest": "^2.0.0",
+        "jest-html-reporters": "^3.1.0",
+        "jest-junit": "^16.0.0",
+        
+        "# Database Testing": "",
+        "@types/supertest": "^2.0.16",
+        "supertest": "^6.3.0",
+        "sqlite3": "^5.1.0",
+        "@types/sqlite3": "^3.1.0",
+        
+        "# Cloudflare Workers Testing": "",
+        "miniflare": "^3.0.0",
+        "@miniflare/storage-memory": "^3.0.0",
+        "@miniflare/d1": "^3.0.0",
+        "@miniflare/kv": "^3.0.0"
     }
 }

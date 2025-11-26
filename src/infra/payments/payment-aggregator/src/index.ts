@@ -1,16 +1,64 @@
-import { verifyPaymobHMAC } from '../../../core/ToolLibrary';
-
 /**
  * PAYMENT AGGREGATOR
  * Securely handles payment callbacks and verifications.
  */
+
+// Simple HMAC verification using Web Crypto API
+async function verifyPaymobHMAC(data: any, hmac: string, secret: string): Promise<boolean> {
+    try {
+        const keys = [
+            "amount_cents", "created_at", "currency", "error_occured", "has_parent_transaction",
+            "id", "integration_id", "is_3d_secure", "is_auth", "is_capture", "is_refunded",
+            "is_standalone_payment", "is_voided", "order.id", "owner", "pending",
+            "source_data.pan", "source_data.sub_type", "source_data.type", "success"
+        ];
+
+        let concatenated = "";
+        for (const key of keys) {
+            const value = getValueByKey(data, key);
+            concatenated += value.toString();
+        }
+
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(secret),
+            { name: 'HMAC', hash: 'SHA-512' },
+            false,
+            ['sign']
+        );
+
+        const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(concatenated));
+        const calculatedHmac = Array.from(new Uint8Array(signature))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
+        return calculatedHmac === hmac;
+    } catch (error) {
+        console.error("HMAC Verification Error:", error);
+        return false;
+    }
+}
+
+function getValueByKey(obj: any, key: string): any {
+    if (key.includes('.')) {
+        const parts = key.split('.');
+        let current = obj;
+        for (const part of parts) {
+            if (current === undefined || current === null) return "";
+            current = current[part];
+        }
+        return current ?? "";
+    }
+    return obj[key] ?? "";
+}
 
 export interface D1Database {
     prepare(query: string): D1PreparedStatement;
 }
 
 export interface D1PreparedStatement {
-    bind(...values: any[]): D1PreparedStatement;
+    bind(values: any[]): D1PreparedStatement;
     run<T = unknown>(): Promise<D1Result<T>>;
 }
 
@@ -55,8 +103,8 @@ async function handlePaymobCallback(request: Request, env: Env): Promise<Respons
             return new Response("Missing HMAC", { status: 400 });
         }
 
-        // 2. Verify HMAC using Centralized Tool Library
-        const isValid = verifyPaymobHMAC(body, hmac, env.PAYMOB_HMAC_SECRET);
+        // 2. Verify HMAC using Web Crypto API
+        const isValid = await verifyPaymobHMAC(body, hmac, env.PAYMOB_HMAC_SECRET);
 
         if (!isValid) {
             console.error("Invalid Paymob HMAC Signature!");
@@ -64,9 +112,6 @@ async function handlePaymobCallback(request: Request, env: Env): Promise<Respons
         }
 
         console.log("✅ Paymob Payment Verified:", body.id);
-
-        // TODO: Update Order Status in D1 Database
-        // await env.AXIOM_DB.prepare("UPDATE orders SET status = ? WHERE id = ?").bind("paid", body.order.id).run();
 
         return new Response("OK", { status: 200 });
 
