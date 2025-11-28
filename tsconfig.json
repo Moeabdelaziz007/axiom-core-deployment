@@ -37,6 +37,7 @@
   ],
   "exclude": [
     "node_modules",
-    "src/infra/solana/programs/axiom-token/tests"
+    "src/infra/solana/programs/axiom-token/tests",
+    "scripts"
   ]
 }
