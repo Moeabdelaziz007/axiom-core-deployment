@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDeadHandStatus } from '@/lib/deadHandStore';
+import { getDeadHandStatus } from '../../../../lib/deadHandStore';
 
 export async function GET() {
   const data = getDeadHandStatus();
