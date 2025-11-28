@@ -1129,7 +1129,7 @@ export class RealtimeCommunicationSystem {
         },
         quality: {
           overall: { value: 100, category: 'excellent', trend: 'stable', factors: [] },
-          audio: { clarity: 100, volume: 80, noise: 10, latency: 50, jitter: 5, packetLoss: 0.1, mos: 4.5 },
+          audio: { clarity: 100, volume: 80, noise: 10, latency: 50, jitter: 5, packetLoss: 0.1, mos: 4.5, echo: 5 },
           video: { resolution: '1080p', frameRate: 30, bitrate: 2000, clarity: 95, smoothness: 90, colorAccuracy: 95, latency: 100, jitter: 10, packetLoss: 0.2, freezeRate: 0.1 },
           network: { bandwidth: { upload: 10, download: 50, available: 40 }, latency: 50, jitter: 5, packetLoss: 0.1, connectionStability: 95, routeEfficiency: 90, congestion: 10 },
           experience: { satisfaction: 95, engagement: 90, responsiveness: 85, reliability: 95, usability: 90, accessibility: 85 },
