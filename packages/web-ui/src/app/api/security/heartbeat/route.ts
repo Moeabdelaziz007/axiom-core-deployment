@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
+import { updateHeartbeat } from '@/lib/deadHandStore';
 
 export async function POST() {
-  const now = Date.now();
-  // @ts-ignore
-  globalThis._deadHandHeartbeat = now;
+  // 1. (Security Check) - In future, verify operator signature
   
+  // 2. Update Heartbeat
+  const timestamp = updateHeartbeat();
+
   return NextResponse.json({
-    status: 'SAFE',
-    timestamp: now,
-    message: 'Heartbeat received. Doomsday clock reset.'
+    message: "OPERATOR PRESENCE CONFIRMED. TIMER RESET.",
+    timestamp: new Date(timestamp).toISOString(),
+    status: "ARMED"
   });
 }
