@@ -47,9 +47,15 @@ const config: Config = {
                 display: ['var(--font-display)'],
             },
             animation: {
-                'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
                 'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+                'scan-line': 'scan-line 2s linear infinite',
+                'hologram-flicker': 'hologram-flicker 0.1s infinite',
+                'spin-slow': 'spin 8s linear infinite',
+                'spin-reverse-slow': 'spin-reverse 10s linear infinite',
+                'spin-fast': 'spin 1s linear infinite',
+                'scan': 'scan 3s linear infinite',
             },
             keyframes: {
                 'pulse-slow': {
