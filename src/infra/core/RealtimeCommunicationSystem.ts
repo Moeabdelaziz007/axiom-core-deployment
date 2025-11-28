@@ -1159,17 +1159,12 @@ export class RealtimeCommunicationSystem {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         sessionId,
-        timestamp: new Date()
+        timestamp: new Date(),
+        sessionType: 'p2p',
+        participants: []
       };
     }
   }
-
-  /**
-   * Join existing session
-   */
-  async joinSession(
-    sessionId: string,
-    participantId: string,
     capabilities: any
   ): Promise<JoinSessionResult> {
     const session = this.sessions.get(sessionId);
