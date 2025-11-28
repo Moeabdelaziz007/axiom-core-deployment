@@ -1,28 +1,19 @@
 #!/bin/bash
+echo "🚀 Starting Deployment Sequence..."
 
-# Axiom Quantum Command Center - Deployment Script
-# This script deploys the application to the main domain
+# Remove nested .git if it exists (fixes submodule issue)
+rm -rf packages/web-ui/.git
 
-echo "🚀 Initiating Quantum Deployment Sequence..."
+# Add all changes
+echo "📦 Staging files..."
+git add .
 
-# 1. Install dependencies
-echo "🔧 Installing dependencies..."
-npm install --legacy-peer-deps
+# Commit changes
+echo "💾 Committing..."
+git commit -m "Upgrade: Deploying Quantum Command Center & Tesla Forge UI"
 
-# 2. Build the application
-echo "🏗️ Building the Quantum Command Center..."
-npm run build
+# Push to main
+echo "📡 Pushing to Vercel..."
+git push origin main
 
-# 3. Check if build was successful
-if [ $? -eq 0 ]; then
-    echo "✅ Build successful!"
-else
-    echo "❌ Build failed. Aborting deployment."
-    exit 1
-fi
-
-# 4. Start the application
-echo "🟢 Starting the Quantum Command Center..."
-npm run start
-
-echo "🎉 Deployment complete! The Quantum Command Center is now live."
+echo "✅ Deployment Triggered! Check Vercel dashboard."
