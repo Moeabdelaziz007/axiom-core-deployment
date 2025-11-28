@@ -1160,12 +1160,12 @@ export class RealtimeCommunicationSystem {
         error: error instanceof Error ? error.message : 'Unknown error',
         sessionId,
         timestamp: new Date(),
-        sessionType: 'p2p',
+        sessionType: 'chat',
         participants: []
       };
     }
   }
-    capabilities: any
+  capabilities: any
   ): Promise<JoinSessionResult> {
     const session = this.sessions.get(sessionId);
     if (!session) {
