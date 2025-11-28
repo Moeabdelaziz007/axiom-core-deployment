@@ -84,7 +84,7 @@ export interface SecurityAlertThresholds {
 /**
  * Compliance frameworks
  */
-export type ComplianceFramework = 
+export type ComplianceFramework =
   | 'gdpr'
   | 'soc2'
   | 'iso27001'
@@ -98,7 +98,7 @@ export type ComplianceFramework =
 /**
  * Regulatory frameworks
  */
-export type RegulatoryFramework = 
+export type RegulatoryFramework =
   | 'financial-services'
   | 'healthcare'
   | 'education'
@@ -110,7 +110,7 @@ export type RegulatoryFramework =
 /**
  * Encryption levels
  */
-export type EncryptionLevel = 
+export type EncryptionLevel =
   | 'none'
   | 'basic'
   | 'advanced'
@@ -303,7 +303,7 @@ export interface SecurityEvent {
 /**
  * Security event types
  */
-export type SecurityEventType = 
+export type SecurityEventType =
   | 'authentication-failure'
   | 'authorization-failure'
   | 'privilege-escalation'
@@ -362,7 +362,7 @@ export interface SecurityMitigation {
 /**
  * Security action
  */
-export type SecurityAction = 
+export type SecurityAction =
   | 'block-ip'
   | 'lock-account'
   | 'terminate-session'
@@ -483,7 +483,7 @@ export interface DataProtectionPolicy {
 /**
  * Protected data types
  */
-export type ProtectedDataType = 
+export type ProtectedDataType =
   | 'personal-identifiable-information'
   | 'health-information'
   | 'financial-information'
@@ -608,7 +608,7 @@ export interface AnonymizationPolicy {
 /**
  * Anonymization techniques
  */
-export type AnonymizationTechnique = 
+export type AnonymizationTechnique =
   | 'data-masking'
   | 'pseudonymization'
   | 'generalization'
@@ -665,7 +665,7 @@ export interface DataLocalizationPolicy {
 /**
  * Transfer mechanisms
  */
-export type TransferMechanism = 
+export type TransferMechanism =
   | 'standard-contractual-clauses'
   | 'binding-corporate-rules'
   | 'adequacy-decisions'
@@ -761,7 +761,7 @@ export interface NotificationContentPolicy {
 /**
  * Notification channels
  */
-export type NotificationChannel = 
+export type NotificationChannel =
   | 'email'
   | 'sms'
   | 'phone'
@@ -828,7 +828,7 @@ export interface Geofence {
   id: string;
   name: string;
   type: 'circle' | 'polygon';
-  coordinates: Array<{latitude: number; longitude: number}>;
+  coordinates: Array<{ latitude: number; longitude: number }>;
   radius?: number; // for circle
   rules: GeofenceRule[];
 }
@@ -910,7 +910,7 @@ export interface IdentityVerification {
 /**
  * Verification types
  */
-export type VerificationType = 
+export type VerificationType =
   | 'identity'
   | 'address'
   | 'age'
@@ -919,14 +919,14 @@ export type VerificationType =
   | 'accreditation'
   | 'background-check'
   | 'sanctions-screening'
-  | 'pep-screening'; // politically exposed person
+  | 'pep-screening' // politically exposed person
   | 'source-of-funds'
   | 'beneficial-ownership';
 
 /**
  * Verification methods
  */
-export type VerificationMethod = 
+export type VerificationMethod =
   | 'document-upload'
   | 'biometric-scan'
   | 'video-verification'
@@ -966,7 +966,7 @@ export interface VerificationDocument {
 /**
  * Document types
  */
-export type DocumentType = 
+export type DocumentType =
   | 'passport'
   | 'national-id'
   | 'drivers-license'
@@ -1001,7 +1001,7 @@ export interface BiometricData {
 /**
  * Biometric types
  */
-export type BiometricType = 
+export type BiometricType =
   | 'fingerprint'
   | 'face'
   | 'iris'
@@ -1028,7 +1028,7 @@ export interface VerificationCheck {
 /**
  * Check types
  */
-export type CheckType = 
+export type CheckType =
   | 'criminal-record'
   | 'sanctions-list'
   | 'pep-list'
@@ -1122,7 +1122,7 @@ export interface VerificationEvidence {
 /**
  * Evidence types
  */
-export type EvidenceType = 
+export type EvidenceType =
   | 'screenshot'
   | 'video-recording'
   | 'audio-recording'
@@ -1299,7 +1299,7 @@ export interface InfrastructureAlerts {
 /**
  * Alert channels
  */
-export type AlertChannel = 
+export type AlertChannel =
   | 'email'
   | 'sms'
   | 'slack'
@@ -1399,7 +1399,7 @@ export interface TestScope {
 /**
  * Penetration test methods
  */
-export type PenTestMethod = 
+export type PenTestMethod =
   | 'network-scanning'
   | 'vulnerability-assessment'
   | 'social-engineering'
@@ -1495,7 +1495,7 @@ export interface VulnerabilityScanConfig {
 /**
  * Vulnerability scanners
  */
-export type VulnerabilityScanner = 
+export type VulnerabilityScanner =
   | 'nessus'
   | 'openvas'
   | 'nikto'
@@ -2240,7 +2240,7 @@ export interface AggregationCondition {
 /**
  * Aggregation method
  */
-export type AggregationMethod = 
+export type AggregationMethod =
   | 'count'
   | 'sum'
   | 'average'
@@ -2312,7 +2312,7 @@ export class AgentSecurityFramework extends EventEmitter {
   private authenticationSystem: AuthenticationSystem;
   private infrastructureSecurity: InfrastructureSecurity;
   private testingSystem: SecurityTestingSystem;
-  
+
   constructor(config: SecurityFrameworkConfig = {}) {
     super();
     this.config = this.mergeConfig(config);
@@ -2324,28 +2324,28 @@ export class AgentSecurityFramework extends EventEmitter {
    */
   private initializeComponents(): void {
     console.log('🛡️ Initializing Axiom Security Framework...');
-    
+
     // Initialize RBAC system
     this.rbacSystem = new RoleBasedAccessControl(this.config.rbac);
-    
+
     // Initialize monitoring system
     this.monitoringSystem = new SecurityMonitoringSystem(this.config.monitoring);
-    
+
     // Initialize compliance system
     this.complianceSystem = new ComplianceSystem(this.config.compliance);
-    
+
     // Initialize data protection system
     this.dataProtectionSystem = new DataProtectionSystem(this.config.dataProtection);
-    
+
     // Initialize authentication system
     this.authenticationSystem = new AuthenticationSystem(this.config.authentication);
-    
+
     // Initialize infrastructure security
     this.infrastructureSecurity = new InfrastructureSecurity(this.config.infrastructure);
-    
+
     // Initialize testing system
     this.testingSystem = new SecurityTestingSystem(this.config);
-    
+
     console.log('✅ Security Framework initialized successfully');
   }
 
@@ -2427,7 +2427,7 @@ export class AgentSecurityFramework extends EventEmitter {
    */
   private deepMerge(target: any, source: any): any {
     const result = { ...target };
-    
+
     for (const key in source) {
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
         result[key] = this.deepMerge(target[key] || {}, source[key]);
@@ -2435,7 +2435,7 @@ export class AgentSecurityFramework extends EventEmitter {
         result[key] = source[key];
       }
     }
-    
+
     return result;
   }
 
@@ -2494,7 +2494,7 @@ export class AgentSecurityFramework extends EventEmitter {
   private calculateOverallStatus(componentStatuses: ('healthy' | 'degraded' | 'unhealthy')[]): 'healthy' | 'degraded' | 'unhealthy' {
     const degradedCount = componentStatuses.filter(status => status === 'degraded').length;
     const unhealthyCount = componentStatuses.filter(status => status === 'unhealthy').length;
-    
+
     if (unhealthyCount > 0) return 'unhealthy';
     if (degradedCount > 0) return 'degraded';
     return 'healthy';
@@ -2505,16 +2505,16 @@ export class AgentSecurityFramework extends EventEmitter {
    */
   async handleSecurityEvent(event: SecurityEvent): Promise<void> {
     console.log(`🚨 Security event: ${event.type} - ${event.description}`);
-    
+
     // Log event
     await this.monitoringSystem.logEvent(event);
-    
+
     // Assess impact
     const impact = await this.assessEventImpact(event);
-    
+
     // Trigger automated response
     await this.triggerAutomatedResponse(event, impact);
-    
+
     // Emit event for external systems
     this.emit('security-event', { event, impact });
   }
@@ -2664,49 +2664,49 @@ export interface SecurityAuditFinding {
 
 // Placeholder class implementations (would be in separate files)
 class RoleBasedAccessControl {
-  constructor(config: any) {}
+  constructor(config: any) { }
   getStatus() { return { health: 'healthy', metrics: { totalUsers: 0 } }; }
-  updateConfig(config: any) {}
+  updateConfig(config: any) { }
 }
 
 class SecurityMonitoringSystem {
-  constructor(config: any) {}
+  constructor(config: any) { }
   getStatus() { return { health: 'healthy', metrics: { totalEvents: 0, threatsDetected: 0 }, activeAlerts: [] }; }
-  updateConfig(config: any) {}
-  async logEvent(event: SecurityEvent): Promise<void> {}
+  updateConfig(config: any) { }
+  async logEvent(event: SecurityEvent): Promise<void> { }
 }
 
 class ComplianceSystem {
-  constructor(config: any) {}
+  constructor(config: any) { }
   getStatus() { return { health: 'healthy', metrics: { score: 100 }, activeAlerts: [] }; }
-  updateConfig(config: any) {}
+  updateConfig(config: any) { }
   async generateReport(framework: ComplianceFramework): Promise<ComplianceReport> {
     return {} as ComplianceReport;
   }
 }
 
 class DataProtectionSystem {
-  constructor(config: any) {}
+  constructor(config: any) { }
   getStatus() { return { health: 'healthy', metrics: { breaches: 0 }, activeAlerts: [] }; }
-  updateConfig(config: any) {}
+  updateConfig(config: any) { }
 }
 
 class AuthenticationSystem {
-  constructor(config: any) {}
+  constructor(config: any) { }
   getStatus() { return { health: 'healthy', metrics: { activeSessions: 0 } }; }
-  updateConfig(config: any) {}
+  updateConfig(config: any) { }
 }
 
 class InfrastructureSecurity {
-  constructor(config: any) {}
+  constructor(config: any) { }
   getStatus() { return { health: 'healthy' }; }
-  updateConfig(config: any) {}
+  updateConfig(config: any) { }
 }
 
 class SecurityTestingSystem {
-  constructor(config: any) {}
+  constructor(config: any) { }
   getStatus() { return { health: 'healthy', metrics: { vulnerabilities: 0 } }; }
-  updateConfig(config: any) {}
+  updateConfig(config: any) { }
   async runSecurityAudit(): Promise<SecurityAuditResult> {
     return {} as SecurityAuditResult;
   }

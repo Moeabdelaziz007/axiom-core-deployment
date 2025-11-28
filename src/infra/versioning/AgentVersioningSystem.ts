@@ -120,7 +120,7 @@ export interface VerificationCheck {
 export interface Migration {
   id: string;
   version: string;
-  type: 'database' | 'configuration' | 'data' | 'schema';
+  type: 'database' | 'configuration' | 'data' | 'schema' | 'function' | 'index' | 'constraint';
   direction: 'up' | 'down';
   script: string;
   checksum: string;
@@ -186,7 +186,7 @@ export class AgentVersioningSystem {
   ): Promise<VersionMetadata> {
     const currentVersion = this.getCurrentVersion();
     const newSemanticVersion = this.incrementVersion(currentVersion.semanticVersion, versionIncrement, prereleaseTag);
-    
+
     const versionMetadata: VersionMetadata = {
       version: this.formatVersion(newSemanticVersion),
       semanticVersion: newSemanticVersion,
@@ -205,7 +205,7 @@ export class AgentVersioningSystem {
 
     console.log(`📦 Version created: ${versionMetadata.version}`);
     console.log(`📝 Changelog: ${changelog.join(', ')}`);
-    
+
     return versionMetadata;
   }
 
@@ -220,7 +220,7 @@ export class AgentVersioningSystem {
    * Get all versions
    */
   getAllVersions(): VersionMetadata[] {
-    return Array.from(this.versions.values()).sort((a, b) => 
+    return Array.from(this.versions.values()).sort((a, b) =>
       this.compareVersions(b.semanticVersion, a.semanticVersion)
     );
   }
@@ -239,17 +239,17 @@ export class AgentVersioningSystem {
   isCompatible(version1: string, version2: string): boolean {
     const v1 = this.versions.get(version1);
     const v2 = this.versions.get(version2);
-    
+
     if (!v1 || !v2) return false;
-    
+
     // Check semantic version compatibility
     if (v1.semanticVersion.major !== v2.semanticVersion.major) {
       return v1.breakingChanges || v2.breakingChanges ? false : true;
     }
-    
+
     // Check compatibility matrix
-    return v1.compatibilityMatrix.some(comp => 
-      comp.compatible && 
+    return v1.compatibilityMatrix.some(comp =>
+      comp.compatible &&
       this.isVersionInRange(version2, comp.minVersion, comp.maxVersion)
     );
   }
@@ -268,11 +268,11 @@ export class AgentVersioningSystem {
   ): Promise<DeploymentResult> {
     const versionMetadata = this.versions.get(version);
     const environment = this.environments.get(environmentId);
-    
+
     if (!versionMetadata) {
       throw new Error(`Version ${version} not found`);
     }
-    
+
     if (!environment) {
       throw new Error(`Environment ${environmentId} not found`);
     }
@@ -312,21 +312,21 @@ export class AgentVersioningSystem {
       environment.currentVersion = version;
       environment.status = 'active';
       environment.lastHealthCheck = new Date();
-      
+
       this.activeDeployments.set(environmentId, version);
-      
+
       deploymentResult.status = 'completed';
       deploymentResult.endTime = new Date();
-      
+
       console.log(`✅ Deployment completed: ${version} -> ${environment.name}`);
-      
+
     } catch (error) {
       deploymentResult.status = 'failed';
       deploymentResult.error = error instanceof Error ? error.message : String(error);
       deploymentResult.endTime = new Date();
-      
+
       console.error(`❌ Deployment failed: ${error}`);
-      
+
       // Auto-rollback on failure
       if (this.config.autoRollbackOnFailure) {
         await this.executeRollback(rollbackPoint.id);
@@ -341,27 +341,27 @@ export class AgentVersioningSystem {
    */
   private async executeBlueGreenDeployment(version: string, environment: DeploymentEnvironment): Promise<void> {
     console.log(`🔵🟢 Executing blue-green deployment for ${version}`);
-    
+
     // Identify inactive environment (blue or green)
     const inactiveEnv = await this.getInactiveEnvironment(environment.type);
-    
+
     if (!inactiveEnv) {
       throw new Error('No inactive environment available for blue-green deployment');
     }
 
     // Deploy to inactive environment
     await this.deployToEnvironment(version, inactiveEnv.id);
-    
+
     // Run health checks
     const healthResult = await this.runHealthChecks(inactiveEnv.id);
-    
+
     if (!healthResult.healthy) {
       throw new Error(`Health checks failed: ${healthResult.issues.join(', ')}`);
     }
 
     // Switch traffic
     await this.switchTraffic(environment.id, inactiveEnv.id);
-    
+
     console.log(`✅ Blue-green deployment completed successfully`);
   }
 
@@ -370,20 +370,20 @@ export class AgentVersioningSystem {
    */
   private async executeRollingDeployment(version: string, environment: DeploymentEnvironment): Promise<void> {
     console.log(`🔄 Executing rolling deployment for ${version}`);
-    
+
     // Get current instances
     const instances = await this.getEnvironmentInstances(environment.id);
-    
+
     // Update instances one by one
     for (const instance of instances) {
       await this.updateInstance(instance.id, version);
-      
+
       // Health check for updated instance
       const healthResult = await this.runInstanceHealthCheck(instance.id);
       if (!healthResult.healthy) {
         throw new Error(`Instance ${instance.id} health check failed`);
       }
-      
+
       console.log(`✅ Updated instance ${instance.id} to version ${version}`);
     }
   }
@@ -393,30 +393,30 @@ export class AgentVersioningSystem {
    */
   private async executeCanaryDeployment(version: string, environment: DeploymentEnvironment): Promise<void> {
     console.log(`🐤 Executing canary deployment for ${version}`);
-    
+
     // Deploy to small subset of instances
     const instances = await this.getEnvironmentInstances(environment.id);
     const canaryCount = Math.max(1, Math.floor(instances.length * 0.1)); // 10% canary
-    
+
     const canaryInstances = instances.slice(0, canaryCount);
-    
+
     for (const instance of canaryInstances) {
       await this.updateInstance(instance.id, version);
     }
-    
+
     // Monitor canary instances
     const monitoringResult = await this.monitorCanaryInstances(canaryInstances.map(i => i.id));
-    
+
     if (!monitoringResult.success) {
       throw new Error(`Canary deployment failed: ${monitoringResult.issues.join(', ')}`);
     }
-    
+
     // Roll out to remaining instances
     const remainingInstances = instances.slice(canaryCount);
     for (const instance of remainingInstances) {
       await this.updateInstance(instance.id, version);
     }
-    
+
     console.log(`✅ Canary deployment completed successfully`);
   }
 
@@ -463,7 +463,7 @@ export class AgentVersioningSystem {
    */
   async executeRollback(rollbackPointId: string): Promise<RollbackResult> {
     const rollbackPoint = this.rollbackPoints.get(rollbackPointId);
-    
+
     if (!rollbackPoint) {
       throw new Error(`Rollback point ${rollbackPointId} not found`);
     }
@@ -487,7 +487,7 @@ export class AgentVersioningSystem {
       // Execute rollback commands
       for (const command of rollbackPoint.rollbackCommands) {
         console.log(`🔧 Executing: ${command}`);
-        
+
         const result = await this.executeCommand(command);
         if (!result.success) {
           throw new Error(`Command failed: ${command} - ${result.error}`);
@@ -498,7 +498,7 @@ export class AgentVersioningSystem {
       if (rollbackPoint.data.databaseBackup) {
         await this.restoreDatabaseBackup(rollbackPoint.environmentId, rollbackPoint.data.databaseBackup);
       }
-      
+
       if (rollbackPoint.data.configurationBackup) {
         await this.restoreConfigurationBackup(rollbackPoint.environmentId, rollbackPoint.data.configurationBackup);
       }
@@ -513,7 +513,7 @@ export class AgentVersioningSystem {
 
       // Run verification checks
       const verificationResult = await this.runVerificationChecks(rollbackPoint.verificationChecks);
-      
+
       if (!verificationResult.success) {
         throw new Error(`Verification checks failed: ${verificationResult.issues.join(', ')}`);
       }
@@ -528,7 +528,7 @@ export class AgentVersioningSystem {
       rollbackResult.status = 'failed';
       rollbackResult.error = error instanceof Error ? error.message : String(error);
       rollbackResult.endTime = new Date();
-      
+
       console.error(`❌ Rollback failed: ${error}`);
     }
 
@@ -541,7 +541,7 @@ export class AgentVersioningSystem {
    */
   async emergencyRollback(environmentId: string): Promise<RollbackResult> {
     console.log('🚨 EMERGENCY ROLLBACK INITIATED');
-    
+
     // Find most recent successful rollback point
     const recentRollbacks = Array.from(this.rollbackPoints.values())
       .filter(rp => rp.environmentId === environmentId && rp.status === 'available')
@@ -553,7 +553,7 @@ export class AgentVersioningSystem {
 
     const emergencyRollbackPoint = recentRollbacks[0];
     console.log(`🔄 Using rollback point: ${emergencyRollbackPoint.id}`);
-    
+
     return this.executeRollback(emergencyRollbackPoint.id);
   }
 
@@ -595,7 +595,7 @@ export class AgentVersioningSystem {
    */
   async executeMigration(migrationId: string): Promise<MigrationResult> {
     const migration = this.migrations.get(migrationId);
-    
+
     if (!migration) {
       throw new Error(`Migration ${migrationId} not found`);
     }
@@ -613,17 +613,17 @@ export class AgentVersioningSystem {
     try {
       // Check dependencies
       await this.checkMigrationDependencies(migration);
-      
+
       // Execute migration script
       const result = await this.executeMigrationScript(migration.script);
-      
+
       if (!result.success) {
         throw new Error(`Migration script failed: ${result.error}`);
       }
 
       migration.status = 'completed';
       migration.executedAt = new Date();
-      
+
       migrationResult.status = 'completed';
       migrationResult.endTime = new Date();
 
@@ -634,7 +634,7 @@ export class AgentVersioningSystem {
       migrationResult.status = 'failed';
       migrationResult.error = error instanceof Error ? error.message : String(error);
       migrationResult.endTime = new Date();
-      
+
       console.error(`❌ Migration failed: ${error}`);
     }
 
@@ -647,7 +647,7 @@ export class AgentVersioningSystem {
    */
   async rollbackMigration(migrationId: string): Promise<MigrationResult> {
     const migration = this.migrations.get(migrationId);
-    
+
     if (!migration) {
       throw new Error(`Migration ${migrationId} not found`);
     }
@@ -669,13 +669,13 @@ export class AgentVersioningSystem {
     try {
       // Execute rollback script
       const result = await this.executeMigrationScript(migration.rollbackScript);
-      
+
       if (!result.success) {
         throw new Error(`Rollback script failed: ${result.error}`);
       }
 
       migration.status = 'rolled_back';
-      
+
       migrationResult.status = 'completed';
       migrationResult.endTime = new Date();
 
@@ -685,7 +685,7 @@ export class AgentVersioningSystem {
       migrationResult.status = 'failed';
       migrationResult.error = error instanceof Error ? error.message : String(error);
       migrationResult.endTime = new Date();
-      
+
       console.error(`❌ Migration rollback failed: ${error}`);
     }
 
@@ -737,7 +737,7 @@ export class AgentVersioningSystem {
    */
   async deployHotUpdate(hotUpdateId: string): Promise<HotUpdateResult> {
     const hotUpdate = this.hotUpdates.get(hotUpdateId);
-    
+
     if (!hotUpdate) {
       throw new Error(`Hot update ${hotUpdateId} not found`);
     }
@@ -770,20 +770,20 @@ export class AgentVersioningSystem {
       // Gradual rollout
       while (hotUpdate.rolloutPercentage < 100) {
         await this.deployHotUpdateToPercentage(hotUpdate, hotUpdate.rolloutPercentage);
-        
+
         // Monitor and wait
         await this.monitorHotUpdate(hotUpdate, 5 * 60 * 1000); // 5 minutes
-        
+
         // Increase rollout percentage
         hotUpdate.rolloutPercentage = Math.min(100, hotUpdate.rolloutPercentage + 20);
         await this.saveHotUpdates();
-        
+
         console.log(`📊 Hot update rollout: ${hotUpdate.rolloutPercentage}%`);
       }
 
       hotUpdate.status = 'completed';
       hotUpdate.completedAt = new Date();
-      
+
       hotUpdateResult.status = 'completed';
       hotUpdateResult.endTime = new Date();
 
@@ -794,9 +794,9 @@ export class AgentVersioningSystem {
       hotUpdateResult.status = 'failed';
       hotUpdateResult.error = error instanceof Error ? error.message : String(error);
       hotUpdateResult.endTime = new Date();
-      
+
       console.error(`❌ Hot update deployment failed: ${error}`);
-      
+
       // Auto-rollback on failure
       if (hotUpdate.critical) {
         await this.rollbackHotUpdate(hotUpdateId);
@@ -812,7 +812,7 @@ export class AgentVersioningSystem {
    */
   async rollbackHotUpdate(hotUpdateId: string): Promise<HotUpdateResult> {
     const hotUpdate = this.hotUpdates.get(hotUpdateId);
-    
+
     if (!hotUpdate) {
       throw new Error(`Hot update ${hotUpdateId} not found`);
     }
@@ -830,13 +830,13 @@ export class AgentVersioningSystem {
     try {
       // Execute rollback plan
       const result = await this.executeRollbackPlan(hotUpdate.rollbackPlan);
-      
+
       if (!result.success) {
         throw new Error(`Hot update rollback failed: ${result.error}`);
       }
 
       hotUpdate.status = 'rolled_back';
-      
+
       hotUpdateResult.status = 'completed';
       hotUpdateResult.endTime = new Date();
 
@@ -846,7 +846,7 @@ export class AgentVersioningSystem {
       hotUpdateResult.status = 'failed';
       hotUpdateResult.error = error instanceof Error ? error.message : String(error);
       hotUpdateResult.endTime = new Date();
-      
+
       console.error(`❌ Hot update rollback failed: ${error}`);
     }
 
@@ -864,11 +864,11 @@ export class AgentVersioningSystem {
   private parseVersion(version: string): SemanticVersion {
     const regex = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+))?(?:\+([0-9A-Za-z-]+))?$/;
     const match = version.match(regex);
-    
+
     if (!match) {
       throw new Error(`Invalid version format: ${version}`);
     }
-    
+
     return {
       major: parseInt(match[1]),
       minor: parseInt(match[2]),
@@ -883,15 +883,15 @@ export class AgentVersioningSystem {
    */
   private formatVersion(version: SemanticVersion): string {
     let result = `${version.major}.${version.minor}.${version.patch}`;
-    
+
     if (version.prerelease) {
       result += `-${version.prerelease}`;
     }
-    
+
     if (version.build) {
       result += `+${version.build}`;
     }
-    
+
     return result;
   }
 
@@ -899,12 +899,12 @@ export class AgentVersioningSystem {
    * Increment version
    */
   private incrementVersion(
-    current: SemanticVersion, 
+    current: SemanticVersion,
     increment: 'major' | 'minor' | 'patch' | 'prerelease',
     prereleaseTag?: string
   ): SemanticVersion {
     const newVersion = { ...current };
-    
+
     switch (increment) {
       case 'major':
         newVersion.major++;
@@ -925,7 +925,7 @@ export class AgentVersioningSystem {
         newVersion.prerelease = prereleaseTag || 'alpha.0';
         break;
     }
-    
+
     return newVersion;
   }
 
@@ -936,12 +936,12 @@ export class AgentVersioningSystem {
     if (v1.major !== v2.major) return v1.major - v2.major;
     if (v1.minor !== v2.minor) return v1.minor - v2.minor;
     if (v1.patch !== v2.patch) return v1.patch - v2.patch;
-    
+
     // Compare prerelease
     if (v1.prerelease && !v2.prerelease) return -1;
     if (!v1.prerelease && v2.prerelease) return 1;
     if (v1.prerelease && v2.prerelease) return v1.prerelease.localeCompare(v2.prerelease);
-    
+
     return 0;
   }
 
@@ -952,7 +952,7 @@ export class AgentVersioningSystem {
     const v = this.parseVersion(version);
     const min = this.parseVersion(minVersion);
     const max = this.parseVersion(maxVersion);
-    
+
     return this.compareVersions(v, min) >= 0 && this.compareVersions(v, max) <= 0;
   }
 
@@ -1265,6 +1265,9 @@ export interface VersioningConfig {
   maxRollbackPoints?: number;
   enableHotUpdates?: boolean;
   requireApprovalForProduction?: boolean;
+  autoIncrement?: boolean;
+  requireApproval?: boolean;
+  maxVersions?: number;
 }
 
 export interface DeploymentResult {

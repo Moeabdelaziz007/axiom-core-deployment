@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Connection, PublicKey, Keypair, clusterApiUrl } from '@solana/web3.js';
-import { 
+import { Connection, PublicKey, Keypair, clusterApiUrl, Transaction } from '@solana/web3.js';
+import {
   getOrCreateAssociatedTokenAccount,
   createTransferInstruction,
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID
 } from '@solana/spl-token';
@@ -30,19 +32,19 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'getStakeInfo':
         return await getStakeInfo(userPublicKey);
-      
+
       case 'stake':
         return await stakeTokens(userPublicKey, amount);
-      
+
       case 'unstake':
         return await unstakeTokens(userPublicKey, amount);
-      
+
       case 'deployAgent':
         return await deployAgent(userPublicKey);
-      
+
       case 'undeployAgent':
         return await undeployAgent(userPublicKey);
-      
+
       default:
         return NextResponse.json(
           { error: 'Invalid action' },
@@ -69,7 +71,7 @@ async function getStakeInfo(userPublicKey: PublicKey) {
       );
 
       const stakeAccountInfo = await connection.getAccountInfo(stakeAccountPDA);
-      
+
       if (!stakeAccountInfo) {
         // Account not initialized
         return NextResponse.json({
@@ -139,43 +141,67 @@ async function stakeTokens(userPublicKey: PublicKey, amount: number) {
         STAKING_PROGRAM_ID
       );
 
+      // Get user's token account address
+      const userTokenAccountAddress = await getAssociatedTokenAddress(
+        AXIOM_MINT,
+        userPublicKey
+      );
+
+      const transaction = new Transaction();
+
+      // Check if user token account exists
+      const userTokenAccountInfo = await connection.getAccountInfo(userTokenAccountAddress);
+      if (!userTokenAccountInfo) {
+        transaction.add(
+          createAssociatedTokenAccountInstruction(
+            userPublicKey, // payer
+            userTokenAccountAddress,
+            userPublicKey, // owner
+            AXIOM_MINT
+          )
+        );
+      }
+
       // Find vault PDA
       const [vaultPDA] = PublicKey.findProgramAddressSync(
         [Buffer.from("axiom_vault")],
         STAKING_PROGRAM_ID
       );
 
-      // Get user's token account
-      const userTokenAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        null, // We'll have user sign this transaction
-        userPublicKey,
-        AXIOM_MINT
-      );
-
-      // Get vault token account
-      const vaultTokenAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        null,
+      // Get vault token account address
+      const vaultTokenAccountAddress = await getAssociatedTokenAddress(
+        AXIOM_MINT,
         vaultPDA,
-        AXIOM_MINT
+        true // allowOwnerOffCurve
       );
 
-      // Create staking transaction
-      const transaction = new Transaction().add(
-        // This would be the actual staking instruction
-        // For now, return the structure needed
-        {
-          keys: [
-            { pubkey: stakeAccountPDA, isSigner: false },
-            { pubkey: userTokenAccount.address, isSigner: false },
-            { pubkey: vaultTokenAccount.address, isSigner: false },
-            { pubkey: userPublicKey, isSigner: true },
-          ],
-          programId: STAKING_PROGRAM_ID,
-          data: Buffer.from([0, ...amountToBuffer(amount)]) // Simplified
-        }
-      );
+      // Check if vault token account exists (it should, but for safety)
+      const vaultTokenAccountInfo = await connection.getAccountInfo(vaultTokenAccountAddress);
+      if (!vaultTokenAccountInfo) {
+        // Note: Vault account creation usually requires a payer. 
+        // Here we assume user pays if it doesn't exist, or we skip if we assume it exists.
+        // For safety, let's add creation instruction with user as payer
+        transaction.add(
+          createAssociatedTokenAccountInstruction(
+            userPublicKey, // payer
+            vaultTokenAccountAddress,
+            vaultPDA, // owner
+            AXIOM_MINT
+          )
+        );
+      }
+
+      // Add staking instruction (mock data for now)
+      transaction.add({
+        keys: [
+          { pubkey: stakeAccountPDA, isSigner: false, isWritable: true },
+          { pubkey: userTokenAccountAddress, isSigner: false, isWritable: true },
+          { pubkey: vaultTokenAccountAddress, isSigner: false, isWritable: true },
+          { pubkey: userPublicKey, isSigner: true, isWritable: true },
+        ],
+        programId: STAKING_PROGRAM_ID,
+        data: Buffer.from([0, ...amountToBuffer(amount)])
+      });
 
       const response = {
         success: true,

@@ -23,12 +23,12 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, 
-  MessageSquare, 
-  Activity, 
-  BarChart3, 
-  Settings, 
+import {
+  Users,
+  MessageSquare,
+  Activity,
+  BarChart3,
+  Settings,
   Eye,
   Brain,
   Sparkles,
@@ -46,7 +46,7 @@ import { ThirdEyeOverlay } from './ThirdEyeOverlay';
 // Import types
 import { AxiomID } from '@/infra/core/AxiomID';
 import { KarmaBalance } from '@/infra/core/DualityEngine';
-import { AgentCommunicationIntegration } from '@/infra/core/AgentCommunicationIntegration';
+// import { AgentCommunicationIntegration } from '@/infra/core/AgentCommunicationIntegration'; // DISABLED - مؤقتاً معطل
 import { RealtimeCommunicationSystem } from '@/infra/core/RealtimeCommunicationSystem';
 import { CommunicationMonitoringSystem } from '@/infra/core/CommunicationMonitoringSystem';
 
@@ -95,22 +95,22 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
   const [isThirdEyeActive, setIsThirdEyeActive] = useState(false);
   const [systemHealth, setSystemHealth] = useState<any>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
-  
+
   // System instances
-  const communicationIntegration = useRef(new AgentCommunicationIntegration(agentId || 'hub'));
+  // const communicationIntegration = useRef(new AgentCommunicationIntegration(agentId || 'hub')); // DISABLED - مؤقتاً معطل
   const realtimeSystem = useRef(new RealtimeCommunicationSystem());
   const monitoringSystem = useRef(new CommunicationMonitoringSystem());
-  
+
   // ============================================================================
   // DATA FETCHING
   // ============================================================================
-  
+
   // Fetch agents directory
   const fetchAgents = useCallback(async () => {
     try {
       const response = await fetch('/api/communication/agents');
       const data = await response.json();
-      
+
       if (data.success) {
         setAgents(data.data.agents);
       } else {
@@ -120,13 +120,13 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       console.error('Error fetching agents:', error);
     }
   }, []);
-  
+
   // Fetch communication sessions
   const fetchSessions = useCallback(async () => {
     try {
       const response = await fetch('/api/communication/sessions');
       const data = await response.json();
-      
+
       if (data.success) {
         setSessions(data.data.sessions);
       } else {
@@ -136,13 +136,13 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       console.error('Error fetching sessions:', error);
     }
   }, []);
-  
+
   // Fetch analytics
   const fetchAnalytics = useCallback(async () => {
     try {
       const response = await fetch('/api/communication/analytics');
       const data = await response.json();
-      
+
       if (data.success) {
         setAnalytics(data.data);
       } else {
@@ -152,13 +152,13 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       console.error('Error fetching analytics:', error);
     }
   }, []);
-  
+
   // Fetch system health
   const fetchSystemHealth = useCallback(async () => {
     try {
       const response = await fetch('/api/monitoring');
       const data = await response.json();
-      
+
       if (data.success) {
         setSystemHealth(data.data);
       }
@@ -166,27 +166,27 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       console.error('Error fetching system health:', error);
     }
   }, []);
-  
+
   // ============================================================================
   // EVENT HANDLERS
   // ============================================================================
-  
+
   // Handle agent selection
   const handleAgentSelect = useCallback((agentId: string) => {
     onAgentSelect?.(agentId);
     setActiveSection('agent-detail');
   }, [onAgentSelect]);
-  
+
   // Handle session creation
   const handleSessionCreate = useCallback((sessionData: any) => {
     onSessionCreate?.(sessionData);
     setActiveSection('sessions');
   }, [onSessionCreate]);
-  
+
   // Handle message sending
   const handleMessageSend = useCallback((messageData: any) => {
     onMessageSend?.(messageData);
-    
+
     // Add to local messages for immediate UI update
     setMessages(prev => [...prev, {
       ...messageData,
@@ -195,11 +195,11 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       status: 'sent'
     }]);
   }, [onMessageSend]);
-  
+
   // Handle third eye activation
   const handleThirdEyeToggle = useCallback((active: boolean) => {
     setIsThirdEyeActive(active);
-    
+
     // Log third eye usage for analytics
     if (active) {
       monitoringSystem.current.trackEvent('third_eye_activated', {
@@ -209,7 +209,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       });
     }
   }, [agentId, activeSection, monitoringSystem]);
-  
+
   // Handle insight click from third eye
   const handleInsightClick = useCallback((insight: any) => {
     // Add notification
@@ -222,24 +222,24 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       timestamp: new Date(),
       read: false
     }]);
-    
+
     // Navigate to relevant section
     if (insight.targetId) {
       handleAgentSelect(insight.targetId);
     }
   }, [handleAgentSelect]);
-  
+
   // ============================================================================
   // HUB SECTIONS
   // ============================================================================
-  
+
   // Define hub sections
   const hubSections: HubSection[] = [
     {
       id: 'overview',
       title: 'Overview',
       icon: <Globe className="w-5 h-5" />,
-      component: <OverviewSection 
+      component: <OverviewSection
         agents={agents}
         sessions={sessions}
         analytics={analytics}
@@ -252,7 +252,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       id: 'agents',
       title: 'Agents',
       icon: <Users className="w-5 h-5" />,
-      component: <AgentsSection 
+      component: <AgentsSection
         agents={agents}
         onAgentSelect={handleAgentSelect}
         onRefresh={fetchAgents}
@@ -264,7 +264,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       id: 'sessions',
       title: 'Sessions',
       icon: <MessageSquare className="w-5 h-5" />,
-      component: <SessionsSection 
+      component: <SessionsSection
         sessions={sessions}
         onSessionCreate={handleSessionCreate}
         onRefresh={fetchSessions}
@@ -276,7 +276,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       id: 'messages',
       title: 'Messages',
       icon: <Activity className="w-5 h-5" />,
-      component: <MessagesSection 
+      component: <MessagesSection
         messages={messages}
         onMessageSend={handleMessageSend}
         agents={agents}
@@ -287,7 +287,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       id: 'analytics',
       title: 'Analytics',
       icon: <BarChart3 className="w-5 h-5" />,
-      component: <AnalyticsSection 
+      component: <AnalyticsSection
         analytics={analytics}
         onRefresh={fetchAnalytics}
       />,
@@ -298,7 +298,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       title: 'Digital Mandala',
       icon: <Sparkles className="w-5 h-5" />,
       component: axiomId ? (
-        <DigitalMandala 
+        <DigitalMandala
           axiomId={axiomId}
           karmaBalance={karmaBalance}
           config={{
@@ -321,7 +321,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       title: 'Karma Balance',
       icon: <Brain className="w-5 h-5" />,
       component: karmaBalance ? (
-        <KarmaSection 
+        <KarmaSection
           karmaBalance={karmaBalance}
           axiomId={axiomId}
         />
@@ -333,30 +333,30 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
       isActive: activeSection === 'karma'
     }
   ];
-  
+
   // ============================================================================
   // INITIAL DATA LOADING
   // ============================================================================
-  
+
   useEffect(() => {
     // Load initial data
     fetchAgents();
     fetchSessions();
     fetchAnalytics();
     fetchSystemHealth();
-    
+
     // Set up real-time updates
     const interval = setInterval(() => {
       fetchSystemHealth();
     }, 30000); // Update every 30 seconds
-    
+
     return () => clearInterval(interval);
   }, [fetchAgents, fetchSessions, fetchAnalytics, fetchSystemHealth]);
-  
+
   // ============================================================================
   // RENDER
   // ============================================================================
-  
+
   return (
     <div className={`communication-hub ${className}`}>
       {/* Header */}
@@ -366,7 +366,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
             <h1 className="hub-title">Axiom Communication Hub</h1>
             <p className="hub-subtitle">Microcosm ↔ Macrocosm Interface</p>
           </div>
-          
+
           <div className="header-right">
             {/* System Health Indicator */}
             {systemHealth && (
@@ -375,7 +375,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
                 <span className="health-text">{systemHealth.overallHealth}%</span>
               </div>
             )}
-            
+
             {/* Notifications */}
             <div className="notifications">
               <AnimatePresence>
@@ -396,7 +396,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
           </div>
         </div>
       </header>
-      
+
       {/* Navigation */}
       <nav className="hub-navigation">
         {hubSections.map(section => (
@@ -413,7 +413,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
           </button>
         ))}
       </nav>
-      
+
       {/* Main Content */}
       <main className="hub-main">
         <AnimatePresence mode="wait">
@@ -429,7 +429,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
           </motion.div>
         </AnimatePresence>
       </main>
-      
+
       {/* Third Eye Overlay */}
       <ThirdEyeOverlay
         axiomIds={axiomId ? [axiomId] : []}
@@ -443,7 +443,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
           autoReveal: true
         }}
       />
-      
+
       {/* Status Bar */}
       <footer className="hub-status">
         <div className="status-left">
@@ -456,7 +456,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
             <span>Performance: {systemHealth?.performanceStatus || 'Unknown'}</span>
           </div>
         </div>
-        
+
         <div className="status-right">
           <div className="status-item">
             <TrendingUp className="w-4 h-4" />
@@ -468,7 +468,7 @@ export const CommunicationHub: React.FC<CommunicationHubProps> = ({
           </div>
         </div>
       </footer>
-      
+
       <style jsx>{`
         .communication-hub {
           display: flex;
@@ -702,7 +702,7 @@ const OverviewSection: React.FC<{
 }> = ({ agents, sessions, analytics, systemHealth, karmaBalance }) => {
   const onlineAgents = agents.filter(a => a.status === 'online');
   const activeSessions = sessions.filter(s => s.status === 'active');
-  
+
   return (
     <div className="overview-section">
       <div className="overview-grid">
@@ -717,7 +717,7 @@ const OverviewSection: React.FC<{
             <span className="metric-label">Active Sessions</span>
           </div>
         </div>
-        
+
         {karmaBalance && (
           <div className="overview-card">
             <h3>Karma Balance</h3>
@@ -737,7 +737,7 @@ const OverviewSection: React.FC<{
             </div>
           </div>
         )}
-        
+
         {systemHealth && (
           <div className="overview-card">
             <h3>System Health</h3>
@@ -745,8 +745,8 @@ const OverviewSection: React.FC<{
               <div className="health-metric">
                 <span className="health-label">Overall</span>
                 <div className="health-bar">
-                  <div 
-                    className="health-fill" 
+                  <div
+                    className="health-fill"
                     style={{ width: `${systemHealth.overallHealth}%` }}
                   />
                 </div>
@@ -755,8 +755,8 @@ const OverviewSection: React.FC<{
               <div className="health-metric">
                 <span className="health-label">Security</span>
                 <div className="health-bar">
-                  <div 
-                    className="health-fill security" 
+                  <div
+                    className="health-fill security"
                     style={{ width: `${systemHealth.securityScore}%` }}
                   />
                 </div>
@@ -765,8 +765,8 @@ const OverviewSection: React.FC<{
               <div className="health-metric">
                 <span className="health-label">Performance</span>
                 <div className="health-bar">
-                  <div 
-                    className="health-fill performance" 
+                  <div
+                    className="health-fill performance"
                     style={{ width: `${systemHealth.performanceScore}%` }}
                   />
                 </div>
@@ -775,7 +775,7 @@ const OverviewSection: React.FC<{
             </div>
           </div>
         )}
-        
+
         {analytics && (
           <div className="overview-card">
             <h3>Quick Analytics</h3>
@@ -796,7 +796,7 @@ const OverviewSection: React.FC<{
           </div>
         )}
       </div>
-      
+
       <style jsx>{`
         .overview-section {
           padding: 2rem;
@@ -981,13 +981,13 @@ const AgentsSection: React.FC<{
 }> = ({ agents, onAgentSelect, onRefresh }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  
+
   const filteredAgents = agents.filter(agent => {
     const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || agent.type === filterType;
     return matchesSearch && matchesType;
   });
-  
+
   return (
     <div className="agents-section">
       <div className="section-header">
@@ -1015,7 +1015,7 @@ const AgentsSection: React.FC<{
           </button>
         </div>
       </div>
-      
+
       <div className="agents-grid">
         {filteredAgents.map(agent => (
           <div
@@ -1033,7 +1033,7 @@ const AgentsSection: React.FC<{
                 <span>{agent.status}</span>
               </div>
             </div>
-            
+
             <div className="agent-details">
               <p className="agent-description">{agent.description}</p>
               <div className="agent-metrics">
@@ -1047,7 +1047,7 @@ const AgentsSection: React.FC<{
                 </div>
               </div>
               <div className="agent-capabilities">
-                {agent.capabilities?.slice(0, 3).map(cap => (
+                {agent.capabilities?.slice(0, 3).map((cap: any) => (
                   <span key={cap} className="capability-tag">{cap}</span>
                 ))}
                 {agent.capabilities?.length > 3 && (
@@ -1058,7 +1058,7 @@ const AgentsSection: React.FC<{
           </div>
         ))}
       </div>
-      
+
       <style jsx>{`
         .agents-section {
           padding: 2rem;
@@ -1244,17 +1244,17 @@ const SessionsSection: React.FC<{
   onRefresh: () => void;
 }> = ({ sessions, onSessionCreate, onRefresh }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
-  
+
   const activeSessions = sessions.filter(s => s.status === 'active');
   const scheduledSessions = sessions.filter(s => s.status === 'scheduled');
   const endedSessions = sessions.filter(s => s.status === 'ended');
-  
+
   return (
     <div className="sessions-section">
       <div className="section-header">
         <h2>Communication Sessions</h2>
         <div className="header-controls">
-          <button 
+          <button
             onClick={() => setShowCreateForm(!showCreateForm)}
             className="create-session-btn"
           >
@@ -1265,14 +1265,14 @@ const SessionsSection: React.FC<{
           </button>
         </div>
       </div>
-      
+
       {showCreateForm && (
-        <CreateSessionForm 
+        <CreateSessionForm
           onSubmit={onSessionCreate}
           onClose={() => setShowCreateForm(false)}
         />
       )}
-      
+
       <div className="sessions-tabs">
         <div className="tab">
           <h3>Active ({activeSessions.length})</h3>
@@ -1282,7 +1282,7 @@ const SessionsSection: React.FC<{
             ))}
           </div>
         </div>
-        
+
         <div className="tab">
           <h3>Scheduled ({scheduledSessions.length})</h3>
           <div className="sessions-list">
@@ -1291,7 +1291,7 @@ const SessionsSection: React.FC<{
             ))}
           </div>
         </div>
-        
+
         <div className="tab">
           <h3>Recent ({endedSessions.slice(0, 5).length})</h3>
           <div className="sessions-list">
@@ -1301,7 +1301,7 @@ const SessionsSection: React.FC<{
           </div>
         </div>
       </div>
-      
+
       <style jsx>{`
         .sessions-section {
           padding: 2rem;
@@ -1364,7 +1364,7 @@ const SessionCard: React.FC<{ session: any }> = ({ session }) => {
           {session.status}
         </span>
       </div>
-      
+
       <div className="session-details">
         <p className="session-description">{session.description}</p>
         <div className="session-participants">
@@ -1394,7 +1394,7 @@ const SessionCard: React.FC<{ session: any }> = ({ session }) => {
           </span>
         </div>
       </div>
-      
+
       <style jsx>{`
         .session-card {
           background: rgba(255, 255, 255, 0.05);
@@ -1503,45 +1503,45 @@ const CreateSessionForm: React.FC<{
     participants: [],
     scheduledFor: ''
   });
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
     onClose();
   };
-  
+
   return (
     <div className="create-session-form">
       <div className="form-header">
         <h3>Create New Session</h3>
         <button onClick={onClose} className="close-btn">×</button>
       </div>
-      
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Title</label>
           <input
             type="text"
             value={formData.title}
-            onChange={(e) => setFormData({...formData, title: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             required
           />
         </div>
-        
+
         <div className="form-group">
           <label>Description</label>
           <textarea
             value={formData.description}
-            onChange={(e) => setFormData({...formData, description: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={3}
           />
         </div>
-        
+
         <div className="form-group">
           <label>Type</label>
           <select
             value={formData.type}
-            onChange={(e) => setFormData({...formData, type: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
           >
             <option value="chat">Chat</option>
             <option value="voice-call">Voice Call</option>
@@ -1549,16 +1549,16 @@ const CreateSessionForm: React.FC<{
             <option value="conference">Conference</option>
           </select>
         </div>
-        
+
         <div className="form-group">
           <label>Scheduled For (optional)</label>
           <input
             type="datetime-local"
             value={formData.scheduledFor}
-            onChange={(e) => setFormData({...formData, scheduledFor: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, scheduledFor: e.target.value })}
           />
         </div>
-        
+
         <div className="form-actions">
           <button type="button" onClick={onClose} className="cancel-btn">
             Cancel
@@ -1568,7 +1568,7 @@ const CreateSessionForm: React.FC<{
           </button>
         </div>
       </form>
-      
+
       <style jsx>{`
         .create-session-form {
           background: rgba(0, 0, 0, 0.8);
@@ -1661,7 +1661,7 @@ const MessagesSection: React.FC<{
 }> = ({ messages, onMessageSend, agents }) => {
   const [newMessage, setNewMessage] = useState('');
   const [selectedAgent, setSelectedAgent] = useState('');
-  
+
   const handleSend = () => {
     if (newMessage.trim() && selectedAgent) {
       onMessageSend({
@@ -1672,7 +1672,7 @@ const MessagesSection: React.FC<{
       setNewMessage('');
     }
   };
-  
+
   return (
     <div className="messages-section">
       <div className="messages-container">
@@ -1693,7 +1693,7 @@ const MessagesSection: React.FC<{
             </div>
           ))}
         </div>
-        
+
         <div className="message-composer">
           <div className="composer-row">
             <select
@@ -1718,7 +1718,7 @@ const MessagesSection: React.FC<{
               placeholder="Type your message..."
               className="message-input"
             />
-            <button 
+            <button
               onClick={handleSend}
               disabled={!newMessage.trim() || !selectedAgent}
               className="send-btn"
@@ -1728,7 +1728,7 @@ const MessagesSection: React.FC<{
           </div>
         </div>
       </div>
-      
+
       <style jsx>{`
         .messages-section {
           padding: 2rem;
@@ -1837,7 +1837,7 @@ const AnalyticsSection: React.FC<{
       </div>
     );
   }
-  
+
   return (
     <div className="analytics-section">
       <div className="section-header">
@@ -1846,7 +1846,7 @@ const AnalyticsSection: React.FC<{
           Refresh
         </button>
       </div>
-      
+
       <div className="analytics-grid">
         <div className="analytics-card">
           <h3>Performance Metrics</h3>
@@ -1865,7 +1865,7 @@ const AnalyticsSection: React.FC<{
             </div>
           </div>
         </div>
-        
+
         <div className="analytics-card">
           <h3>Quality Metrics</h3>
           <div className="metrics-list">
@@ -1883,7 +1883,7 @@ const AnalyticsSection: React.FC<{
             </div>
           </div>
         </div>
-        
+
         <div className="analytics-card">
           <h3>Security Metrics</h3>
           <div className="metrics-list">
@@ -1902,7 +1902,7 @@ const AnalyticsSection: React.FC<{
           </div>
         </div>
       </div>
-      
+
       <style jsx>{`
         .analytics-section {
           padding: 2rem;
@@ -2000,24 +2000,24 @@ const KarmaSection: React.FC<{
 }> = ({ karmaBalance, axiomId }) => {
   const virtuePercentage = karmaBalance.virtuePoints / (karmaBalance.virtuePoints + karmaBalance.vicePoints) * 100;
   const vicePercentage = karmaBalance.vicePoints / (karmaBalance.virtuePoints + karmaBalance.vicePoints) * 100;
-  
+
   return (
     <div className="karma-section">
       <div className="karma-overview">
         <h3>Karma Balance Overview</h3>
         <div className="karma-visualization">
           <div className="karma-bar">
-            <div 
-              className="karma-fill virtue" 
+            <div
+              className="karma-fill virtue"
               style={{ width: `${virtuePercentage}%` }}
             />
-            <div 
-              className="karma-fill vice" 
+            <div
+              className="karma-fill vice"
               style={{ width: `${vicePercentage}%` }}
             />
           </div>
         </div>
-        
+
         <div className="karma-stats">
           <div className="stat-item">
             <span className="stat-label">Net Balance</span>
@@ -2033,11 +2033,11 @@ const KarmaSection: React.FC<{
           </div>
           <div className="stat-item">
             <span className="stat-label">Dominance</span>
-            <span className="stat-value">{karmaBalance.dominantAgent}</span>
+            <span className="stat-value">{karmaBalance.virtuePoints > karmaBalance.vicePoints ? 'Virtue' : 'Vice'}</span>
           </div>
         </div>
       </div>
-      
+
       <div className="karma-details">
         <div className="detail-section">
           <h4>Virtue Points</h4>
@@ -2056,7 +2056,7 @@ const KarmaSection: React.FC<{
             </div>
           </div>
         </div>
-        
+
         <div className="detail-section">
           <h4>Vice Points</h4>
           <div className="points-display vice">
@@ -2075,20 +2075,9 @@ const KarmaSection: React.FC<{
           </div>
         </div>
       </div>
-      
-      {karmaBalance.recommendations && karmaBalance.recommendations.length > 0 && (
-        <div className="recommendations">
-          <h4>Recommendations</h4>
-          <ul className="recommendations-list">
-            {karmaBalance.recommendations.map((rec, i) => (
-              <li key={i} className="recommendation-item">
-                {rec}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      
+
+
+
       <style jsx>{`
         .karma-section {
           padding: 2rem;

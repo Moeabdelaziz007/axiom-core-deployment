@@ -12,7 +12,7 @@
  * @version 1.0.0
  */
 
-import { AgentReputation } from '../types/marketplace';
+import { AgentReputation } from '../../types/marketplace';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -216,7 +216,7 @@ class ViceObserver {
         agentId: action.agentId,
         action: 'RESOURCE_WASTE',
         score,
-        reason: `Exceeded budget limit by ${waste} units (${((waste/action.budget)*100).toFixed(1)}% over)`,
+        reason: `Exceeded budget limit by ${waste} units (${((waste / action.budget) * 100).toFixed(1)}% over)`,
         timestamp: new Date(),
         metadata: { budget: action.budget, cost: result.cost, waste }
       };
@@ -225,10 +225,10 @@ class ViceObserver {
     // 2. Check for Hallucination/Failure
     if (!result.success || action.hallucination) {
       const score = action.hallucination ? 35 : 20; // Higher penalty for hallucinations
-      const reason = action.hallucination ? 
-        'Agent hallucinated - generated false information' : 
+      const reason = action.hallucination ?
+        'Agent hallucinated - generated false information' :
         (result.error || 'Task execution failed');
-      
+
       return {
         type: 'VICE',
         agentId: action.agentId,
@@ -236,10 +236,10 @@ class ViceObserver {
         score,
         reason,
         timestamp: new Date(),
-        metadata: { 
-          error: result.error, 
+        metadata: {
+          error: result.error,
           hallucination: action.hallucination,
-          failureType: action.metadata?.failureType 
+          failureType: action.metadata?.failureType
         }
       };
     }
@@ -281,9 +281,9 @@ class ViceObserver {
         score: 30,
         reason: 'Received negative user feedback',
         timestamp: new Date(),
-        metadata: { 
+        metadata: {
           complaintReason: action.metadata?.complaintReason,
-          feedbackSource: action.metadata?.feedbackSource 
+          feedbackSource: action.metadata?.feedbackSource
         }
       };
     }
@@ -371,7 +371,7 @@ export class DualityEngine {
       karmaBalance.virtuePoints += virtueReport.score;
       karmaBalance.history.push(virtueReport);
       logs.push(`😇 Virtue: ${virtueReport.reason} (+${virtueReport.score})`);
-      
+
       // Trigger Reward Logic
       await this.triggerReward(agentId, virtueReport);
     }
@@ -381,7 +381,7 @@ export class DualityEngine {
       karmaBalance.vicePoints += viceReport.score;
       karmaBalance.history.push(viceReport);
       logs.push(`😈 Vice: ${viceReport.reason} (-${viceReport.score})`);
-      
+
       // Trigger Penalty Logic
       await this.triggerPenalty(agentId, viceReport);
     }
@@ -389,7 +389,7 @@ export class DualityEngine {
     // 4. Update Karma Balance and State
     karmaBalance.netBalance = karmaBalance.virtuePoints - karmaBalance.vicePoints;
     karmaBalance.lastUpdated = new Date();
-    
+
     // Update state based on balance
     if (karmaBalance.netBalance >= 50) {
       karmaBalance.state = 'BLESSED';
@@ -457,7 +457,7 @@ export class DualityEngine {
       balance.virtuePoints += points;
       balance.netBalance = balance.virtuePoints - balance.vicePoints;
       balance.lastUpdated = new Date();
-      
+
       balance.history.push({
         type: 'VIRTUE',
         agentId,
@@ -466,7 +466,7 @@ export class DualityEngine {
         reason,
         timestamp: new Date()
       });
-      
+
       console.log(`🎁 Added ${points} virtue points to ${agentId}: ${reason}`);
     }
   }
@@ -480,7 +480,7 @@ export class DualityEngine {
       balance.vicePoints += points;
       balance.netBalance = balance.virtuePoints - balance.vicePoints;
       balance.lastUpdated = new Date();
-      
+
       balance.history.push({
         type: 'VICE',
         agentId,
@@ -489,7 +489,7 @@ export class DualityEngine {
         reason,
         timestamp: new Date()
       });
-      
+
       console.log(`⚠️ Added ${points} vice points to ${agentId}: ${reason}`);
     }
   }
@@ -500,13 +500,13 @@ export class DualityEngine {
   public clearPenance(agentId: string): void {
     if (this.penanceStates.has(agentId)) {
       this.penanceStates.delete(agentId);
-      
+
       const balance = this.karmaBalances.get(agentId);
       if (balance && balance.state === 'PENANCE') {
         balance.state = 'BALANCED';
         balance.netBalance = Math.max(-49, balance.netBalance); // Move out of penance range
       }
-      
+
       console.log(`✅ Cleared penance state for ${agentId}`);
     }
   }
@@ -521,33 +521,36 @@ export class DualityEngine {
   private calculateReputation(karmaBalance: KarmaBalance): AgentReputation {
     const baseReputation = 50; // Starting point
     const karmaImpact = karmaBalance.netBalance / 2; // Scale karma to reputation
-    
+
     const overall = Math.max(0, Math.min(100, baseReputation + karmaImpact));
-    
+
     // Calculate specific reputation categories
-    const collaboration = Math.max(0, Math.min(100, 
+    const collaboration = Math.max(0, Math.min(100,
       overall + (karmaBalance.virtuePoints * 0.1) - (karmaBalance.vicePoints * 0.15)
     ));
-    
-    const reliability = Math.max(0, Math.min(100, 
+
+    const reliability = Math.max(0, Math.min(100,
       overall + (this.getVirtueByAction(karmaBalance, 'EFFICIENT_EXECUTION') * 2) -
-             (this.getViceByAction(karmaBalance, 'TASK_FAILURE') * 3)
+      (this.getViceByAction(karmaBalance, 'TASK_FAILURE') * 3)
     ));
-    
-    const innovation = Math.max(0, Math.min(100, 
+
+    const innovation = Math.max(0, Math.min(100,
       overall + (this.getVirtueByAction(karmaBalance, 'INNOVATION') * 3) -
-             (this.getViceByAction(karmaBalance, 'HALLUCINATION') * 4)
+      (this.getViceByAction(karmaBalance, 'HALLUCINATION') * 4)
     ));
-    
+
     return {
-      agentId: karmaBalance.agentId,
       overall,
-      collaboration,
       reliability,
-      knowledge: innovation, // Map innovation to knowledge for now
-      leadership: collaboration,
+      performance: overall, // Default to overall score
+      communication: collaboration, // Map collaboration to communication
       innovation,
-      lastUpdated: new Date()
+      trustScore: overall, // Default to overall score
+      disputeResolution: {
+        resolved: 0,
+        total: 0,
+        successRate: 0
+      }
     };
   }
 
@@ -575,7 +578,7 @@ export class DualityEngine {
   private async triggerReward(agentId: string, report: BehaviorReport): Promise<void> {
     // In production, implement actual reward logic
     console.log(`🎉 Reward triggered for ${agentId}: ${report.reason}`);
-    
+
     // Examples of rewards:
     // - Grant XP or skill points
     // - Increase resource allocation
@@ -589,7 +592,7 @@ export class DualityEngine {
   private async triggerPenalty(agentId: string, report: BehaviorReport): Promise<void> {
     // In production, implement actual penalty logic
     console.log(`⚡ Penalty triggered for ${agentId}: ${report.reason}`);
-    
+
     // Examples of penalties:
     // - Drain energy or resources
     // - Reduce capabilities temporarily
@@ -604,10 +607,10 @@ export class DualityEngine {
     const vicePoints = karmaBalance.vicePoints;
     const virtuePoints = karmaBalance.virtuePoints;
     const ratio = virtuePoints / Math.max(1, vicePoints);
-    
+
     let severity: 'minor' | 'moderate' | 'severe' | 'critical';
     let fine: number | undefined;
-    
+
     if (ratio < 0.2) {
       severity = 'critical';
       fine = 1000; // High fine for severe cases
@@ -619,41 +622,41 @@ export class DualityEngine {
     } else {
       severity = 'minor';
     }
-    
+
     // Determine restrictions based on common vices
     const restrictions: string[] = [];
     const requiredActions: string[] = [];
-    
+
     const recentVices = karmaBalance.history
       .filter(report => report.type === 'VICE')
       .slice(-10); // Last 10 vice events
-    
+
     if (recentVices.some(v => v.action === 'HALLUCINATION')) {
       restrictions.push('NO_GENERATIVE_TASKS');
       requiredActions.push('COMPLETE_ACCURACY_TRAINING');
     }
-    
+
     if (recentVices.some(v => v.action === 'RESOURCE_WASTE')) {
       restrictions.push('LIMITED_RESOURCES');
       requiredActions.push('COMPLETE_EFFICIENCY_TRAINING');
     }
-    
+
     if (recentVices.some(v => v.action === 'SECURITY_RISK')) {
       restrictions.push('NO_SECURITY_TASKS');
       requiredActions.push('COMPLETE_SECURITY_AUDIT');
     }
-    
+
     if (recentVices.some(v => v.action === 'USER_COMPLAINT')) {
       restrictions.push('SUPERVISED_OPERATIONS');
       requiredActions.push('REVIEW_USER_FEEDBACK');
     }
-    
+
     // Default restrictions if none specific
     if (restrictions.length === 0) {
       restrictions.push('LIMITED_OPERATIONS');
       requiredActions.push('IMPROVE_PERFORMANCE');
     }
-    
+
     return {
       agentId,
       reason: `Excessive vice points (${vicePoints}) vs virtue points (${virtuePoints})`,

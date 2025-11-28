@@ -14,19 +14,7 @@ export interface MarketplaceAgent {
   tags: string[];
   superpowers: string[];
   reviewCount: number;
-  reputation: {
-    overall: number;
-    reliability: number;
-    performance: number;
-    communication: number;
-    innovation: number;
-    trustScore: number;
-    disputeResolution: {
-      resolved: number;
-      total: number;
-      successRate: number;
-    };
-  };
+  reputation: AgentReputation;
   performance: {
     totalDeployments: number;
     activeDeployments: number;
@@ -421,5 +409,19 @@ export interface MarketplaceAnalytics {
     searchPatterns: any[];
     conversionFunnel: any[];
     retentionMetrics: any[];
+  };
+}
+
+export interface AgentReputation {
+  overall: number;
+  reliability: number;
+  performance: number;
+  communication: number;
+  innovation: number;
+  trustScore: number;
+  disputeResolution: {
+    resolved: number;
+    total: number;
+    successRate: number;
   };
 }

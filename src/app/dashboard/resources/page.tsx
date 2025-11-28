@@ -472,9 +472,18 @@ export default function ResourceMonitorDashboard() {
 
         {/* Performance Metrics */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card title="📊 Performance Score" value="85%" />
-          <Card title="⚡ Efficiency" value="85%" />
-          <Card title="💸 Cost/Task" value="$0.05" />
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">📊 Performance Score</h3>
+            <div className="text-3xl font-bold text-blue-600">85%</div>
+          </div>
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">⚡ Efficiency</h3>
+            <div className="text-3xl font-bold text-green-600">85%</div>
+          </div>
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">💸 Cost/Task</h3>
+            <div className="text-3xl font-bold text-purple-600">$0.05</div>
+          </div>
         </div>
 
         {/* Alerts */}
@@ -499,14 +508,14 @@ export default function ResourceMonitorDashboard() {
 
         {/* Resource Allocation */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <ResourceAllocationChart resources={resourceAllocation} />
-          <UtilizationMetrics utilization={utilizationData} />
+          <ResourceAllocationChart />
+          <UtilizationMetrics />
         </div>
 
         {/* Recent Activity */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
-          <ActivityLog activities={recentActivities} />
+          <ActivityLog />
         </div>
       </div>
     </div>

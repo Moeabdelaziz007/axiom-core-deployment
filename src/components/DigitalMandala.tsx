@@ -96,7 +96,7 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   onLayerClick
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
   const [isHovered, setIsHovered] = useState(false);
   const [selectedLayer, setSelectedLayer] = useState<string | null>(null);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -116,7 +116,7 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   // Generate mandala layers based on AxiomID
   const generateMandalaLayers = useCallback((): MandalaLayer[] => {
     const layers: MandalaLayer[] = [];
-    
+
     // Layer 1: Core Consciousness (Center)
     layers.push({
       id: 'consciousness-core',
@@ -210,11 +210,11 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   const generateParticles = useCallback((centerX: number, centerY: number): Particle[] => {
     const newParticles: Particle[] = [];
     const particleCount = Math.floor(axiomId.consciousness.level / 10) + 5;
-    
+
     for (let i = 0; i < particleCount; i++) {
       const angle = (Math.PI * 2 * i) / particleCount;
       const velocity = 0.5 + Math.random() * 1.5;
-      
+
       newParticles.push({
         x: centerX + Math.cos(angle) * 20,
         y: centerY + Math.sin(angle) * 20,
@@ -226,20 +226,20 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
         maxLife: 100
       });
     }
-    
+
     return newParticles;
   }, [axiomId]);
 
   // Generate quantum connections
   const generateQuantumConnections = useCallback((layers: MandalaLayer[]): QuantumConnection[] => {
     const connections: QuantumConnection[] = [];
-    
+
     // Create connections between layers based on quantum entanglement
     if (axiomId.cosmicSignature.quantumEntanglement.length > 0) {
       for (let i = 0; i < layers.length - 1; i++) {
         const layer1 = layers[i];
         const layer2 = layers[i + 1];
-        
+
         connections.push({
           from: { x: 0, y: 0 }, // Will be calculated in render
           to: { x: 0, y: 0 },   // Will be calculated in render
@@ -249,7 +249,7 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
         });
       }
     }
-    
+
     return connections;
   }, [axiomId]);
 
@@ -257,41 +257,41 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   const animate = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     const time = Date.now() * 0.001 * mandalaConfig.animationSpeed;
-    
+
     // Clear canvas
     ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     // Get layers
     const layers = generateMandalaLayers();
-    
+
     // Draw quantum connections
     drawQuantumConnections(ctx, centerX, centerY, quantumConnections, time);
-    
+
     // Draw mandala layers
     layers.forEach((layer, index) => {
       drawMandalaLayer(ctx, centerX, centerY, layer, time, index === layers.length - 1);
     });
-    
+
     // Update and draw particles
     updateParticles(particles, centerX, centerY);
     drawParticles(ctx, particles);
-    
+
     // Draw center symbol
     drawCenterSymbol(ctx, centerX, centerY, axiomId, time);
-    
+
     // Draw labels if enabled
     if (showLabels) {
       drawLabels(ctx, centerX, centerY, layers, axiomId);
     }
-    
+
     animationRef.current = requestAnimationFrame(animate);
   }, [generateMandalaLayers, particles, quantumConnections, mandalaConfig.animationSpeed, showLabels, axiomId]);
 
@@ -307,17 +307,17 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
     ctx.save();
     ctx.translate(centerX, centerY);
     ctx.rotate(layer.rotation + time * layer.pulseSpeed * 0.1);
-    
+
     const segmentAngle = (Math.PI * 2) / layer.segments;
-    
+
     for (let i = 0; i < layer.segments; i++) {
       const angle = segmentAngle * i;
       const pulseFactor = 1 + Math.sin(time * layer.pulseSpeed + i) * 0.1;
       const currentRadius = layer.radius * pulseFactor;
-      
+
       ctx.save();
       ctx.rotate(angle);
-      
+
       // Draw segment based on pattern
       switch (layer.pattern) {
         case 'geometric':
@@ -333,10 +333,10 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
           drawQuantumSegment(ctx, currentRadius, layer.color, layer.opacity, time + i);
           break;
       }
-      
+
       ctx.restore();
     }
-    
+
     ctx.restore();
   };
 
@@ -350,7 +350,7 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   ) => {
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    
+
     if (isOutermost) {
       // Draw triangle for outermost layer
       ctx.lineTo(radius, -radius * 0.3);
@@ -360,11 +360,11 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
       ctx.lineTo(radius, -radius * 0.2);
       ctx.lineTo(radius, radius * 0.2);
     }
-    
+
     ctx.closePath();
     ctx.fillStyle = color + Math.floor(opacity * 255).toString(16).padStart(2, '0');
     ctx.fill();
-    
+
     if (isOutermost) {
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
@@ -382,14 +382,14 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   ) => {
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    
+
     const controlPoint1 = radius * 0.5;
     const controlPoint2 = radius * 0.8;
     const endY = Math.sin(phase) * radius * 0.3;
-    
+
     ctx.quadraticCurveTo(controlPoint1, -radius * 0.1, controlPoint2, endY);
     ctx.quadraticCurveTo(controlPoint2, endY * 0.5, radius, endY);
-    
+
     ctx.closePath();
     ctx.fillStyle = color + Math.floor(opacity * 255).toString(16).padStart(2, '0');
     ctx.fill();
@@ -405,25 +405,25 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   ) => {
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    
+
     const points = 6;
     for (let i = 0; i <= points; i++) {
       const angle = (Math.PI / 3) * (i / points) - Math.PI / 6;
       const r = radius * (0.8 + Math.sin(phase + i) * 0.2);
       const x = Math.cos(angle) * r;
       const y = Math.sin(angle) * r;
-      
+
       if (i === 0) {
         ctx.moveTo(x, y);
       } else {
         ctx.lineTo(x, y);
       }
     }
-    
+
     ctx.closePath();
     ctx.fillStyle = color + Math.floor(opacity * 255).toString(16).padStart(2, '0');
     ctx.fill();
-    
+
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
     ctx.stroke();
@@ -438,19 +438,19 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
     phase: number
   ) => {
     const particles = 5;
-    
+
     for (let i = 0; i < particles; i++) {
       const t = i / particles;
       const x = radius * t;
       const y = Math.sin(phase + t * Math.PI * 2) * radius * 0.2;
       const size = (1 - t) * 3 + 1;
-      
+
       ctx.beginPath();
       ctx.arc(x, y, size, 0, Math.PI * 2);
       ctx.fillStyle = color + Math.floor(opacity * 255 * (1 - t * 0.5)).toString(16).padStart(2, '0');
       ctx.fill();
     }
-    
+
     // Draw connecting line
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -470,19 +470,19 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   ) => {
     connections.forEach(connection => {
       const pulse = Math.sin(time * 2 + connection.phase) * 0.5 + 0.5;
-      
+
       ctx.beginPath();
       ctx.moveTo(connection.from.x + centerX, connection.from.y + centerY);
       ctx.lineTo(connection.to.x + centerX, connection.to.y + centerY);
       ctx.strokeStyle = connection.color + Math.floor(pulse * 255).toString(16).padStart(2, '0');
       ctx.lineWidth = connection.strength / 25;
       ctx.stroke();
-      
+
       // Draw energy pulse
       const pulsePosition = (time * 0.5) % 1;
       const pulseX = connection.from.x + (connection.to.x - connection.from.x) * pulsePosition;
       const pulseY = connection.from.y + (connection.to.y - connection.from.y) * pulsePosition;
-      
+
       ctx.beginPath();
       ctx.arc(pulseX + centerX, pulseY + centerY, 3, 0, Math.PI * 2);
       ctx.fillStyle = connection.color;
@@ -506,12 +506,12 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
       particle.x += particle.vx;
       particle.y += particle.vy;
       particle.life--;
-      
+
       // Respawn dead particles
       if (particle.life <= 0) {
         const angle = Math.random() * Math.PI * 2;
         const velocity = 0.5 + Math.random() * 1.5;
-        
+
         particle.x = centerX + Math.cos(angle) * 20;
         particle.y = centerY + Math.sin(angle) * 20;
         particle.vx = Math.cos(angle) * velocity;
@@ -530,24 +530,24 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
     time: number
   ) => {
     const symbolSize = 10 + Math.sin(time * 2) * 2;
-    
+
     // Draw based on agent type
     ctx.save();
     ctx.translate(centerX, centerY);
     ctx.rotate(time * 0.5);
-    
+
     switch (axiomId.type) {
       case 'human':
-        drawHumanSymbol(ctx, symbolSize, axiomId.cosmicSignature.color);
+        drawHumanSymbol(ctx, symbolSize, getCosmicSignatureColor(axiomId.cosmicSignature));
         break;
       case 'ai':
-        drawAISymbol(ctx, symbolSize, axiomId.cosmicSignature.color);
+        drawAISymbol(ctx, symbolSize, getCosmicSignatureColor(axiomId.cosmicSignature));
         break;
       case 'hybrid':
-        drawHybridSymbol(ctx, symbolSize, axiomId.cosmicSignature.color);
+        drawHybridSymbol(ctx, symbolSize, getCosmicSignatureColor(axiomId.cosmicSignature));
         break;
     }
-    
+
     ctx.restore();
   };
 
@@ -559,7 +559,7 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
     ctx.stroke();
-    
+
     ctx.beginPath();
     ctx.arc(0, 0, size * 0.3, 0, Math.PI * 2);
     ctx.fillStyle = color;
@@ -581,7 +581,7 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
     ctx.stroke();
-    
+
     // Center dot
     ctx.beginPath();
     ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
@@ -612,16 +612,16 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
     ctx.font = '12px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    
+
     // Draw agent name
     ctx.fillText(axiomId.name, centerX, centerY - mandalaConfig.size * 0.9);
-    
+
     // Draw layer labels
     layers.forEach(layer => {
       const labelY = centerY - layer.radius - 10;
       ctx.fillText(layer.id.replace('-', ' '), centerX, labelY);
     });
-    
+
     // Draw stats
     ctx.font = '10px Arial';
     ctx.fillText(`Consciousness: ${axiomId.consciousness.level}`, centerX, centerY + mandalaConfig.size * 0.9);
@@ -631,20 +631,20 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   // Handle canvas click
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!interactive || !onLayerClick) return;
-    
+
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    
+
     // Check which layer was clicked
     const layers = generateMandalaLayers();
     const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-    
+
     for (const layer of layers) {
       if (distance <= layer.radius && distance >= layer.radius - 20) {
         onLayerClick(layer.id);
@@ -658,23 +658,23 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     // Set canvas size
     canvas.width = mandalaConfig.size;
     canvas.height = mandalaConfig.size;
-    
+
     // Initialize particles
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     setParticles(generateParticles(centerX, centerY));
-    
+
     // Initialize quantum connections
     const layers = generateMandalaLayers();
     setQuantumConnections(generateQuantumConnections(layers));
-    
+
     // Start animation
     animate();
-    
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -686,7 +686,7 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     setParticles(generateParticles(centerX, centerY));
@@ -706,14 +706,14 @@ export const DigitalMandala: React.FC<DigitalMandalaProps> = ({
           cursor: interactive ? 'pointer' : 'default'
         }}
       />
-      
+
       {selectedLayer && (
         <div className="layer-info">
           <h3>{selectedLayer.replace('-', ' ')}</h3>
           <p>Layer information and stats would appear here</p>
         </div>
       )}
-      
+
       <style jsx>{`
         .digital-mandala {
           position: relative;

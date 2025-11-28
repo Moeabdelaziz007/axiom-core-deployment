@@ -27,28 +27,28 @@ export interface AgentMessage {
   senderId: string;
   recipientId: string | string[]; // Single recipient or broadcast
   sessionId?: string; // For session-based communications
-  
+
   // Message content
   type: MessageType;
   content: MessageContent;
   payload?: any; // Additional data payload
-  
+
   // Metadata
   timestamp: Date;
   priority: MessagePriority;
   encrypted: boolean;
   signed: boolean;
-  
+
   // Routing and delivery
   routing: MessageRouting;
   delivery: DeliveryStatus;
-  
+
   // Security
   security: SecurityMetadata;
-  
+
   // Performance tracking
   metrics: MessageMetrics;
-  
+
   // Protocol versioning
   version: string;
   compatibility: CompatibilityInfo;
@@ -57,7 +57,7 @@ export interface AgentMessage {
 /**
  * Message types with specific purposes
  */
-export type MessageType = 
+export type MessageType =
   | 'text'           // Plain text messages
   | 'file'           // File transfers
   | 'task'           // Task delegation
@@ -93,17 +93,17 @@ export interface MessageContent {
 /**
  * Content format types
  */
-export type ContentFormat = 
-  | 'text'           | 'json'           | 'xml'            | 'binary'
-  | 'base64'         | 'multipart'       | 'encrypted'       | 'signed'
-  | 'stream'         | 'blob'           | 'arraybuffer'     | 'url';
+export type ContentFormat =
+  | 'text' | 'json' | 'xml' | 'binary'
+  | 'base64' | 'multipart' | 'encrypted' | 'signed'
+  | 'stream' | 'blob' | 'arraybuffer' | 'url';
 
 /**
  * Message priority levels
  */
-export type MessagePriority = 
-  | 'low'            | 'normal'         | 'high'            | 'urgent'
-  | 'critical'       | 'emergency';
+export type MessagePriority =
+  | 'low' | 'normal' | 'high' | 'urgent'
+  | 'critical' | 'emergency';
 
 /**
  * Message routing information
@@ -119,16 +119,16 @@ export interface MessageRouting {
 /**
  * Routing protocols
  */
-export type RoutingProtocol = 
-  | 'direct'         | 'broadcast'      | 'multicast'       | 'anycast'
-  | 'peer-to-peer'   | 'relay'          | 'store-and-forward' | 'flood';
+export type RoutingProtocol =
+  | 'direct' | 'broadcast' | 'multicast' | 'anycast'
+  | 'peer-to-peer' | 'relay' | 'store-and-forward' | 'flood';
 
 /**
  * Routing strategies
  */
-export type RoutingStrategy = 
-  | 'shortest_path'  | 'least_cost'     | 'fastest_delivery' | 'most_reliable'
-  | 'load_balanced'   | 'priority_based'  | 'security_first'  | 'adaptive';
+export type RoutingStrategy =
+  | 'shortest_path' | 'least_cost' | 'fastest_delivery' | 'most_reliable'
+  | 'load_balanced' | 'priority_based' | 'security_first' | 'adaptive';
 
 /**
  * Fallback routing options
@@ -144,8 +144,8 @@ export interface FallbackRouting {
 /**
  * Backoff strategies for retries
  */
-export type BackoffStrategy = 
-  | 'linear'         | 'exponential'    | 'fixed'           | 'jitter'
+export type BackoffStrategy =
+  | 'linear' | 'exponential' | 'fixed' | 'jitter'
   | 'adaptive';
 
 /**
@@ -175,9 +175,9 @@ export interface DeliveryStatus {
 /**
  * Delivery states
  */
-export type DeliveryState = 
-  | 'pending'        | 'queued'         | 'in_transit'      | 'delivered'
-  | 'read'           | 'acknowledged'    | 'failed'          | 'expired'
+export type DeliveryState =
+  | 'pending' | 'queued' | 'in_transit' | 'delivered'
+  | 'read' | 'acknowledged' | 'failed' | 'expired'
   | 'cancelled';
 
 /**
@@ -194,17 +194,17 @@ export interface DeliveryError {
 /**
  * Error categories
  */
-export type ErrorCategory = 
-  | 'network'        | 'routing'        | 'security'        | 'protocol'
-  | 'format'         | 'timeout'         | 'resource'        | 'permission'
-  | 'authentication'  | 'authorization'   | 'rate_limit'      | 'quota'
+export type ErrorCategory =
+  | 'network' | 'routing' | 'security' | 'protocol'
+  | 'format' | 'timeout' | 'resource' | 'permission'
+  | 'authentication' | 'authorization' | 'rate_limit' | 'quota'
   | 'system';
 
 /**
  * Error severity levels
  */
-export type ErrorSeverity = 
-  | 'low'            | 'medium'          | 'high'            | 'critical';
+export type ErrorSeverity =
+  | 'low' | 'medium' | 'high' | 'critical';
 
 /**
  * Delivery trace information
@@ -244,22 +244,22 @@ export interface EncryptionInfo {
 /**
  * Encryption algorithms
  */
-export type EncryptionAlgorithm = 
-  | 'AES-256-GCM'    | 'ChaCha20-Poly1305' | 'RSA-OAEP-256'   | 'ECDH-ES'
-  | 'Quantum-Resistant' | 'Hybrid'           | 'End-to-End'      | 'Transport';
+export type EncryptionAlgorithm =
+  | 'AES-256-GCM' | 'ChaCha20-Poly1305' | 'RSA-OAEP-256' | 'ECDH-ES'
+  | 'Quantum-Resistant' | 'Hybrid' | 'End-to-End' | 'Transport';
 
 /**
  * Key exchange methods
  */
-export type KeyExchangeMethod = 
-  | 'RSA'            | 'Diffie-Hellman'   | 'ECDH'            | 'Quantum-Key-Distribution'
-  | 'Pre-Shared'      | 'Certificate-Based' | 'Blockchain-Based'  | 'KMS-Managed';
+export type KeyExchangeMethod =
+  | 'RSA' | 'Diffie-Hellman' | 'ECDH' | 'Quantum-Key-Distribution'
+  | 'Pre-Shared' | 'Certificate-Based' | 'Blockchain-Based' | 'KMS-Managed';
 
 /**
  * Encryption strength levels
  */
-export type EncryptionStrength = 
-  | 'standard'        | 'high'            | 'military'        | 'quantum-safe'
+export type EncryptionStrength =
+  | 'standard' | 'high' | 'military' | 'quantum-safe'
   | 'custom';
 
 /**
@@ -277,9 +277,9 @@ export interface SignatureInfo {
 /**
  * Signature algorithms
  */
-export type SignatureAlgorithm = 
-  | 'ECDSA-P256'     | 'ECDSA-P384'     | 'RSA-PSS-2048'    | 'RSA-PSS-4096'
-  | 'Ed25519'         | 'Quantum-Safe'    | 'Multi-Signature'  | 'Threshold';
+export type SignatureAlgorithm =
+  | 'ECDSA-P256' | 'ECDSA-P384' | 'RSA-PSS-2048' | 'RSA-PSS-4096'
+  | 'Ed25519' | 'Quantum-Safe' | 'Multi-Signature' | 'Threshold';
 
 /**
  * Authentication information
@@ -295,9 +295,9 @@ export interface AuthenticationInfo {
 /**
  * Authentication methods
  */
-export type AuthenticationMethod = 
-  | 'token'           | 'certificate'     | 'biometric'       | 'multi-factor'
-  | 'zero-knowledge'   | 'blockchain'       | 'decentralized'   | 'federated';
+export type AuthenticationMethod =
+  | 'token' | 'certificate' | 'biometric' | 'multi-factor'
+  | 'zero-knowledge' | 'blockchain' | 'decentralized' | 'federated';
 
 /**
  * Credential information
@@ -315,16 +315,16 @@ export interface CredentialInfo {
 /**
  * Credential types
  */
-export type CredentialType = 
-  | 'JWT'             | 'X.509'           | 'DID'              | 'Verifiable-Credential'
-  | 'API-Key'          | 'OAuth-Token'       | 'Session-Token'    | 'Hardware-Token';
+export type CredentialType =
+  | 'JWT' | 'X.509' | 'DID' | 'Verifiable-Credential'
+  | 'API-Key' | 'OAuth-Token' | 'Session-Token' | 'Hardware-Token';
 
 /**
  * Trust levels
  */
-export type TrustLevel = 
-  | 'untrusted'       | 'low'              | 'medium'           | 'high'
-  | 'critical'         | 'root';
+export type TrustLevel =
+  | 'untrusted' | 'low' | 'medium' | 'high'
+  | 'critical' | 'root';
 
 /**
  * Multi-factor authentication info
@@ -339,9 +339,9 @@ export interface MFAInfo {
 /**
  * MFA methods
  */
-export type MFAMethod = 
-  | 'TOTP'            | 'SMS'              | 'Email'            | 'Hardware-Key'
-  | 'Biometric'        | 'Push-Notification' | 'Backup-Codes';
+export type MFAMethod =
+  | 'TOTP' | 'SMS' | 'Email' | 'Hardware-Key'
+  | 'Biometric' | 'Push-Notification' | 'Backup-Codes';
 
 /**
  * Integrity verification
@@ -356,9 +356,9 @@ export interface IntegrityInfo {
 /**
  * Integrity algorithms
  */
-export type IntegrityAlgorithm = 
-  | 'SHA-256'         | 'SHA-512'         | 'BLAKE3'           | 'CRC32'
-  | 'HMAC-SHA256'      | 'Quantum-Resistant' | 'Merkle-Tree';
+export type IntegrityAlgorithm =
+  | 'SHA-256' | 'SHA-512' | 'BLAKE3' | 'CRC32'
+  | 'HMAC-SHA256' | 'Quantum-Resistant' | 'Merkle-Tree';
 
 /**
  * Privacy information
@@ -373,8 +373,8 @@ export interface PrivacyInfo {
 /**
  * Privacy levels
  */
-export type PrivacyLevel = 
-  | 'public'           | 'internal'         | 'confidential'     | 'secret'
+export type PrivacyLevel =
+  | 'public' | 'internal' | 'confidential' | 'secret'
   | 'top-secret';
 
 /**
@@ -390,9 +390,9 @@ export interface AnonymizationInfo {
 /**
  * Anonymization methods
  */
-export type AnonymizationMethod = 
-  | 'hashing'          | 'tokenization'     | 'masking'          | 'generalization'
-  | 'differential-privacy' | 'k-anonymity'    | 'l-diversity';
+export type AnonymizationMethod =
+  | 'hashing' | 'tokenization' | 'masking' | 'generalization'
+  | 'differential-privacy' | 'k-anonymity' | 'l-diversity';
 
 /**
  * Retention policy
@@ -417,9 +417,9 @@ export interface ComplianceInfo {
 /**
  * Compliance frameworks
  */
-export type ComplianceFramework = 
-  | 'GDPR'            | 'HIPAA'            | 'SOC2'             | 'PCI-DSS'
-  | 'ISO-27001'        | 'NIST'             | 'CCPA'             | 'POPIA';
+export type ComplianceFramework =
+  | 'GDPR' | 'HIPAA' | 'SOC2' | 'PCI-DSS'
+  | 'ISO-27001' | 'NIST' | 'CCPA' | 'POPIA';
 
 /**
  * Message metrics for performance tracking
@@ -451,9 +451,9 @@ export interface CompressionInfo {
 /**
  * Compression algorithms
  */
-export type CompressionAlgorithm = 
-  | 'gzip'            | 'deflate'          | 'brotli'           | 'lz4'
-  | 'zstd'             | 'custom';
+export type CompressionAlgorithm =
+  | 'gzip' | 'deflate' | 'brotli' | 'lz4'
+  | 'zstd' | 'custom';
 
 /**
  * Localization information
@@ -503,17 +503,17 @@ export interface RealtimeSession {
 /**
  * Session types
  */
-export type SessionType = 
-  | 'chat'            | 'voice-call'       | 'video-call'       | 'conference'
-  | 'webinar'          | 'broadcast'        | 'collaboration'    | 'screen-share'
+export type SessionType =
+  | 'chat' | 'voice-call' | 'video-call' | 'conference'
+  | 'webinar' | 'broadcast' | 'collaboration' | 'screen-share'
   | 'file-transfer';
 
 /**
  * Session states
  */
-export type SessionState = 
-  | 'initiating'       | 'ringing'         | 'connecting'       | 'connected'
-  | 'active'           | 'on-hold'         | 'reconnecting'     | 'ended'
+export type SessionState =
+  | 'initiating' | 'ringing' | 'connecting' | 'connected'
+  | 'active' | 'on-hold' | 'reconnecting' | 'ended'
   | 'failed';
 
 /**
@@ -534,9 +534,9 @@ export interface Participant {
 /**
  * Participant roles
  */
-export type ParticipantRole = 
-  | 'host'            | 'moderator'        | 'presenter'        | 'participant'
-  | 'observer'         | 'guest';
+export type ParticipantRole =
+  | 'host' | 'moderator' | 'presenter' | 'participant'
+  | 'observer' | 'guest';
 
 /**
  * Participant permissions
@@ -556,9 +556,9 @@ export interface ParticipantPermissions {
 /**
  * Participant status
  */
-export type ParticipantStatus = 
-  | 'online'           | 'offline'          | 'away'             | 'busy'
-  | 'in-call'          | 'do-not-disturb';
+export type ParticipantStatus =
+  | 'online' | 'offline' | 'away' | 'busy'
+  | 'in-call' | 'do-not-disturb' | 'connecting';
 
 /**
  * Device information
@@ -575,9 +575,9 @@ export interface DeviceInfo {
 /**
  * Device types
  */
-export type DeviceType = 
-  | 'desktop'          | 'mobile'           | 'tablet'           | 'wearable'
-  | 'iot'              | 'server'           | 'edge-device';
+export type DeviceType =
+  | 'desktop' | 'mobile' | 'tablet' | 'wearable'
+  | 'iot' | 'server' | 'edge-device';
 
 /**
  * Device capabilities
@@ -651,9 +651,9 @@ export interface NetworkBandwidth {
 /**
  * Connection types
  */
-export type ConnectionType = 
-  | 'wifi'             | 'ethernet'         | 'cellular'         | 'satellite'
-  | 'fiber'            | 'dsl'              | 'dial-up'          | 'bluetooth';
+export type ConnectionType =
+  | 'wifi' | 'ethernet' | 'cellular' | 'satellite'
+  | 'fiber' | 'dsl' | 'dial-up' | 'bluetooth';
 
 /**
  * Storage capabilities
@@ -668,8 +668,8 @@ export interface StorageCapabilities {
 /**
  * Storage types
  */
-export type StorageType = 
-  | 'local'            | 'cloud'            | 'network'          | 'removable'
+export type StorageType =
+  | 'local' | 'cloud' | 'network' | 'removable'
   | 'encrypted';
 
 /**
@@ -704,8 +704,8 @@ export interface NetworkInfo {
 /**
  * Network quality levels
  */
-export type NetworkQuality = 
-  | 'excellent'        | 'good'             | 'fair'             | 'poor'
+export type NetworkQuality =
+  | 'excellent' | 'good' | 'fair' | 'poor'
   | 'unusable';
 
 /**
@@ -732,9 +732,9 @@ export interface AudioState {
 /**
  * Audio quality levels
  */
-export type AudioQuality = 
-  | 'low'              | 'medium'           | 'high'             | 'ultra'
-  | 'hd'               | 'studio';
+export type AudioQuality =
+  | 'low' | 'medium' | 'high' | 'ultra'
+  | 'hd' | 'studio';
 
 /**
  * Video state
@@ -752,10 +752,10 @@ export interface VideoState {
 /**
  * Video quality levels
  */
-export type VideoQualityLevel = 
-  | '144p'             | '240p'             | '360p'             | '480p'
-  | '720p'             | '1080p'            | '1440p'            | '4K'
-  | '8K'               | 'auto';
+export type VideoQualityLevel =
+  | '144p' | '240p' | '360p' | '480p'
+  | '720p' | '1080p' | '1440p' | '4K'
+  | '8K' | 'auto';
 
 /**
  * Screen state
@@ -772,9 +772,9 @@ export interface ScreenState {
 /**
  * Screen sources
  */
-export type ScreenSource = 
-  | 'entire-screen'    | 'application'      | 'browser-tab'      | 'window'
-  | 'region'           | 'monitor';
+export type ScreenSource =
+  | 'entire-screen' | 'application' | 'browser-tab' | 'window'
+  | 'region' | 'monitor';
 
 /**
  * Session configuration
@@ -803,16 +803,16 @@ export interface RecordingConfig {
 /**
  * Recording formats
  */
-export type RecordingFormat = 
-  | 'mp4'              | 'webm'             | 'mkv'              | 'avi'
-  | 'mov'              | 'mp3'              | 'wav'              | 'flac'
+export type RecordingFormat =
+  | 'mp4' | 'webm' | 'mkv' | 'avi'
+  | 'mov' | 'mp3' | 'wav' | 'flac'
   | 'm4a';
 
 /**
  * Recording quality levels
  */
-export type RecordingQuality = 
-  | 'low'              | 'medium'           | 'high'             | 'ultra'
+export type RecordingQuality =
+  | 'low' | 'medium' | 'high' | 'ultra'
   | 'lossless';
 
 /**
@@ -829,8 +829,8 @@ export interface RecordingStorage {
 /**
  * Storage locations
  */
-export type StorageLocation = 
-  | 'local'            | 'cloud'            | 'network'          | 'hybrid'
+export type StorageLocation =
+  | 'local' | 'cloud' | 'network' | 'hybrid'
   | 'distributed';
 
 /**
@@ -860,22 +860,22 @@ export interface ModerationRule {
 /**
  * Moderation types
  */
-export type ModerationType = 
-  | 'content-filter'   | 'language'         | 'behavior'         | 'spam'
-  | 'harassment'       | 'violence'         | 'copyright'        | 'privacy';
+export type ModerationType =
+  | 'content-filter' | 'language' | 'behavior' | 'spam'
+  | 'harassment' | 'violence' | 'copyright' | 'privacy';
 
 /**
  * Moderation actions
  */
-export type ModerationAction = 
-  | 'warn'             | 'mute'             | 'remove'           | 'ban'
-  | 'flag'             | 'blur'             | 'delay'            | 'escalate';
+export type ModerationAction =
+  | 'warn' | 'mute' | 'remove' | 'ban'
+  | 'flag' | 'blur' | 'delay' | 'escalate';
 
 /**
  * Moderation severity levels
  */
-export type ModerationSeverity = 
-  | 'low'              | 'medium'           | 'high'             | 'critical';
+export type ModerationSeverity =
+  | 'low' | 'medium' | 'high' | 'critical';
 
 /**
  * Quality configuration
@@ -989,8 +989,8 @@ export interface RecurringConfig {
 /**
  * Recurring patterns
  */
-export type RecurringPattern = 
-  | 'daily'            | 'weekly'           | 'monthly'          | 'yearly'
+export type RecurringPattern =
+  | 'daily' | 'weekly' | 'monthly' | 'yearly'
   | 'custom';
 
 /**
@@ -1006,8 +1006,8 @@ export interface ReminderConfig {
 /**
  * Reminder methods
  */
-export type ReminderMethod = 
-  | 'email'            | 'sms'              | 'push'             | 'in-app'
+export type ReminderMethod =
+  | 'email' | 'sms' | 'push' | 'in-app'
   | 'calendar';
 
 /**
@@ -1045,9 +1045,9 @@ export interface AudioDevice {
 /**
  * Audio device types
  */
-export type AudioDeviceType = 
-  | 'microphone'       | 'speaker'          | 'headset'          | 'usb'
-  | 'bluetooth'        | 'virtual';
+export type AudioDeviceType =
+  | 'microphone' | 'speaker' | 'headset' | 'usb'
+  | 'bluetooth' | 'virtual';
 
 /**
  * Audio device capabilities
@@ -1098,9 +1098,9 @@ export interface VideoDevice {
 /**
  * Video device types
  */
-export type VideoDeviceType = 
-  | 'webcam'           | 'camera'           | 'ip-camera'        | 'virtual'
-  | 'capture-card'      | 'usb';
+export type VideoDeviceType =
+  | 'webcam' | 'camera' | 'ip-camera' | 'virtual'
+  | 'capture-card' | 'usb';
 
 /**
  * Video device capabilities
@@ -1189,16 +1189,16 @@ export interface MediaStreamingConfig {
 /**
  * Streaming protocols
  */
-export type StreamingProtocol = 
-  | 'WebRTC'           | 'RTMP'             | 'HLS'              | 'DASH'
-  | 'SRT'              | 'WebSocket'        | 'UDP'              | 'TCP';
+export type StreamingProtocol =
+  | 'WebRTC' | 'RTMP' | 'HLS' | 'DASH'
+  | 'SRT' | 'WebSocket' | 'UDP' | 'TCP';
 
 /**
  * Streaming quality levels
  */
-export type StreamingQuality = 
-  | 'auto'             | 'low'              | 'medium'           | 'high'
-  | 'ultra'            | 'lossless';
+export type StreamingQuality =
+  | 'auto' | 'low' | 'medium' | 'high'
+  | 'ultra' | 'lossless';
 
 /**
  * Streaming latency configuration
@@ -1289,17 +1289,17 @@ export interface Condition {
 /**
  * Condition types
  */
-export type ConditionType = 
-  | 'time'             | 'location'         | 'device'           | 'role'
-  | 'status'           | 'attribute'        | 'custom';
+export type ConditionType =
+  | 'time' | 'location' | 'device' | 'role'
+  | 'status' | 'attribute' | 'custom';
 
 /**
  * Condition operators
  */
-export type ConditionOperator = 
-  | 'equals'           | 'not-equals'       | 'greater-than'     | 'less-than'
-  | 'contains'         | 'not-contains'     | 'in'               | 'not-in'
-  | 'matches'          | 'before'           | 'after'            | 'between';
+export type ConditionOperator =
+  | 'equals' | 'not-equals' | 'greater-than' | 'less-than'
+  | 'contains' | 'not-contains' | 'in' | 'not-in'
+  | 'matches' | 'before' | 'after' | 'between';
 
 /**
  * Policy definition
@@ -1326,9 +1326,9 @@ export interface Rule {
 /**
  * Rule actions
  */
-export type RuleAction = 
-  | 'allow'            | 'deny'             | 'log'              | 'alert'
-  | 'escalate'         | 'transform'        | 'redirect';
+export type RuleAction =
+  | 'allow' | 'deny' | 'log' | 'alert'
+  | 'escalate' | 'transform' | 'redirect';
 
 /**
  * Access control configuration
@@ -1343,15 +1343,15 @@ export interface AccessControlConfig {
 /**
  * Access control models
  */
-export type AccessControlModel = 
-  | 'RBAC'             | 'ABAC'             | 'PBAC'             | 'Hybrid'
+export type AccessControlModel =
+  | 'RBAC' | 'ABAC' | 'PBAC' | 'Hybrid'
   | 'Custom';
 
 /**
  * Enforcement modes
  */
-export type EnforcementMode = 
-  | 'permissive'        | 'strict'           | 'monitoring'       | 'learning';
+export type EnforcementMode =
+  | 'permissive' | 'strict' | 'monitoring' | 'learning';
 
 /**
  * Session audit configuration
@@ -1367,16 +1367,16 @@ export interface SessionAudit {
 /**
  * Audit levels
  */
-export type AuditLevel = 
-  | 'minimal'           | 'standard'         | 'comprehensive'    | 'verbose';
+export type AuditLevel =
+  | 'minimal' | 'standard' | 'comprehensive' | 'verbose';
 
 /**
  * Audit events
  */
-export type AuditEvent = 
-  | 'join'             | 'leave'            | 'message'          | 'file-share'
-  | 'screen-share'      | 'recording'        | 'permission-change' | 'error'
-  | 'security-violation' | 'performance'      | 'custom';
+export type AuditEvent =
+  | 'join' | 'leave' | 'message' | 'file-share'
+  | 'screen-share' | 'recording' | 'permission-change' | 'error'
+  | 'security-violation' | 'performance' | 'custom';
 
 /**
  * Quality metrics
@@ -1403,15 +1403,15 @@ export interface QualityScore {
 /**
  * Quality categories
  */
-export type QualityCategory = 
-  | 'excellent'         | 'good'             | 'fair'             | 'poor'
+export type QualityCategory =
+  | 'excellent' | 'good' | 'fair' | 'poor'
   | 'unacceptable';
 
 /**
  * Quality trends
  */
-export type QualityTrend = 
-  | 'improving'        | 'stable'           | 'degrading'        | 'fluctuating';
+export type QualityTrend =
+  | 'improving' | 'stable' | 'degrading' | 'fluctuating';
 
 /**
  * Quality factors
@@ -1500,45 +1500,45 @@ export interface CommunicationProtocol {
 /**
  * Protocol types
  */
-export type ProtocolType = 
-  | 'messaging'         | 'streaming'        | 'file-transfer'     | 'broadcast'
-  | 'multicast'        | 'discovery'        | 'signaling'        | 'control';
+export type ProtocolType =
+  | 'messaging' | 'streaming' | 'file-transfer' | 'broadcast'
+  | 'multicast' | 'discovery' | 'signaling' | 'control';
 
 /**
  * Transport protocols
  */
-export type TransportProtocol = 
-  | 'TCP'              | 'UDP'              | 'WebSocket'        | 'WebRTC'
-  | 'HTTP'             | 'HTTPS'            | 'gRPC'             | 'MQTT'
-  | 'AMQP'             | 'STOMP'            | 'SSE'              | 'Custom';
+export type TransportProtocol =
+  | 'TCP' | 'UDP' | 'WebSocket' | 'WebRTC'
+  | 'HTTP' | 'HTTPS' | 'gRPC' | 'MQTT'
+  | 'AMQP' | 'STOMP' | 'SSE' | 'Custom';
 
 /**
  * Message formats
  */
-export type MessageFormat = 
-  | 'JSON'             | 'XML'              | 'Protocol-Buffers' | 'MessagePack'
-  | 'CBOR'             | 'Avro'             | 'FlatBuffers'      | 'Custom';
+export type MessageFormat =
+  | 'JSON' | 'XML' | 'Protocol-Buffers' | 'MessagePack'
+  | 'CBOR' | 'Avro' | 'FlatBuffers' | 'Custom';
 
 /**
  * Security protocols
  */
-export type SecurityProtocol = 
-  | 'TLS-1.3'          | 'DTLS-1.3'         | 'QUIC'             | 'Custom-Encryption'
-  | 'End-to-End'       | 'Hybrid'           | 'Quantum-Safe';
+export type SecurityProtocol =
+  | 'TLS-1.3' | 'DTLS-1.3' | 'QUIC' | 'Custom-Encryption'
+  | 'End-to-End' | 'Hybrid' | 'Quantum-Safe';
 
 /**
  * Reliability protocols
  */
-export type ReliabilityProtocol = 
-  | 'ACK-NACK'          | 'Selective-Repeat'  | 'Go-Back-N'        | 'TCP-Style'
+export type ReliabilityProtocol =
+  | 'ACK-NACK' | 'Selective-Repeat' | 'Go-Back-N' | 'TCP-Style'
   | 'Custom-Retry';
 
 /**
  * Performance protocols
  */
-export type PerformanceProtocol = 
-  | 'Adaptive-QoS'      | 'Traffic-Shaping'   | 'Load-Balancing'   | 'Caching'
-  | 'Compression'        | 'Optimization';
+export type PerformanceProtocol =
+  | 'Adaptive-QoS' | 'Traffic-Shaping' | 'Load-Balancing' | 'Caching'
+  | 'Compression' | 'Optimization';
 
 /**
  * Protocol compatibility matrix
@@ -1587,8 +1587,8 @@ export interface MigrationStep {
 /**
  * Migration impact
  */
-export type MigrationImpact = 
-  | 'minimal'           | 'moderate'         | 'significant'       | 'critical';
+export type MigrationImpact =
+  | 'minimal' | 'moderate' | 'significant' | 'critical';
 
 // ============================================================================
 // ERROR HANDLING AND RETRY MECHANISMS
@@ -1641,8 +1641,8 @@ export interface FallbackStrategy {
 /**
  * Fallback types
  */
-export type FallbackType = 
-  | 'alternative-route'  | 'different-protocol' | 'cached-response'  | 'degraded-service'
+export type FallbackType =
+  | 'alternative-route' | 'different-protocol' | 'cached-response' | 'degraded-service'
   | 'manual-intervention' | 'emergency-mode';
 
 /**
@@ -1679,9 +1679,9 @@ export interface EscalationRule {
 /**
  * Escalation actions
  */
-export type EscalationAction = 
-  | 'notify-admin'      | 'create-ticket'     | 'escalate-support' | 'auto-recovery'
-  | 'failover'         | 'circuit-breaker';
+export type EscalationAction =
+  | 'notify-admin' | 'create-ticket' | 'escalate-support' | 'auto-recovery'
+  | 'failover' | 'circuit-breaker';
 
 /**
  * Escalation channels
@@ -1696,9 +1696,9 @@ export interface EscalationChannel {
 /**
  * Escalation channel types
  */
-export type EscalationChannelType = 
-  | 'email'            | 'sms'              | 'slack'            | 'pagerduty'
-  | 'webhook'          | 'api'              | 'custom';
+export type EscalationChannelType =
+  | 'email' | 'sms' | 'slack' | 'pagerduty'
+  | 'webhook' | 'api' | 'custom';
 
 /**
  * Escalation timeout
@@ -1734,15 +1734,15 @@ export interface ErrorDestination {
 /**
  * Error destination types
  */
-export type ErrorDestinationType = 
-  | 'logging-service'   | 'monitoring'       | 'alerting'         | 'database'
-  | 'file'             | 'webhook'          | 'email';
+export type ErrorDestinationType =
+  | 'logging-service' | 'monitoring' | 'alerting' | 'database'
+  | 'file' | 'webhook' | 'email';
 
 /**
  * Error format
  */
-export type ErrorFormat = 
-  | 'JSON'             | 'XML'              | 'CSV'              | 'Syslog'
+export type ErrorFormat =
+  | 'JSON' | 'XML' | 'CSV' | 'Syslog'
   | 'Custom';
 
 /**
@@ -1758,8 +1758,8 @@ export interface ErrorFilter {
 /**
  * Filter actions
  */
-export type FilterAction = 
-  | 'include'           | 'exclude'           | 'transform'        | 'aggregate';
+export type FilterAction =
+  | 'include' | 'exclude' | 'transform' | 'aggregate';
 
 /**
  * Error aggregation
@@ -1803,9 +1803,9 @@ export interface RateLimitRule {
 /**
  * Rate limit scopes
  */
-export type RateLimitScope = 
-  | 'global'           | 'per-user'         | 'per-agent'        | 'per-session'
-  | 'per-ip'           | 'per-organization' | 'custom';
+export type RateLimitScope =
+  | 'global' | 'per-user' | 'per-agent' | 'per-session'
+  | 'per-ip' | 'per-organization' | 'custom';
 
 /**
  * Rate limit definition
@@ -1820,9 +1820,9 @@ export interface RateLimit {
 /**
  * Rate limit metrics
  */
-export type RateLimitMetric = 
-  | 'messages'         | 'bytes'            | 'requests'        | 'connections'
-  | 'operations'       | 'cpu-time'         | 'memory'           | 'custom';
+export type RateLimitMetric =
+  | 'messages' | 'bytes' | 'requests' | 'connections'
+  | 'operations' | 'cpu-time' | 'memory' | 'custom';
 
 /**
  * Rate limit actions
@@ -1836,16 +1836,16 @@ export interface RateLimitAction {
 /**
  * Rate limit action types
  */
-export type RateLimitActionType = 
-  | 'reject'           | 'delay'            | 'throttle'         | 'queue'
-  | 'degrade'          | 'notify';
+export type RateLimitActionType =
+  | 'reject' | 'delay' | 'throttle' | 'queue'
+  | 'degrade' | 'notify';
 
 /**
  * Rate limiting algorithms
  */
-export type RateLimitAlgorithm = 
-  | 'token-bucket'      | 'sliding-window'   | 'fixed-window'     | 'leaky-bucket'
-  | 'adaptive'         | 'custom';
+export type RateLimitAlgorithm =
+  | 'token-bucket' | 'sliding-window' | 'fixed-window' | 'leaky-bucket'
+  | 'adaptive' | 'custom';
 
 /**
  * Rate limit storage
@@ -1860,8 +1860,8 @@ export interface RateLimitStorage {
 /**
  * Rate limit storage types
  */
-export type RateLimitStorageType = 
-  | 'memory'           | 'redis'            | 'database'         | 'distributed-cache'
+export type RateLimitStorageType =
+  | 'memory' | 'redis' | 'database' | 'distributed-cache'
   | 'custom';
 
 /**
@@ -1890,9 +1890,9 @@ export interface SpamFilter {
 /**
  * Spam filter types
  */
-export type SpamFilterType = 
-  | 'keyword'          | 'pattern'          | 'frequency'        | 'reputation'
-  | 'behavioral'       | 'machine-learning'  | 'external-service' | 'custom';
+export type SpamFilterType =
+  | 'keyword' | 'pattern' | 'frequency' | 'reputation'
+  | 'behavioral' | 'machine-learning' | 'external-service' | 'custom';
 
 /**
  * Spam scoring configuration
@@ -1907,8 +1907,8 @@ export interface SpamScoringConfig {
 /**
  * Scoring aggregation methods
  */
-export type ScoringAggregation = 
-  | 'sum'              | 'average'          | 'weighted-average'  | 'max'
+export type ScoringAggregation =
+  | 'sum' | 'average' | 'weighted-average' | 'max'
   | 'custom';
 
 /**
@@ -1923,9 +1923,9 @@ export interface SpamAction {
 /**
  * Spam action types
  */
-export type SpamActionType = 
-  | 'block'            | 'quarantine'       | 'flag'             | 'delay'
-  | 'require-review'    | 'rate-limit'       | 'notify';
+export type SpamActionType =
+  | 'block' | 'quarantine' | 'flag' | 'delay'
+  | 'require-review' | 'rate-limit' | 'notify';
 
 /**
  * Spam learning configuration
@@ -1940,9 +1940,9 @@ export interface SpamLearningConfig {
 /**
  * Learning algorithms
  */
-export type LearningAlgorithm = 
-  | 'naive-bayes'     | 'svm'              | 'neural-network'   | 'random-forest'
-  | 'ensemble'         | 'deep-learning'    | 'custom';
+export type LearningAlgorithm =
+  | 'naive-bayes' | 'svm' | 'neural-network' | 'random-forest'
+  | 'ensemble' | 'deep-learning' | 'custom';
 
 /**
  * Feedback configuration
@@ -1957,8 +1957,8 @@ export interface FeedbackConfig {
 /**
  * Feedback sources
  */
-export type FeedbackSource = 
-  | 'user-reports'     | 'admin-actions'    | 'automatic'        | 'external'
+export type FeedbackSource =
+  | 'user-reports' | 'admin-actions' | 'automatic' | 'external'
   | 'hybrid';
 
 /**
@@ -1974,15 +1974,15 @@ export interface ModelUpdateConfig {
 /**
  * Model update frequencies
  */
-export type ModelUpdateFrequency = 
-  | 'real-time'        | 'hourly'          | 'daily'            | 'weekly'
-  | 'monthly'          | 'custom';
+export type ModelUpdateFrequency =
+  | 'real-time' | 'hourly' | 'daily' | 'weekly'
+  | 'monthly' | 'custom';
 
 /**
  * Model deployment strategies
  */
-export type ModelDeploymentStrategy = 
-  | 'immediate'        | 'canary'          | 'blue-green'       | 'gradual'
+export type ModelDeploymentStrategy =
+  | 'immediate' | 'canary' | 'blue-green' | 'gradual'
   | 'custom';
 
 // ============================================================================

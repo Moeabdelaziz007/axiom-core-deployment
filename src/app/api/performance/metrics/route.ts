@@ -16,11 +16,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { 
-  AgentPerformanceMetrics, 
+import {
+  AgentPerformanceMetrics,
   PerformanceAlert,
   TimeRange,
-  DEFAULT_PERFORMANCE_THRESHOLDS 
+  DEFAULT_PERFORMANCE_THRESHOLDS
 } from '@/infra/core/PerformanceMetricsTypes';
 
 // Validation schemas
@@ -61,44 +61,44 @@ const MetricsQuerySchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validatedData = MetricsSubmissionSchema.parse(body);
-    
+
     // Create metrics object
     const metrics: AgentPerformanceMetrics = {
       ...validatedData,
       timestamp: new Date()
     };
-    
+
     // Store in Durable Object
     const metricsDO = getMetricsDurableObject();
     await metricsDO.storeMetrics(metrics);
-    
+
     // Check for alerts
     await checkPerformanceAlerts(metrics);
-    
+
     // Broadcast real-time updates
     await broadcastMetricsUpdate(metrics);
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       message: 'Metrics recorded successfully',
-      timestamp: metrics.timestamp 
+      timestamp: metrics.timestamp
     });
-    
+
   } catch (error) {
     console.error('Error recording metrics:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Validation failed', 
-        details: error.errors 
+      return NextResponse.json({
+        error: 'Validation failed',
+        details: error.issues
       }, { status: 400 });
     }
-    
-    return NextResponse.json({ 
-      error: 'Internal server error' 
+
+    return NextResponse.json({
+      error: 'Internal server error'
     }, { status: 500 });
   }
 }
@@ -110,20 +110,20 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const query = Object.fromEntries(searchParams.entries());
-    
+
     // Validate query parameters
     const validatedQuery = MetricsQuerySchema.parse(query);
-    
+
     // Parse metrics list if provided
-    const metricsFilter = validatedQuery.metrics 
+    const metricsFilter = validatedQuery.metrics
       ? validatedQuery.metrics.split(',').map(m => m.trim())
       : undefined;
-    
+
     // Convert time range to dates
-    const timeRange = validatedQuery.timeRange 
+    const timeRange = validatedQuery.timeRange
       ? convertTimeRange(validatedQuery.timeRange)
       : undefined;
-    
+
     // Get metrics from Durable Object
     const metricsDO = getMetricsDurableObject();
     const result = await metricsDO.getMetrics({
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
       limit: validatedQuery.limit || 1000,
       offset: validatedQuery.offset || 0
     });
-    
+
     return NextResponse.json({
       success: true,
       data: result.metrics,
@@ -146,19 +146,19 @@ export async function GET(request: NextRequest) {
         aggregation: validatedQuery.aggregation
       }
     });
-    
+
   } catch (error) {
     console.error('Error retrieving metrics:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ 
-        error: 'Validation failed', 
-        details: error.errors 
+      return NextResponse.json({
+        error: 'Validation failed',
+        details: error.issues
       }, { status: 400 });
     }
-    
-    return NextResponse.json({ 
-      error: 'Internal server error' 
+
+    return NextResponse.json({
+      error: 'Internal server error'
     }, { status: 500 });
   }
 }
@@ -170,26 +170,26 @@ export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const agentId = searchParams.get('agentId');
-    
+
     if (!agentId) {
-      return NextResponse.json({ 
-        error: 'Agent ID is required' 
+      return NextResponse.json({
+        error: 'Agent ID is required'
       }, { status: 400 });
     }
-    
+
     // Clear metrics from Durable Object
     const metricsDO = getMetricsDurableObject();
     await metricsDO.clearAgentMetrics(agentId);
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: `Metrics cleared for agent ${agentId}` 
+
+    return NextResponse.json({
+      success: true,
+      message: `Metrics cleared for agent ${agentId}`
     });
-    
+
   } catch (error) {
     console.error('Error clearing metrics:', error);
-    return NextResponse.json({ 
-      error: 'Internal server error' 
+    return NextResponse.json({
+      error: 'Internal server error'
     }, { status: 500 });
   }
 }
@@ -213,7 +213,7 @@ function getMetricsDurableObject() {
 function convertTimeRange(range: string): { start: Date; end: Date } {
   const now = new Date();
   let start: Date;
-  
+
   switch (range) {
     case '1h':
       start = new Date(now.getTime() - 60 * 60 * 1000);
@@ -236,7 +236,7 @@ function convertTimeRange(range: string): { start: Date; end: Date } {
     default:
       start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   }
-  
+
   return { start, end: now };
 }
 
@@ -245,7 +245,7 @@ function convertTimeRange(range: string): { start: Date; end: Date } {
  */
 async function checkPerformanceAlerts(metrics: AgentPerformanceMetrics): Promise<void> {
   const alerts: PerformanceAlert[] = [];
-  
+
   // Check CPU threshold
   if (metrics.cpu >= DEFAULT_PERFORMANCE_THRESHOLDS.cpu.critical) {
     alerts.push({
@@ -274,7 +274,7 @@ async function checkPerformanceAlerts(metrics: AgentPerformanceMetrics): Promise
       lastTriggered: new Date()
     });
   }
-  
+
   // Check memory threshold
   if (metrics.memory >= DEFAULT_PERFORMANCE_THRESHOLDS.memory.critical) {
     alerts.push({
@@ -290,7 +290,7 @@ async function checkPerformanceAlerts(metrics: AgentPerformanceMetrics): Promise
       lastTriggered: new Date()
     });
   }
-  
+
   // Check success rate threshold
   if (metrics.successRate <= DEFAULT_PERFORMANCE_THRESHOLDS.successRate.critical) {
     alerts.push({
@@ -306,7 +306,7 @@ async function checkPerformanceAlerts(metrics: AgentPerformanceMetrics): Promise
       lastTriggered: new Date()
     });
   }
-  
+
   // Store and process alerts
   if (alerts.length > 0) {
     const alertsDO = getAlertsDurableObject();
@@ -333,19 +333,19 @@ async function broadcastMetricsUpdate(metrics: AgentPerformanceMetrics): Promise
 
 class MetricsDurableObject {
   private metrics: Map<string, AgentPerformanceMetrics[]> = new Map();
-  
+
   async storeMetrics(metrics: AgentPerformanceMetrics): Promise<void> {
     const agentMetrics = this.metrics.get(metrics.agentId) || [];
     agentMetrics.push(metrics);
-    
+
     // Keep only last 10,000 metrics per agent to prevent memory issues
     if (agentMetrics.length > 10000) {
       agentMetrics.splice(0, agentMetrics.length - 10000);
     }
-    
+
     this.metrics.set(metrics.agentId, agentMetrics);
   }
-  
+
   async getMetrics(options: {
     agentId?: string;
     timeRange?: { start: Date; end: Date };
@@ -355,7 +355,7 @@ class MetricsDurableObject {
     offset: number;
   }): Promise<{ metrics: AgentPerformanceMetrics[]; pagination: any }> {
     let allMetrics: AgentPerformanceMetrics[] = [];
-    
+
     if (options.agentId) {
       allMetrics = this.metrics.get(options.agentId) || [];
     } else {
@@ -364,23 +364,23 @@ class MetricsDurableObject {
         allMetrics.push(...agentMetrics);
       }
     }
-    
+
     // Filter by time range
     if (options.timeRange) {
-      allMetrics = allMetrics.filter(m => 
-        m.timestamp >= options.timeRange!.start && 
+      allMetrics = allMetrics.filter(m =>
+        m.timestamp >= options.timeRange!.start &&
         m.timestamp <= options.timeRange!.end
       );
     }
-    
+
     // Sort by timestamp (newest first)
     allMetrics.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-    
+
     // Apply pagination
     const startIndex = options.offset;
     const endIndex = startIndex + options.limit;
     const paginatedMetrics = allMetrics.slice(startIndex, endIndex);
-    
+
     return {
       metrics: paginatedMetrics,
       pagination: {
@@ -391,7 +391,7 @@ class MetricsDurableObject {
       }
     };
   }
-  
+
   async clearAgentMetrics(agentId: string): Promise<void> {
     this.metrics.delete(agentId);
   }

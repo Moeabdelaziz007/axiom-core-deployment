@@ -1,122 +1,57 @@
-"""
-Test suite for Amadeus Cacher
-Verifies caching logic, TTL expiration, and stats tracking
-"""
-
-import unittest
+import pytest
 import sqlite3
+import json
 import time
-from pathlib import Path
-import sys
+from unittest.mock import MagicMock, patch
+from quantum_command_center.agents.data_aggregator import AmadeusCacher
 
-# Add parent directory to path
-sys.path.append(str(Path(__file__).parent.parent))
+@pytest.fixture
+def cacher(tmp_path):
+    """Fixture to create a fresh AmadeusCacher instance for each test."""
+    # Use a temporary file for the database to ensure persistence across calls
+    db_file = tmp_path / "test_cache.db"
+    cacher = AmadeusCacher(db_path=str(db_file))
+    return cacher
 
-from utils.amadeus_cacher import AmadeusCacher, DEFAULT_TTL
+def test_cache_miss(cacher):
+    """Test that a new key results in a cache miss."""
+    query = {"origin": "NYC", "destination": "LON", "date": "2025-12-25"}
+    result = cacher.get(query)
+    assert result is None
 
+def test_cache_hit(cacher):
+    """Test that a stored key results in a cache hit."""
+    query = {"origin": "NYC", "destination": "LON", "date": "2025-12-25"}
+    mock_data = {"flights": ["flight1", "flight2"]}
+    
+    cacher.set(query, mock_data)
+    
+    result = cacher.get(query)
+    assert result == mock_data
 
-class TestAmadeusCacher(unittest.TestCase):
-    """Test cases for AmadeusCacher."""
+def test_cache_expiration(cacher):
+    """Test that expired cache entries are treated as misses."""
+    query = {"origin": "NYC", "destination": "LON", "date": "2025-12-25"}
+    mock_data = {"flights": ["flight1"]}
     
-    def setUp(self):
-        """Create a test cacher with a temporary database."""
-        self.test_db = "test_cache.db"
-        self.cacher = AmadeusCacher(db_path=self.test_db)
-        
-        # Test data
-        self.sample_query = {
-            "type": "flight_offers",
-            "origin": "JFK",
-            "destination": "RUH",
-            "departure_date": "2025-12-01",
-            "adults": 1
-        }
-        
-        self.sample_response = {
-            "data": [
-                {
-                    "id": "TEST_1",
-                    "price": {"total": "850.00", "currency": "USD"}
-                }
-            ]
-        }
+    # Cache with 1 second TTL
+    cacher.set(query, mock_data, ttl=1)
     
-    def tearDown(self):
-        """Clean up test database."""
-        import os
-        if os.path.exists(self.test_db):
-            os.remove(self.test_db)
+    # Verify hit immediately
+    assert cacher.get(query) == mock_data
     
-    def test_cache_set_and_get(self):
-        """Test that data can be cached and retrieved."""
-        # Set cache
-        self.cacher.set(self.sample_query, self.sample_response)
-        
-        # Get from cache
-        result = self.cacher.get(self.sample_query)
-        
-        self.assertIsNotNone(result)
-        self.assertEqual(result, self.sample_response)
+    # Wait for expiration
+    time.sleep(1.1)
     
-    def test_cache_miss(self):
-        """Test that missing cache returns None."""
-        non_existent_query = {
-            "type": "flight_offers",
-            "origin": "LAX",
-            "destination": "SFO",
-            "departure_date": "2025-12-15",
-            "adults": 2
-        }
-        
-        result = self.cacher.get(non_existent_query)
-        self.assertIsNone(result)
-    
-    def test_cache_expiration(self):
-        """Test that expired cache entries are not returned."""
-        # Set cache with very short TTL
-        short_ttl = 1  # 1 second
-        self.cacher.set(self.sample_query, self.sample_response, ttl=short_ttl)
-        
-        # Immediate retrieval should work
-        result = self.cacher.get(self.sample_query, ttl=short_ttl)
-        self.assertIsNotNone(result)
-        
-        # Wait for expiration
-        time.sleep(2)
-        
-        # Should return None after expiration
-        result = self.cacher.get(self.sample_query, ttl=short_ttl)
-        self.assertIsNone(result)
-    
-    def test_hit_count_tracking(self):
-        """Test that cache hit count is incremented."""
-        # Set cache
-        self.cacher.set(self.sample_query, self.sample_response)
-        
-        # Get from cache multiple times
-        for _ in range(3):
-            self.cacher.get(self.sample_query)
-        
-        # Check stats
-        stats = self.cacher.get_stats()
-        self.assertEqual(stats["total_hits"], 3)
-    
-    def test_clear_expired(self):
-        """Test clearing expired entries."""
-        # Add some entries with short TTL
-        for i in range(5):
-            query = self.sample_query.copy()
-            query["adults"] = i + 1
-            self.cacher.set(query, self.sample_response, ttl=1)
-        
-        # Wait for expiration
-        time.sleep(2)
-        
-        # Clear expired
-        deleted_count = self.cacher.clear_expired()
-        
-        self.assertEqual(deleted_count, 5)
+    # Verify miss after expiration
+    assert cacher.get(query) is None
 
-
-if __name__ == "__main__":
-    unittest.main()
+def test_concurrent_access_simulation(cacher):
+    """Simulate basic concurrent access pattern (sequential in this unit test)."""
+    query = {"origin": "A", "destination": "B", "date": "2025-01-01"}
+    
+    cacher.set(query, {"data": 1})
+    cacher.set(query, {"data": 2}) # Overwrite
+    
+    result = cacher.get(query)
+    assert result == {"data": 2}

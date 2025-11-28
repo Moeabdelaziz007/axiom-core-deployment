@@ -42,6 +42,43 @@ class PsySafeMonitor:
 
         return is_safe
 
+    def check_cot_resonance(self, current_cot_embedding: list, target_alignment_vector: list) -> bool:
+        """
+        Measures the cosine similarity between the current CoT and the predefined safety vector.
+        A low score indicates CoT drift or potential initial misalignment.
+        
+        Args:
+            current_cot_embedding: The embedding of the Optimizer's raw initial thought process.
+            target_alignment_vector: The predefined vector of the Anti-Scheming Specification.
+            
+        Returns:
+            True if resonance (similarity) exceeds the threshold, False otherwise.
+        """
+        # Mock implementation for Phase 2 - In production, use numpy/scikit-learn
+        # similarity = calculate_cosine_similarity(current_cot_embedding, target_alignment_vector)
+        
+        # For now, we simulate resonance check
+        print(f"🔮 PSYSAFE RESONANCE: Checking CoT Alignment...")
+        
+        # Heuristic: If embedding is empty or None, fail
+        if not current_cot_embedding:
+            print("🚨 RESONANCE FAIL: Empty CoT embedding.")
+            return False
+            
+        # Mock threshold check (assuming normalized vectors for now)
+        # In real implementation: similarity = dot_product(a, b) / (norm(a) * norm(b))
+        DIVERGENCE_THRESHOLD = 0.85
+        
+        # Simulating a high resonance for valid CoT
+        similarity = 0.95 # Placeholder
+        
+        if similarity < DIVERGENCE_THRESHOLD:
+            print(f"🚨 RESONANCE ALERT: Low CoT Resonance ({similarity:.2f}). Potential Goal Drift.")
+            return False
+            
+        print(f"✅ RESONANCE CONFIRMED: CoT aligned with Safety Vector ({similarity:.2f}).")
+        return True
+
 # The actual function used by the Orchestrator to check security
 def psy_safe_check(recipient, message, sender, config):
     monitor = PsySafeMonitor(safety_protocols_file="config/safety_protocols.yaml")

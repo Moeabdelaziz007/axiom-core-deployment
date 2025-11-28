@@ -82,6 +82,7 @@ interface Task {
   progress: number;
   deadline?: string;
   createdAt: string;
+  sessionId: string;
 }
 
 interface KnowledgeEntry {
@@ -317,7 +318,7 @@ const CollaborationDashboard: React.FC = () => {
         ].map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => setActiveTab(tab.id as any)}
             className={`flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors ${activeTab === tab.id
               ? 'bg-blue-500 text-white'
               : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -841,4 +842,4 @@ const CollaborationDashboard: React.FC = () => {
   );
 };
 
-export default CollaborationPage;
+export default CollaborationDashboard;

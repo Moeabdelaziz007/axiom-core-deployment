@@ -35,6 +35,17 @@ def create_notification_agent(model_client) -> AssistantAgent:
         tools=[send_notification]
     )
 
+
+async def fast_handoff(sender_agent: str, receiver_agent: str, partial_output: str):
+    """
+    Bypasses standard GroupChat termination/logging to initiate the receiver immediately.
+    Mimics Polyphase flow by starting the next phase before the current one officially ends.
+    """
+    print(f"⚡ POLYPHASE HANDOFF: [{sender_agent}] >>> [{receiver_agent}] (Zero-Latency)")
+    # In a real AutoGen SelectorGroupChat, we would inject this message directly.
+    # For this pilot, we log the intent to demonstrate the architectural pattern.
+    # The SelectorGroupChat's 'selector_func' would ideally pick this up.
+    pass
 async def run_orchestrator():
     """
     Main Orchestrator for QCC ATA Pilot.

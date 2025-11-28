@@ -14,19 +14,18 @@
  * @version 1.0.0
  */
 
-import { 
-  AgentMessage, 
-  MessageType, 
-  MessagePriority, 
+import {
+  AgentMessage,
+  MessageType,
+  MessagePriority,
   DeliveryState,
   RealtimeSession,
-  QualityMetrics,
+
   AudioQualityMetrics,
   VideoQualityMetrics,
   NetworkQualityMetrics,
   ExperienceMetrics,
-  SecurityMetrics,
-  CommunicationMetricsReport
+
 } from '../../types/communication';
 
 // ============================================================================
@@ -142,6 +141,25 @@ export interface QualityMetrics {
     };
   };
   network: NetworkQualityMetrics;
+  timestamp: Date;
+}
+
+/**
+ * Communication metrics report
+ */
+export interface CommunicationMetricsReport {
+  overview: {
+    totalMessages: number;
+    activeConnections: number;
+    activeSessions: number;
+    averageLatency: number;
+    deliveryRate: number;
+    errorRate: number;
+    throughput: number;
+  };
+  performance: PerformanceMetrics;
+  security: SecurityMetrics;
+  quality: QualityMetrics;
   timestamp: Date;
 }
 
@@ -288,15 +306,15 @@ export interface AlertSummary {
  * Tracks and analyzes all communication metrics
  */
 export class CommunicationMonitoringSystem {
-  private metrics: CommunicationMetrics;
-  private performance: PerformanceMetrics;
-  private security: SecurityMetrics;
-  private quality: QualityMetrics;
-  private usage: UsageAnalytics;
+  private metrics!: CommunicationMetrics;
+  private performance!: PerformanceMetrics;
+  private security!: SecurityMetrics;
+  private quality!: QualityMetrics;
+  private usage!: UsageAnalytics;
   private alerts: Alert[] = [];
-  private config: MonitoringConfig;
-  private dataRetention: DataRetentionConfig;
-  
+  private config!: MonitoringConfig;
+  private dataRetention!: DataRetentionConfig;
+
   constructor(config: MonitoringConfig = {}) {
     this.config = this.mergeConfig(config);
     this.dataRetention = this.config.dataRetention || {
@@ -305,7 +323,7 @@ export class CommunicationMonitoringSystem {
       alerts: 365, // days
       analytics: 365 // days
     };
-    
+
     this.initializeMetrics();
     this.startMonitoring();
   }
@@ -363,8 +381,8 @@ export class CommunicationMonitoringSystem {
     this.quality = {
       communication: { clarity: 100, reliability: 100, responsiveness: 100, satisfaction: 100 },
       media: {
-        audio: { clarity: 100, volume: 80, noise: 10, latency: 50, jitter: 5, packetLoss: 0.1, mos: 4.5 },
-        video: { resolution: '1080p', frameRate: 30, bitrate: 2000, clarity: 95, smoothness: 90, latency: 100, jitter: 10, packetLoss: 0.2, freezeRate: 0.1 },
+        audio: { clarity: 100, volume: 80, noise: 10, latency: 50, jitter: 5, packetLoss: 0.1, mos: 4.5, echo: 0 },
+        video: { resolution: '1080p', frameRate: 30, bitrate: 2000, clarity: 95, smoothness: 90, latency: 100, jitter: 10, packetLoss: 0.2, freezeRate: 0.1, colorAccuracy: 95 },
         screen: { resolution: '1080p', frameRate: 30, bitrate: 2000, quality: 95 }
       },
       network: { bandwidth: { upload: 10, download: 50, available: 40 }, latency: 50, jitter: 5, packetLoss: 0.1, connectionStability: 95, routeEfficiency: 90, congestion: 10 },
@@ -407,16 +425,16 @@ export class CommunicationMonitoringSystem {
   private startMonitoring(): void {
     // Start performance monitoring
     this.startPerformanceMonitoring();
-    
+
     // Start security monitoring
     this.startSecurityMonitoring();
-    
+
     // Start quality monitoring
     this.startQualityMonitoring();
-    
+
     // Start alert processing
     this.startAlertProcessing();
-    
+
     // Start data cleanup
     this.startDataCleanup();
   }
@@ -426,35 +444,35 @@ export class CommunicationMonitoringSystem {
    */
   recordMessage(message: AgentMessage): void {
     this.metrics.totalMessages++;
-    
+
     // Update message type counters
     const type = message.type;
     this.metrics.messagesByType[type] = (this.metrics.messagesByType[type] || 0) + 1;
-    
+
     // Update priority counters
     const priority = message.priority;
     this.metrics.messagesByPriority[priority] = (this.metrics.messagesByPriority[priority] || 0) + 1;
-    
+
     // Update latency
     if (message.metrics.latency > 0) {
       const totalLatency = this.metrics.averageLatency * (this.metrics.totalMessages - 1) + message.metrics.latency;
       this.metrics.averageLatency = totalLatency / this.metrics.totalMessages;
     }
-    
+
     // Update delivery status
     if (message.delivery.status === 'delivered') {
       this.metrics.deliveryRate = ((this.metrics.deliveryRate * (this.metrics.totalMessages - 1)) + 100) / this.metrics.totalMessages;
     } else if (message.delivery.status === 'failed') {
       this.metrics.errorRate = ((this.metrics.errorRate * (this.metrics.totalMessages - 1)) + 100) / this.metrics.totalMessages;
     }
-    
+
     // Update bandwidth usage
     this.metrics.bandwidthUsage.upload += message.metrics.size;
     this.metrics.throughput = this.metrics.totalMessages / ((Date.now() - this.metrics.timestamp.getTime()) / 1000);
-    
+
     // Update timestamp
     this.metrics.timestamp = new Date();
-    
+
     // Check alert thresholds
     this.checkAlertThresholds();
   }
@@ -464,15 +482,15 @@ export class CommunicationMonitoringSystem {
    */
   recordSession(session: RealtimeSession): void {
     this.metrics.activeSessions++;
-    
+
     // Update usage analytics
     this.usage.sessions.total++;
     this.usage.sessions.active++;
     this.usage.sessions.byType[session.type] = (this.usage.sessions.byType[session.type] || 0) + 1;
-    
+
     // Update quality metrics
     this.updateQualityMetrics(session.quality);
-    
+
     // Check alert thresholds
     this.checkAlertThresholds();
   }
@@ -483,18 +501,18 @@ export class CommunicationMonitoringSystem {
   recordSessionEnd(session: RealtimeSession): void {
     this.metrics.activeSessions--;
     this.usage.sessions.active--;
-    
+
     if (session.endedAt && session.startedAt) {
       const duration = (session.endedAt.getTime() - session.startedAt.getTime()) / (1000 * 60); // minutes
       const totalDuration = this.usage.sessions.averageDuration * (this.usage.sessions.total - 1) + duration;
       this.usage.sessions.averageDuration = totalDuration / this.usage.sessions.total;
-      
+
       // Update peak concurrent sessions
       if (this.metrics.activeSessions > this.usage.sessions.peakConcurrent) {
         this.usage.sessions.peakConcurrent = this.metrics.activeSessions;
       }
     }
-    
+
     this.metrics.timestamp = new Date();
     this.checkAlertThresholds();
   }
@@ -515,7 +533,7 @@ export class CommunicationMonitoringSystem {
           this.security.authenticationEvents.blocked++;
         }
         break;
-        
+
       case 'encryption':
         this.security.encryptionEvents.total++;
         if (event.success) {
@@ -524,11 +542,11 @@ export class CommunicationMonitoringSystem {
           this.security.encryptionEvents.failed++;
         }
         if (event.algorithm) {
-          this.security.encryptionEvents.algorithms[event.algorithm] = 
+          this.security.encryptionEvents.algorithms[event.algorithm] =
             (this.security.encryptionEvents.algorithms[event.algorithm] || 0) + 1;
         }
         break;
-        
+
       case 'threat':
         this.security.threatEvents.detected++;
         if (event.blocked) {
@@ -538,11 +556,11 @@ export class CommunicationMonitoringSystem {
           this.security.threatEvents.escalated++;
         }
         if (event.type) {
-          this.security.threatEvents.types[event.type] = 
+          this.security.threatEvents.types[event.type] =
             (this.security.threatEvents.types[event.type] || 0) + 1;
         }
         break;
-        
+
       case 'compliance':
         if (event.gdprViolation) this.security.complianceEvents.gdprViolations++;
         if (event.dataBreach) this.security.complianceEvents.dataBreaches++;
@@ -550,7 +568,7 @@ export class CommunicationMonitoringSystem {
         if (event.policyViolation) this.security.complianceEvents.policyViolations++;
         break;
     }
-    
+
     this.security.timestamp = new Date();
     this.checkAlertThresholds();
   }
@@ -571,9 +589,20 @@ export class CommunicationMonitoringSystem {
     if (metrics.storage) {
       this.performance.storage = { ...this.performance.storage, ...metrics.storage };
     }
-    
+
     this.performance.timestamp = new Date();
     this.checkAlertThresholds();
+  }
+
+  /**
+   * Track generic event
+   */
+  trackEvent(eventName: string, data: any): void {
+    // In a real system, this would log to an analytics service
+    console.log(`[Monitoring] Event: ${eventName}`, data);
+
+    // For now, we'll just update the timestamp to trigger any necessary updates
+    this.metrics.timestamp = new Date();
   }
 
   /**
@@ -606,9 +635,12 @@ export class CommunicationMonitoringSystem {
   ): MonitoringReport {
     // In production, query historical data from database
     // For now, return current metrics as report
-    
+
     return {
-      period,
+      period: {
+        ...period,
+        duration: period.end.getTime() - period.start.getTime()
+      },
       communication: this.metrics,
       performance: this.performance,
       security: this.security,
@@ -625,15 +657,15 @@ export class CommunicationMonitoringSystem {
    */
   getAlerts(limit?: number, level?: string): Alert[] {
     let filteredAlerts = this.alerts;
-    
+
     if (level) {
       filteredAlerts = filteredAlerts.filter(alert => alert.level === level);
     }
-    
+
     if (limit) {
       filteredAlerts = filteredAlerts.slice(-limit);
     }
-    
+
     return filteredAlerts.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
 
@@ -657,12 +689,12 @@ export class CommunicationMonitoringSystem {
       resolved: false,
       escalated: false
     };
-    
+
     this.alerts.push(alert);
-    
+
     // Send alert notifications
     this.sendAlertNotification(alert);
-    
+
     // Check for auto-escalation
     this.checkAutoEscalation(alert);
   }
@@ -746,7 +778,7 @@ export class CommunicationMonitoringSystem {
           success: false,
           blocked: Math.random() > 0.5,
           escalated: Math.random() > 0.7,
-          type: 'brute_force',
+          subType: 'brute_force',
           source: 'unknown',
           target: 'authentication_service',
           timestamp: new Date()
@@ -770,8 +802,8 @@ export class CommunicationMonitoringSystem {
           satisfaction: 80 + Math.random() * 20
         },
         media: {
-          audio: { clarity: 90 + Math.random() * 15, volume: 75 + Math.random() * 25, noise: 5 + Math.random() * 10, latency: 40 + Math.random() * 40, jitter: 3 + Math.random() * 7, packetLoss: 0.1 + Math.random() * 0.5, mos: 4.0 + Math.random() * 1.5 },
-          video: { resolution: '1080p', frameRate: 30, bitrate: 1800 + Math.random() * 400, clarity: 85 + Math.random() * 15, smoothness: 80 + Math.random() * 20, latency: 80 + Math.random() * 40, jitter: 5 + Math.random() * 10, packetLoss: 0.2 + Math.random() * 0.3, freezeRate: 0.1 + Math.random() * 0.2 },
+          audio: { clarity: 90 + Math.random() * 15, volume: 75 + Math.random() * 25, noise: 5 + Math.random() * 10, latency: 40 + Math.random() * 40, jitter: 3 + Math.random() * 7, packetLoss: 0.1 + Math.random() * 0.5, mos: 4.0 + Math.random() * 1.5, echo: 0 },
+          video: { resolution: '1080p', frameRate: 30, bitrate: 1800 + Math.random() * 400, clarity: 85 + Math.random() * 15, smoothness: 80 + Math.random() * 20, latency: 80 + Math.random() * 40, jitter: 5 + Math.random() * 10, packetLoss: 0.2 + Math.random() * 0.3, freezeRate: 0.1 + Math.random() * 0.2, colorAccuracy: 95 },
           screen: { resolution: '1080p', frameRate: 30, bitrate: 1500 + Math.random() * 500, quality: 85 + Math.random() * 15 }
         },
         network: { bandwidth: { upload: 8 + Math.random() * 4, download: 45 + Math.random() * 15, available: 50 + Math.random() * 20 }, latency: 30 + Math.random() * 30, jitter: 2 + Math.random() * 8, packetLoss: 0.05 + Math.random() * 0.15, connectionStability: 90 + Math.random() * 10, routeEfficiency: 85 + Math.random() * 15, congestion: 5 + Math.random() * 10 }
@@ -820,34 +852,35 @@ export class CommunicationMonitoringSystem {
    */
   private checkAlertThresholds(): void {
     const thresholds = this.config.alertThresholds;
-    
+    if (!thresholds) return;
+
     // Check message latency
-    if (this.metrics.averageLatency > thresholds.messageLatency) {
+    if (thresholds.messageLatency && this.metrics.averageLatency > thresholds.messageLatency) {
       this.createAlert('performance', 'high', `Message latency exceeded threshold: ${this.metrics.averageLatency}ms`);
     }
-    
+
     // Check error rate
-    if (this.metrics.errorRate > thresholds.errorRate) {
+    if (thresholds.errorRate && this.metrics.errorRate > thresholds.errorRate) {
       this.createAlert('performance', 'critical', `Error rate exceeded threshold: ${this.metrics.errorRate}%`);
     }
-    
+
     // Check CPU usage
-    if (this.performance.cpu.usage > thresholds.cpuUsage) {
+    if (thresholds.cpuUsage && this.performance.cpu.usage > thresholds.cpuUsage) {
       this.createAlert('performance', 'medium', `CPU usage exceeded threshold: ${this.performance.cpu.usage}%`);
     }
-    
+
     // Check memory usage
-    if (this.performance.memory.usage > thresholds.memoryUsage) {
+    if (thresholds.memoryUsage && this.performance.memory.usage > thresholds.memoryUsage) {
       this.createAlert('performance', 'medium', `Memory usage exceeded threshold: ${this.performance.memory.usage}%`);
     }
-    
+
     // Check network latency
-    if (this.performance.network.latency > thresholds.networkLatency) {
+    if (thresholds.networkLatency && this.performance.network.latency > thresholds.networkLatency) {
       this.createAlert('network', 'high', `Network latency exceeded threshold: ${this.performance.network.latency}ms`);
     }
-    
+
     // Check packet loss
-    if (this.performance.network.packetLoss > thresholds.packetLoss) {
+    if (thresholds.packetLoss && this.performance.network.packetLoss > thresholds.packetLoss) {
       this.createAlert('network', 'critical', `Packet loss exceeded threshold: ${this.performance.network.packetLoss}%`);
     }
   }
@@ -857,7 +890,7 @@ export class CommunicationMonitoringSystem {
    */
   private sendAlertNotification(alert: Alert): void {
     // In production, send actual notifications
-    for (const channel of this.config.alertChannels) {
+    for (const channel of this.config.alertChannels || []) {
       if (channel.enabled && this.shouldSendToChannel(channel, alert)) {
         console.log(`🚨 Sending alert to ${channel.type}:`, alert);
         // Implement actual notification sending
@@ -873,7 +906,7 @@ export class CommunicationMonitoringSystem {
     const levelPriority = { low: 0, medium: 1, high: 2, critical: 3 };
     const alertLevel = levelPriority[alert.level] || 0;
     const channelLevel = levelPriority[channel.priority] || 0;
-    
+
     return alertLevel >= channelLevel;
   }
 
@@ -881,20 +914,21 @@ export class CommunicationMonitoringSystem {
    * Check auto-escalation
    */
   private checkAutoEscalation(alert: Alert): void {
-    if (!this.config.escalation.enabled) return;
-    
-    const escalationLevel = this.config.escalation.levels.find(
+    const escalation = this.config.escalation;
+    if (!escalation?.enabled) return;
+
+    const escalationLevel = escalation.levels.find(
       level => level.threshold <= this.getAlertSeverityScore(alert)
     );
-    
+
     if (escalationLevel && !alert.escalated) {
       alert.escalated = true;
       alert.escalatedAt = new Date();
       alert.escalationLevel = escalationLevel.level;
-      
+
       // Send escalation notifications
       for (const channelType of escalationLevel.channels) {
-        const channel = this.config.alertChannels.find(c => c.type === channelType);
+        const channel = (this.config.alertChannels || []).find(c => c.type === channelType);
         if (channel && channel.enabled) {
           console.log(`🚨 Escalating alert to ${channelType}:`, alert);
           // Implement actual escalation notification
@@ -917,12 +951,14 @@ export class CommunicationMonitoringSystem {
   private processAlerts(): void {
     // Check for unresolved alerts that need escalation
     const now = new Date();
-    
+
     for (const alert of this.alerts) {
       if (!alert.resolved && !alert.escalated) {
         const timeSinceCreation = now.getTime() - alert.timestamp.getTime();
-        const timeoutMs = this.config.escalation.timeout * 60 * 1000; // convert to milliseconds
-        
+        const escalation = this.config.escalation;
+        if (!escalation) continue;
+        const timeoutMs = escalation.timeout * 60 * 1000; // convert to milliseconds
+
         if (timeSinceCreation > timeoutMs) {
           this.checkAutoEscalation(alert);
         }
@@ -934,8 +970,10 @@ export class CommunicationMonitoringSystem {
    * Clean up old alerts
    */
   private cleanupOldAlerts(): void {
-    const cutoffDate = new Date(Date.now() - this.dataRetention.alerts * 24 * 60 * 60 * 1000);
-    
+    const retention = this.dataRetention;
+    if (!retention?.alerts) return;
+    const cutoffDate = new Date(Date.now() - retention.alerts * 24 * 60 * 60 * 1000);
+
     this.alerts = this.alerts.filter(alert => alert.timestamp > cutoffDate);
   }
 
@@ -949,16 +987,16 @@ export class CommunicationMonitoringSystem {
     let resolved = 0;
     let pending = 0;
     let escalated = 0;
-    
+
     for (const alert of this.alerts) {
       byLevel[alert.level] = (byLevel[alert.level] || 0) + 1;
       byType[alert.type] = (byType[alert.type] || 0) + 1;
-      
+
       if (alert.resolved) resolved++;
       else if (!alert.escalated) pending++;
       else escalated++;
     }
-    
+
     return {
       total,
       byLevel,
@@ -974,42 +1012,42 @@ export class CommunicationMonitoringSystem {
    */
   private generateRecommendations(): string[] {
     const recommendations: string[] = [];
-    
+
     // Performance recommendations
     if (this.metrics.errorRate > 5) {
       recommendations.push('Consider investigating network connectivity and message routing');
     }
-    
+
     if (this.metrics.averageLatency > 500) {
       recommendations.push('Optimize message processing and consider load balancing');
     }
-    
+
     if (this.performance.cpu.usage > 80) {
       recommendations.push('Scale up compute resources or optimize message processing');
     }
-    
+
     if (this.performance.memory.usage > 85) {
       recommendations.push('Increase memory allocation or implement memory optimization');
     }
-    
+
     // Security recommendations
     if (this.security.authenticationEvents.failed > 10) {
       recommendations.push('Review authentication mechanisms and implement rate limiting');
     }
-    
+
     if (this.security.threatEvents.detected > 5) {
       recommendations.push('Enhance threat detection and implement additional security measures');
     }
-    
+
     // Quality recommendations
     if (this.quality.communication.reliability < 90) {
       recommendations.push('Investigate message delivery issues and improve error handling');
     }
-    
+
     if (this.quality.network.packetLoss > 2) {
       recommendations.push('Optimize network configuration and consider redundant connections');
     }
-    
+
     return recommendations;
   }
 
@@ -1038,6 +1076,7 @@ export class CommunicationMonitoringSystem {
       ],
       escalation: {
         enabled: true,
+        autoEscalate: true,
         levels: [
           { level: 1, name: 'Level 1', threshold: 5, channels: ['email'], delay: 5 },
           { level: 2, name: 'Level 2', threshold: 10, channels: ['email', 'webhook'], delay: 2 },
@@ -1127,7 +1166,7 @@ export interface SecurityEvent {
   dataBreach?: boolean;
   auditFailure?: boolean;
   policyViolation?: boolean;
-  type?: string;
+  subType?: string;
   source?: string;
   target?: string;
   timestamp: Date;
@@ -1156,7 +1195,7 @@ export interface Alert {
 /**
  * Alert types
  */
-export type AlertType = 
+export type AlertType =
   | 'performance'
   | 'security'
   | 'network'
@@ -1168,7 +1207,7 @@ export type AlertType =
 /**
  * Alert levels
  */
-export type AlertLevel = 
+export type AlertLevel =
   | 'low'
   | 'medium'
   | 'high'

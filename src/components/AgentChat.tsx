@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Send, X, Bot, MessageSquare, Zap, Activity } from 'lucide-react';
 import { NeonButton } from './AxiomUI';
-import { SkillTree } from './SkillTree';
+// import { SkillTree } from './SkillTree'; // DISABLED - مؤقتاً معطل
 
 interface AgentChatProps {
     agentId: string;
@@ -69,7 +69,7 @@ export const AgentChat = ({ agentId, agentName, agentType, onClose }: AgentChatP
                     console.log('🔧 Agent Operations:', {
                         agent: agentId,
                         agentType: agentType,
-                        tools_used: data.tool_calls.map(call => call.tool),
+                        tools_used: data.tool_calls.map((call: any) => call.tool),
                         timestamp: new Date().toISOString()
                     });
                 }
@@ -224,7 +224,7 @@ export const AgentChat = ({ agentId, agentName, agentType, onClose }: AgentChatP
                 </>
             ) : (
                 <div className="flex-1 overflow-hidden">
-                    <SkillTree />
+                    {/* <SkillTree /> */} { /* DISABLED - مؤقتاً معطل */}
                 </div>
             )}
         </div>

@@ -49,7 +49,7 @@ export interface HotUpdateConfig {
 /**
  * Hot update status
  */
-export type HotUpdateStatus = 
+export type HotUpdateStatus =
   | 'draft'
   | 'pending_approval'
   | 'approved'
@@ -144,7 +144,7 @@ export class HotUpdateSystem {
     config: Omit<HotUpdateConfig, 'id' | 'createdAt' | 'status' | 'rolloutHistory'>
   ): Promise<string> {
     const hotUpdateId = this.generateHotUpdateId();
-    
+
     const hotUpdate: HotUpdateConfig = {
       ...config,
       id: hotUpdateId,
@@ -157,7 +157,7 @@ export class HotUpdateSystem {
     this.validateHotUpdateConfig(hotUpdate);
 
     this.hotUpdates.set(hotUpdateId, hotUpdate);
-    
+
     console.log(`🔥 Hot update created: ${hotUpdateId}`);
     console.log(`📦 Version: ${config.version}-${config.patchVersion}`);
     console.log(`🎯 Type: ${config.type} (${config.priority})`);
@@ -177,7 +177,7 @@ export class HotUpdateSystem {
    * Get all hot updates
    */
   getAllHotUpdates(): HotUpdateConfig[] {
-    return Array.from(this.hotUpdates.values()).sort((a, b) => 
+    return Array.from(this.hotUpdates.values()).sort((a, b) =>
       b.createdAt.getTime() - a.createdAt.getTime()
     );
   }
@@ -207,7 +207,7 @@ export class HotUpdateSystem {
     }
 
     hotUpdate.status = 'pending_approval';
-    
+
     console.log(`📋 Hot update ${hotUpdateId} submitted for approval`);
 
     // Send approval requests
@@ -253,11 +253,11 @@ export class HotUpdateSystem {
     // Check if all required approvals are received
     const requiredApprovals = this.getRequiredApprovals(hotUpdate);
     const currentApprovals = this.approvals.get(hotUpdateId)!.filter(a => a.approved);
-    
+
     if (currentApprovals.length >= requiredApprovals) {
       hotUpdate.status = 'approved';
       console.log(`✅ Hot update ${hotUpdateId} approved`);
-      
+
       // Schedule if schedule is set
       if (hotUpdate.schedule) {
         hotUpdate.status = 'scheduled';
@@ -381,7 +381,7 @@ export class HotUpdateSystem {
 
     // Simulate performance testing
     const scriptComplexity = this.analyzeScriptComplexity(hotUpdate.script);
-    
+
     if (scriptComplexity > 80) {
       issues.push('Script complexity is too high');
       recommendations.push('Consider optimizing script performance');
@@ -538,7 +538,7 @@ export class HotUpdateSystem {
     console.log(`⚡ Executing immediate rollout for ${hotUpdate.id}`);
 
     const instances = await this.getTargetInstances(hotUpdate.targetVersions);
-    
+
     const rolloutEntry: HotUpdateRolloutEntry = {
       step: 1,
       percentage: 100,
@@ -560,24 +560,24 @@ export class HotUpdateSystem {
     try {
       // Deploy to all instances
       await this.deployToInstances(instances, hotUpdate);
-      
+
       rolloutEntry.status = 'completed';
       rolloutEntry.completedAt = new Date();
-      
+
       // Update metrics
       rolloutEntry.metrics = await this.collectRolloutMetrics(instances);
-      
+
       hotUpdate.status = 'completed';
       hotUpdate.completedAt = new Date();
-      
+
       console.log(`✅ Immediate rollout completed for ${hotUpdate.id}`);
-      
+
     } catch (error) {
       rolloutEntry.status = 'failed';
       hotUpdate.status = 'failed';
-      
+
       console.error(`❌ Immediate rollout failed for ${hotUpdate.id}: ${error}`);
-      
+
       if (hotUpdate.autoRollback) {
         await this.rollbackHotUpdate(hotUpdate.id);
       }
@@ -597,17 +597,17 @@ export class HotUpdateSystem {
       console.log(`📊 Rollout step ${step.step}: ${step.percentage}% (${step.instances.length} instances)`);
 
       const stepInstances = instances.filter(i => step.instances.includes(i.id));
-      
+
       try {
         // Deploy to step instances
         await this.deployToInstances(stepInstances, hotUpdate);
-        
+
         step.status = 'completed';
         step.completedAt = new Date();
-        
+
         // Collect metrics
         step.metrics = await this.collectRolloutMetrics(stepInstances);
-        
+
         // Check rollback threshold
         if (step.metrics.errorRate > hotUpdate.rollbackThreshold) {
           throw new Error(`Error rate ${step.metrics.errorRate}% exceeds threshold ${hotUpdate.rollbackThreshold}%`);
@@ -623,20 +623,20 @@ export class HotUpdateSystem {
       } catch (error) {
         step.status = 'failed';
         step.issues = [error instanceof Error ? error.message : String(error)];
-        
+
         console.error(`❌ Rollout step ${step.step} failed: ${error}`);
-        
+
         if (hotUpdate.autoRollback) {
           await this.rollbackHotUpdate(hotUpdate.id);
         }
-        
+
         return;
       }
     }
 
     hotUpdate.status = 'completed';
     hotUpdate.completedAt = new Date();
-    
+
     console.log(`✅ Gradual rollout completed for ${hotUpdate.id}`);
   }
 
@@ -649,7 +649,7 @@ export class HotUpdateSystem {
     const instances = await this.getTargetInstances(hotUpdate.targetVersions);
     const canaryPercentage = 5; // Start with 5%
     const canaryCount = Math.max(1, Math.floor(instances.length * canaryPercentage / 100));
-    
+
     const canaryInstances = instances.slice(0, canaryCount);
     const remainingInstances = instances.slice(canaryCount);
 
@@ -660,7 +660,7 @@ export class HotUpdateSystem {
     // Monitor canary instances
     console.log(`👀 Monitoring canary instances...`);
     const monitoringResult = await this.monitorInstances(canaryInstances, 10 * 60 * 1000); // 10 minutes
-    
+
     if (!monitoringResult.success) {
       throw new Error(`Canary deployment failed: ${monitoringResult.issues.join(', ')}`);
     }
@@ -672,17 +672,17 @@ export class HotUpdateSystem {
     for (const percentage of rolloutSteps) {
       const targetCount = Math.floor(instances.length * percentage / 100);
       const newInstances = remainingInstances.slice(0, targetCount - currentCanaryCount);
-      
+
       if (newInstances.length === 0) break;
 
       console.log(`📈 Expanding rollout to ${percentage}% (${newInstances.length} new instances)`);
-      
+
       await this.deployToInstances(newInstances, hotUpdate);
       currentCanaryCount += newInstances.length;
-      
+
       // Monitor for a short period
       const result = await this.monitorInstances(newInstances, 2 * 60 * 1000); // 2 minutes
-      
+
       if (!result.success) {
         throw new Error(`Rollout expansion failed: ${result.issues.join(', ')}`);
       }
@@ -690,7 +690,7 @@ export class HotUpdateSystem {
 
     hotUpdate.status = 'completed';
     hotUpdate.completedAt = new Date();
-    
+
     console.log(`✅ Canary rollout completed for ${hotUpdate.id}`);
   }
 
@@ -701,33 +701,33 @@ export class HotUpdateSystem {
     console.log(`🎭 Executing staged rollout for ${hotUpdate.id}`);
 
     const instances = await this.getTargetInstances(hotUpdate.targetVersions);
-    
+
     // Stage 1: Internal testing (10%)
     const internalInstances = instances.slice(0, Math.ceil(instances.length * 0.1));
     await this.deployToInstances(internalInstances, hotUpdate);
-    
+
     console.log(`🧪 Stage 1: Internal testing completed`);
     await this.sleep(5 * 60 * 1000); // 5 minutes
 
     // Stage 2: Beta testing (30%)
     const betaInstances = instances.slice(
-      internalInstances.length, 
+      internalInstances.length,
       internalInstances.length + Math.ceil(instances.length * 0.3)
     );
     await this.deployToInstances(betaInstances, hotUpdate);
-    
+
     console.log(`🧪 Stage 2: Beta testing completed`);
     await this.sleep(10 * 60 * 1000); // 10 minutes
 
     // Stage 3: Full rollout (100%)
     const remainingInstances = instances.slice(internalInstances.length + betaInstances.length);
     await this.deployToInstances(remainingInstances, hotUpdate);
-    
+
     console.log(`🧪 Stage 3: Full rollout completed`);
 
     hotUpdate.status = 'completed';
     hotUpdate.completedAt = new Date();
-    
+
     console.log(`✅ Staged rollout completed for ${hotUpdate.id}`);
   }
 
@@ -751,7 +751,7 @@ export class HotUpdateSystem {
     try {
       // Execute rollback plan
       const rollbackResult = await this.executeRollbackPlan(hotUpdate.rollbackPlan);
-      
+
       if (!rollbackResult.success) {
         throw new Error(`Rollback plan execution failed: ${rollbackResult.error}`);
       }
@@ -840,7 +840,7 @@ export class HotUpdateSystem {
 
     for (let i = 1; i <= hotUpdate.rolloutSteps; i++) {
       const percentage = Math.min(100, i * stepPercentage);
-      
+
       steps.push({
         step: i,
         percentage: Math.round(percentage),
@@ -875,7 +875,7 @@ export class HotUpdateSystem {
    */
   private async sendApprovalRequests(hotUpdate: HotUpdateConfig): Promise<void> {
     const approvers = this.getApprovers(hotUpdate);
-    
+
     for (const approver of approvers) {
       console.log(`📧 Sending approval request to ${approver.name} (${approver.role})`);
       // Implementation depends on notification system
@@ -900,21 +900,21 @@ export class HotUpdateSystem {
   private analyzeScriptComplexity(script: string): number {
     // Simple complexity analysis
     let complexity = 0;
-    
+
     // Count loops
     complexity += (script.match(/for\s*\(/g) || []).length * 5;
     complexity += (script.match(/while\s*\(/g) || []).length * 5;
-    
+
     // Count conditionals
     complexity += (script.match(/if\s*\(/g) || []).length * 2;
     complexity += (script.match(/else\s+if/g) || []).length * 3;
-    
+
     // Count function calls
     complexity += (script.match(/\w+\s*\(/g) || []).length * 1;
-    
+
     // Count lines
     complexity += script.split('\n').length * 0.5;
-    
+
     return Math.min(100, complexity);
   }
 
@@ -972,10 +972,10 @@ export class HotUpdateSystem {
     duration: number
   ): Promise<{ success: boolean; issues: string[] }> {
     console.log(`Monitoring ${instances.length} instances for ${duration}ms`);
-    
+
     // Simulate monitoring
     await this.sleep(duration);
-    
+
     return { success: true, issues: [] }; // Placeholder
   }
 
@@ -1001,6 +1001,9 @@ export interface HotUpdateSystemConfig {
   requireApprovalForCritical?: boolean;
   autoRollbackOnError?: boolean;
   notificationChannels?: string[];
+  enabled?: boolean;
+  requireApproval?: boolean;
+  autoRollbackThreshold?: number;
 }
 
 export default HotUpdateSystem;

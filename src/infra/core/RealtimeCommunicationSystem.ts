@@ -42,7 +42,46 @@ import {
   AccessibilityFeatures,
   SchedulingConfig
 } from '../../types/communication';
-import { AgentMessage, MessageType, MessagePriority } from './AgentCommunicationSystem';
+
+export type MessagePriority = 'low' | 'normal' | 'high' | 'critical';
+
+export type MessageType = 'text' | 'image' | 'video' | 'audio' | 'file' | 'system' | 'action' | 'event';
+
+export interface AgentMessage {
+  id: string;
+  senderId: string;
+  recipientId?: string;
+  roomId?: string;
+  content: any;
+  type: MessageType;
+  priority: MessagePriority;
+  timestamp: Date;
+  metadata?: Record<string, any>;
+  status?: 'sent' | 'delivered' | 'read' | 'failed';
+}
+
+export interface QueuedMessage {
+  id: string;
+  message: any;
+  timestamp: Date;
+  retryCount: number;
+}
+
+const DEFAULT_QUALITY_CONFIG: QualityConfig = {
+  video: { resolution: '1080p', frameRate: 30, bitrate: 2000, codec: 'H.264', profile: 'main', hardwareAcceleration: true },
+  audio: { bitrate: 128, sampleRate: 48000, channels: 2, codec: 'Opus', noiseCancellation: true, echoCancellation: true },
+  screen: { resolution: '1080p', frameRate: 30, bitrate: 2000, codec: 'H.264', compression: 80 },
+  adaptive: true,
+  optimization: { bandwidthAdaptation: true, qualityAdaptation: true, loadBalancing: true, congestionControl: true, errorRecovery: true }
+};
+
+const DEFAULT_MEDIA_CONFIG: MediaConfig = {
+  audio: { enabled: true, required: false, devices: [], processing: { noiseReduction: true, echoCancellation: true, autoGainControl: true, equalization: false, compression: true, enhancement: false } },
+  video: { enabled: true, required: false, devices: [], processing: { stabilization: true, backgroundBlur: false, backgroundReplacement: false, faceDetection: false, objectDetection: false, colorCorrection: true, enhancement: true } },
+  screen: { enabled: false, sources: [], processing: { optimization: true, compression: true, annotation: false, cursor: true, multiMonitor: false, regionSelection: false } },
+  recording: { enabled: false, autoStart: false, format: 'mp4', quality: 'high', storage: { location: 'cloud', encryption: true, compression: true, backup: true }, retention: { duration: 30, autoDelete: true, archival: false, legalHold: false } } as any,
+  streaming: { enabled: true, protocol: 'WebRTC', quality: 'auto', latency: { target: 100, max: 200, adaptive: true }, adaptive: true }
+};
 
 // ============================================================================
 // WEBSOCKET CONNECTION MANAGER
@@ -132,6 +171,7 @@ export class WebSocketConnectionManager {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         connectionId,
+        agentId,
         timestamp: new Date()
       };
     }
@@ -151,6 +191,7 @@ export class WebSocketConnectionManager {
         success: false,
         error: 'Connection not found',
         connectionId,
+        agentId: 'unknown',
         timestamp: new Date()
       };
     }
@@ -187,6 +228,7 @@ export class WebSocketConnectionManager {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         connectionId,
+        agentId: 'unknown',
         timestamp: new Date()
       };
     }
@@ -206,6 +248,7 @@ export class WebSocketConnectionManager {
         success: false,
         error: 'Connection not found',
         connectionId,
+        messageId: 'unknown',
         timestamp: new Date()
       };
     }
@@ -241,6 +284,7 @@ export class WebSocketConnectionManager {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         connectionId,
+        messageId: 'unknown',
         timestamp: new Date()
       };
     }
@@ -264,6 +308,7 @@ export class WebSocketConnectionManager {
         totalRecipients: 0,
         successCount: 0,
         failureCount: 0,
+        results: [],
         timestamp: new Date()
       };
     }
@@ -711,6 +756,8 @@ export class SSEManager {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         connectionId,
+        agentId,
+        channels,
         timestamp: new Date()
       };
     }
@@ -729,6 +776,7 @@ export class SSEManager {
         success: false,
         error: 'Connection not found',
         eventId: event.id,
+        connectionId,
         timestamp: new Date()
       };
     }
@@ -763,6 +811,7 @@ export class SSEManager {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         eventId: event.id,
+        connectionId,
         timestamp: new Date()
       };
     }
@@ -1016,7 +1065,7 @@ export class RealtimeCommunicationSystem {
     initiatorId: string,
     participants: string[],
     sessionType: SessionType,
-    sessionConfig: SessionConfig = {}
+    sessionConfig?: Partial<SessionConfig>
   ): Promise<SessionCreationResult> {
     const sessionId = this.generateSessionId();
 
@@ -1037,7 +1086,7 @@ export class RealtimeCommunicationSystem {
             capabilities: {
               video: { enabled: true, maxResolution: '1080p', maxFrameRate: 30, codecs: ['H.264', 'VP8'], hardwareAcceleration: true, simulcast: false },
               audio: { enabled: true, inputDevices: 1, outputDevices: 1, codecs: ['Opus', 'AAC'], noiseCancellation: true, echoCancellation: true, autoGainControl: true },
-              screen: { sharing: true, maxResolution: '1080p', frameRate: 30, annotation: true, remoteControl: false, multiMonitor: true },
+              screen: { sharing: true, maxResolution: '1080p', frameRate: 30, annotation: true, remoteControl: false, multipleMonitors: true },
               network: { bandwidth: { upload: 10, download: 50, available: 40 }, latency: 50, jitter: 5, packetLoss: 0.1, connectionType: 'wifi', stable: true },
               storage: { available: 100, total: 500, type: 'local', speed: 100 },
               processing: { cpu: 'Intel i7', cores: 8, memory: 16, threads: 16, architecture: 'x64' }
@@ -1057,27 +1106,21 @@ export class RealtimeCommunicationSystem {
             ipv6: '::1'
           },
           media: {
-            audio: { enabled: sessionType === 'voice' || sessionType === 'conference', muted: false, inputDevice: 'default', outputDevice: 'default', volume: 80, quality: 'high', latency: 50, jitter: 5, packetLoss: 0.1, mos: 4.5 },
-            video: { enabled: sessionType === 'video' || sessionType === 'conference', muted: false, device: 'default', resolution: '1080p', frameRate: 30, quality: 'high', bandwidth: 2000, latency: 100, jitter: 10, packetLoss: 0.2, freezeRate: 0.1 },
-            screen: { sharing: false, source: 'entire-screen', resolution: '1080p', frameRate: 30, quality: 'high', annotation: false }
+            audio: { enabled: sessionType === 'voice-call' || sessionType === 'conference', muted: false, inputDevice: 'default', outputDevice: 'default', volume: 80, quality: 'high', latency: 50, jitter: 5, packetLoss: 0.1, mos: 4.5 },
+            video: { enabled: sessionType === 'video-call' || sessionType === 'conference', muted: false, device: 'default', resolution: '1080p', frameRate: 30, quality: '1080p', bandwidth: 2000, latency: 100, jitter: 10, packetLoss: 0.2, freezeRate: 0.1 },
+            screen: { sharing: false, source: 'entire-screen', resolution: '1080p', frameRate: 30, quality: '1080p', annotation: false }
           }
         })),
         state: 'initiating',
         configuration: {
-          maxParticipants: sessionConfig.maxParticipants || 10,
-          recording: sessionConfig.recording || { enabled: false, autoStart: false, format: 'mp4', quality: 'high', storage: { location: 'cloud', encryption: true, compression: true, backup: true, cloudSync: true }, retention: { duration: 30, autoDelete: true, archival: false, legalHold: false } },
-          moderation: sessionConfig.moderation || { enabled: false, autoModeration: false, rules: [], moderators: [], waitingRoom: false, raiseHand: true },
-          quality: sessionConfig.quality || { video: { resolution: '1080p', frameRate: 30, bitrate: 2000, codec: 'H.264', profile: 'main', hardwareAcceleration: true }, audio: { bitrate: 128, sampleRate: 48000, channels: 2, codec: 'Opus', noiseCancellation: true, echoCancellation: true }, screen: { resolution: '1080p', frameRate: 30, bitrate: 2000, codec: 'H.264', compression: 80 }, adaptive: true, optimization: { bandwidthAdaptation: true, qualityAdaptation: true, loadBalancing: true, congestionControl: true, errorRecovery: true } },
-          features: sessionConfig.features || { chat: true, reactions: true, polls: true, breakout: true, whiteboard: true, fileShare: true, recording: true, transcription: false, translation: false, accessibility: { captions: true, signLanguage: false, screenReader: true, highContrast: true, largeText: true, keyboardNavigation: true, voiceControl: false } },
-          scheduling: sessionConfig.scheduling || { startAt: undefined, duration: undefined, recurring: { enabled: false, pattern: 'weekly', interval: 1, endDate: undefined, maxOccurrences: undefined }, reminders: [], timezone: 'UTC', autoStart: false }
+          maxParticipants: (sessionConfig || {}).maxParticipants || 10,
+          recording: ((sessionConfig || {}).recording || { enabled: false, autoStart: false, format: 'mp4', quality: 'high', storage: { location: 'cloud', encryption: true, compression: true, backup: true }, retention: { duration: 30, autoDelete: true, archival: false, legalHold: false } }) as any,
+          moderation: (sessionConfig || {}).moderation || { enabled: false, autoModeration: false, rules: [], moderators: [], waitingRoom: false, raiseHand: true },
+          quality: (sessionConfig || {}).quality || DEFAULT_QUALITY_CONFIG,
+          features: (sessionConfig || {}).features || { chat: true, reactions: true, polls: true, breakout: true, whiteboard: true, fileShare: true, recording: true, transcription: false, translation: false, accessibility: { captions: true, signLanguage: false, screenReader: true, highContrast: true, largeText: true, keyboardNavigation: true, voiceControl: false } },
+          scheduling: (sessionConfig || {}).scheduling || { startAt: undefined, duration: undefined, recurring: { enabled: false, pattern: 'weekly', interval: 1, endDate: undefined, maxOccurrences: undefined }, reminders: [], timezone: 'UTC', autoStart: false }
         },
-        media: {
-          audio: { enabled: sessionType === 'voice' || sessionType === 'conference', required: sessionType === 'voice' },
-          video: { enabled: sessionType === 'video' || sessionType === 'conference', required: sessionType === 'video' },
-          screen: { enabled: false, sources: [], processing: { optimization: true, compression: true, annotation: false, cursor: true, multiMonitor: false, regionSelection: false } },
-          recording: { enabled: false, format: 'mp4', quality: 'high', storage: { location: 'cloud', encryption: true, compression: true, backup: true, cloudSync: true }, metadata: {} },
-          streaming: { enabled: true, protocol: 'WebRTC', quality: 'auto', latency: { target: 100, max: 200, adaptive: true }, adaptive: true }
-        },
+        media: DEFAULT_MEDIA_CONFIG,
         security: {
           encryption: { enabled: true, algorithm: 'AES-256-GCM', keyRotation: true, keyRotationInterval: 300000, endToEnd: true, transport: true },
           authentication: { required: true, methods: ['token', 'certificate'], mfa: false, deviceVerification: true, biometric: false },

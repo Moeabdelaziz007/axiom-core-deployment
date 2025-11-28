@@ -7,3 +7,6 @@ numpy
 colorama
 python-dotenv
 requests
+psycopg2-binary
+networkx>=3.0
+matplotlib>=3.5.0

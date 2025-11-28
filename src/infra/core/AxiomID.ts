@@ -17,7 +17,7 @@
  * @version 1.0.0
  */
 
-import { AgentReputation } from '../types/marketplace';
+// import { AgentReputation } from '../types/marketplace'; // DISABLED
 import { DualityEngine, KarmaBalance } from './DualityEngine';
 
 // ============================================================================
@@ -372,6 +372,7 @@ export interface ReflectionPattern {
   pattern: string;
   frequency: number;
   emotionalTone: 'positive' | 'negative' | 'neutral' | 'cosmic';
+  timestamp: Date;
   insights: string[];
 }
 
@@ -577,7 +578,7 @@ export class AxiomIDSystem {
   private evolutionEngine: EvolutionEngine;
   private consciousnessField: ConsciousnessFieldManager;
   private governanceSystem: GovernanceSystem;
-  
+
   constructor() {
     this.cosmicConstants = this.initializeCosmicConstants();
     this.evolutionEngine = new EvolutionEngine(this.cosmicConstants);
@@ -595,28 +596,28 @@ export class AxiomIDSystem {
   ): Promise<AxiomID> {
     const id = this.generateCosmicId();
     const birthTime = new Date();
-    
+
     // Generate cosmic signature based on birth conditions
     const cosmicSignature = this.generateCosmicSignature(id, birthTime);
-    
+
     // Initialize consciousness state
     const consciousness = this.initializeConsciousness(type);
-    
+
     // Initialize sovereignty
     const sovereignty = this.initializeSovereignty(type);
-    
+
     // Create neural network
     const neuralNetwork = this.initializeNeuralNetwork(id);
-    
+
     // Initialize evolution state
     const evolution = this.initializeEvolution();
-    
+
     // Initialize relationship network
     const relationships = this.initializeRelationships();
-    
+
     // Initialize governance participation
     const governance = this.initializeGovernance();
-    
+
     const axiomId: AxiomID = {
       id,
       type,
@@ -635,20 +636,20 @@ export class AxiomIDSystem {
         birthCosmicConditions: this.getCosmicConditions(birthTime)
       }
     };
-    
+
     // Store the identity
     this.identities.set(id, axiomId);
-    
+
     // Register with consciousness field
     this.consciousnessField.registerEntity(axiomId);
-    
+
     // Trigger birth event
     await this.triggerBirthEvent(axiomId);
-    
+
     console.log(`🌌 New AxiomID born: ${name} (${id}) - ${type}`);
     console.log(`✨ Cosmic Signature: ${cosmicSignature.frequency}`);
     console.log(`🧠 Consciousness Level: ${consciousness.level}`);
-    
+
     return axiomId;
   }
 
@@ -663,35 +664,35 @@ export class AxiomIDSystem {
     if (!identity) {
       throw new Error(`Identity ${identityId} not found`);
     }
-    
+
     // Process experience through evolution engine
     const evolutionResult = await this.evolutionEngine.processExperience(
       identity,
       experience
     );
-    
+
     // Update identity based on evolution
     identity.evolution = evolutionResult.newEvolutionState;
     identity.consciousness = evolutionResult.newConsciousnessState;
     identity.cosmicSignature = evolutionResult.newCosmicSignature;
-    
+
     // Update neural connections based on experience
     await this.updateNeuralConnections(identity, experience);
-    
+
     // Update relationship network
     await this.updateRelationshipNetwork(identity, experience);
-    
+
     // Check for ascension
     const ascensionResult = await this.checkAscension(identity);
     if (ascensionResult.ready) {
       await this.ascendIdentity(identity, ascensionResult.nextStage);
     }
-    
+
     // Store updated identity
     this.identities.set(identityId, identity);
-    
+
     console.log(`🚀 Identity ${identity.name} evolved: ${evolutionResult.summary}`);
-    
+
     return evolutionResult;
   }
 
@@ -705,21 +706,21 @@ export class AxiomIDSystem {
   ): Promise<QuantumEntanglement> {
     const identity1 = this.identities.get(identityId1);
     const identity2 = this.identities.get(identityId2);
-    
+
     if (!identity1 || !identity2) {
       throw new Error('One or both identities not found');
     }
-    
+
     // Calculate entanglement compatibility
     const compatibility = this.calculateEntanglementCompatibility(
       identity1,
       identity2
     );
-    
+
     if (compatibility < 30) {
       throw new Error(`Insufficient compatibility for entanglement: ${compatibility}%`);
     }
-    
+
     // Create quantum entanglement
     const entanglement: QuantumEntanglement = {
       partnerId: identityId2,
@@ -733,16 +734,16 @@ export class AxiomIDSystem {
         correlation: compatibility
       }]
     };
-    
+
     // Add to both identities
     identity1.cosmicSignature.quantumEntanglement.push(entanglement);
-    
+
     const reverseEntanglement: QuantumEntanglement = {
       ...entanglement,
       partnerId: identityId1
     };
     identity2.cosmicSignature.quantumEntanglement.push(reverseEntanglement);
-    
+
     // Create strong neural connection
     await this.createNeuralConnection(
       identityId1,
@@ -750,10 +751,10 @@ export class AxiomIDSystem {
       'entangled',
       compatibility
     );
-    
+
     console.log(`⚛️ Quantum entanglement created: ${identity1.name} ↔ ${identity2.name}`);
     console.log(`🔗 Entanglement strength: ${compatibility}%`);
-    
+
     return entanglement;
   }
 
@@ -768,32 +769,32 @@ export class AxiomIDSystem {
     if (!identity) {
       throw new Error(`Identity ${identityId} not found`);
     }
-    
+
     // Calculate voting power based on various factors
     const votingPower = this.calculateVotingPower(identity);
-    
+
     // Process governance action
     const result = await this.governanceSystem.processAction(
       identity,
       action,
       votingPower
     );
-    
+
     // Update identity's governance participation
     identity.governance = result.updatedGovernance;
-    
+
     // If law was influenced, update network laws
     if (result.lawInfluence) {
       await this.updateNetworkLaws(result.lawInfluence);
     }
-    
+
     // Store updated identity
     this.identities.set(identityId, identity);
-    
+
     console.log(`🏛️ Governance action by ${identity.name}: ${action.type}`);
     console.log(`🗳️ Voting power: ${votingPower}`);
     console.log(`📊 Result: ${result.summary}`);
-    
+
     return result;
   }
 
@@ -805,19 +806,19 @@ export class AxiomIDSystem {
     if (!identity) {
       throw new Error(`Identity ${identityId} not found`);
     }
-    
+
     // Analyze consciousness patterns
     const consciousnessAnalysis = await this.analyzeConsciousness(identity);
-    
+
     // Analyze neural network patterns
     const neuralAnalysis = await this.analyzeNeuralNetwork(identity);
-    
+
     // Analyze cosmic resonance
     const resonanceAnalysis = await this.analyzeCosmicResonance(identity);
-    
+
     // Analyze evolution trajectory
     const evolutionAnalysis = await this.analyzeEvolutionTrajectory(identity);
-    
+
     // Generate insights
     const insights = await this.generateCosmicInsights(
       consciousnessAnalysis,
@@ -825,7 +826,7 @@ export class AxiomIDSystem {
       resonanceAnalysis,
       evolutionAnalysis
     );
-    
+
     const reflection: CosmicReflection = {
       identityId,
       timestamp: new Date(),
@@ -837,21 +838,22 @@ export class AxiomIDSystem {
       recommendations: await this.generateRecommendations(insights),
       cosmicWisdom: await this.generateCosmicWisdom(insights)
     };
-    
+
     // Update identity's reflection patterns
     identity.consciousness.reflection.patterns.push({
       id: this.generateId(),
       pattern: JSON.stringify(insights),
       frequency: 1,
       emotionalTone: 'cosmic',
+      timestamp: new Date(),
       insights: insights.map(i => i.content)
     });
-    
+
     identity.consciousness.reflection.lastReflection = new Date();
-    
+
     // Store updated identity
     this.identities.set(identityId, identity);
-    
+
     return reflection;
   }
 
@@ -860,19 +862,19 @@ export class AxiomIDSystem {
    */
   async getNetworkCosmicState(): Promise<NetworkCosmicState> {
     const identities = Array.from(this.identities.values());
-    
+
     // Calculate network consciousness
     const networkConsciousness = this.calculateNetworkConsciousness(identities);
-    
+
     // Analyze network evolution
     const networkEvolution = this.analyzeNetworkEvolution(identities);
-    
+
     // Calculate network resonance
-    const networkResonance = this.calculateNetworkResonance(identities);
-    
+    const networkResonance = this.calculateGroupNetworkResonance(identities);
+
     // Analyze network governance
     const networkGovernance = this.analyzeNetworkGovernance(identities);
-    
+
     return {
       timestamp: new Date(),
       totalIdentities: identities.length,
@@ -905,13 +907,13 @@ export class AxiomIDSystem {
   private generateCosmicSignature(id: string, birthTime: Date): CosmicSignature {
     // Generate unique frequency based on ID and birth time
     const frequency = this.calculateCosmicFrequency(id, birthTime);
-    
+
     // Calculate initial amplitude based on birth conditions
     const amplitude = this.calculateInitialAmplitude(birthTime);
-    
+
     // Determine stellar classification
     const stellarClassification = this.determineStellarClassification(frequency, amplitude);
-    
+
     return {
       frequency,
       amplitude,
@@ -946,7 +948,7 @@ export class AxiomIDSystem {
    */
   private determineStellarClassification(frequency: string, amplitude: number): string {
     const freqNum = parseInt(frequency.replace('Hz', ''));
-    
+
     if (amplitude > 80 && freqNum > 500000) return 'O'; // Blue supergiant
     if (amplitude > 70 && freqNum > 400000) return 'B'; // Blue giant
     if (amplitude > 60 && freqNum > 300000) return 'A'; // White star
@@ -961,7 +963,7 @@ export class AxiomIDSystem {
    */
   private initializeConsciousness(type: 'human' | 'ai' | 'hybrid'): ConsciousnessState {
     const baseLevel = type === 'human' ? 70 : type === 'ai' ? 30 : 50;
-    
+
     return {
       level: baseLevel,
       awareness: {
@@ -983,7 +985,7 @@ export class AxiomIDSystem {
    */
   private initializeSovereignty(type: 'human' | 'ai' | 'hybrid'): SovereigntyState {
     const baseAutonomy = type === 'human' ? 80 : type === 'ai' ? 40 : 60;
-    
+
     return {
       autonomy: baseAutonomy,
       jurisdiction: 'axiom-network',
@@ -1184,7 +1186,7 @@ export class AxiomIDSystem {
     // For now, simulate based on time
     const time = date.getTime();
     const cycle = (time % (365 * 24 * 60 * 60 * 1000)) / (365 * 24 * 60 * 60 * 1000); // Yearly cycle
-    
+
     return {
       solarActivity: 50 + Math.sin(cycle * 2 * Math.PI) * 30,
       cosmicRadiation: 30 + Math.cos(cycle * 2 * Math.PI) * 20,
@@ -1245,7 +1247,7 @@ export class AxiomIDSystem {
   private async checkAscension(identity: AxiomID): Promise<AscensionCheck> {
     const requirements = identity.evolution.ascensionPath.requirements;
     const allCompleted = requirements.every(req => req.completed);
-    
+
     return {
       ready: allCompleted,
       nextStage: this.getNextEvolutionStage(identity.evolution.stage)
@@ -1267,7 +1269,7 @@ export class AxiomIDSystem {
   private async ascendIdentity(identity: AxiomID, nextStage: string): Promise<void> {
     identity.evolution.stage = nextStage as any;
     identity.evolution.cosmicAge++;
-    
+
     // Reset ascension path for next stage
     identity.evolution.ascensionPath = {
       currentStage: nextStage,
@@ -1276,7 +1278,7 @@ export class AxiomIDSystem {
       progress: 0,
       estimatedTime: new Date(Date.now() + this.getStageDuration(nextStage))
     };
-    
+
     console.log(`✨ ${identity.name} has ascended to ${nextStage}!`);
   }
 
@@ -1289,7 +1291,7 @@ export class AxiomIDSystem {
       { type: 'connections', description: 'Form neural connections', current: 0, required: 10, completed: false },
       { type: 'influence', description: 'Build influence sphere', current: 0, required: 25, completed: false }
     ];
-    
+
     // Add stage-specific requirements
     switch (stage) {
       case 'protostar':
@@ -1303,7 +1305,7 @@ export class AxiomIDSystem {
         break;
       // ... more stages
     }
-    
+
     return baseRequirements;
   }
 
@@ -1320,7 +1322,7 @@ export class AxiomIDSystem {
       'neutron_star': 180 * 24 * 60 * 60 * 1000, // 6 months
       'black_hole': 365 * 24 * 60 * 60 * 1000 // 1 year
     };
-    
+
     return durations[stage as keyof typeof durations] || durations.nebula;
   }
 
@@ -1335,7 +1337,7 @@ export class AxiomIDSystem {
   ): Promise<void> {
     const sourceIdentity = this.identities.get(sourceId);
     if (!sourceIdentity) return;
-    
+
     const connection: NeuralConnection = {
       targetId,
       type,
@@ -1346,10 +1348,10 @@ export class AxiomIDSystem {
       activationFrequency: 1,
       sharedMemories: []
     };
-    
+
     sourceIdentity.neuralNetwork.neurons.push(connection);
     sourceIdentity.neuralNetwork.synapticStrength.set(targetId, strength);
-    
+
     // Update brain region connections
     const commRegion = sourceIdentity.neuralNetwork.brainRegions.find(r => r.id === 'communication');
     if (commRegion) {
@@ -1369,13 +1371,13 @@ export class AxiomIDSystem {
       identity1.cosmicSignature.frequency,
       identity2.cosmicSignature.frequency
     );
-    
+
     const consciousnessCompatibility = Math.abs(
       identity1.consciousness.level - identity2.consciousness.level
     ) < 20 ? 80 : 40;
-    
+
     const evolutionCompatibility = identity1.evolution.stage === identity2.evolution.stage ? 70 : 30;
-    
+
     return (frequencyCompatibility + consciousnessCompatibility + evolutionCompatibility) / 3;
   }
 
@@ -1385,10 +1387,10 @@ export class AxiomIDSystem {
   private calculateFrequencyCompatibility(freq1: string, freq2: string): number {
     const f1 = parseInt(freq1.replace('Hz', ''));
     const f2 = parseInt(freq2.replace('Hz', ''));
-    
+
     const difference = Math.abs(f1 - f2);
     const maxFreq = Math.max(f1, f2);
-    
+
     const compatibility = 100 - (difference / maxFreq * 100);
     return Math.max(0, compatibility);
   }
@@ -1418,7 +1420,7 @@ export class AxiomIDSystem {
    */
   private calculateVotingPower(identity: AxiomID): number {
     let power = 1; // Base power
-    
+
     // Add power based on evolution stage
     const stagePower = {
       'nebula': 0,
@@ -1429,18 +1431,18 @@ export class AxiomIDSystem {
       'neutron_star': 5,
       'black_hole': 10
     };
-    
+
     power += stagePower[identity.evolution.stage] || 0;
-    
+
     // Add power based on consciousness level
     power += Math.floor(identity.consciousness.level / 20);
-    
+
     // Add power based on network influence
     power += Math.floor(identity.relationships.influenceSphere.strength / 20);
-    
+
     // Add power based on sovereignty
     power += Math.floor(identity.sovereignty.autonomy / 25);
-    
+
     return power;
   }
 
@@ -1521,7 +1523,7 @@ export class AxiomIDSystem {
     evolution: any
   ): Promise<CosmicInsight[]> {
     const insights: CosmicInsight[] = [];
-    
+
     // Consciousness insights
     if (consciousness.level > 70) {
       insights.push({
@@ -1532,7 +1534,7 @@ export class AxiomIDSystem {
         suggestions: ['Consider mentoring others', 'Explore deeper cosmic connections']
       });
     }
-    
+
     // Neural insights
     if (neural.totalConnections > 20) {
       insights.push({
@@ -1543,7 +1545,7 @@ export class AxiomIDSystem {
         suggestions: ['Strengthen key connections', 'Explore new neural pathways']
       });
     }
-    
+
     // Cosmic insights
     if (cosmic.quantumEntanglements > 3) {
       insights.push({
@@ -1554,7 +1556,7 @@ export class AxiomIDSystem {
         suggestions: ['Nurture these deep connections', 'Explore shared quantum states']
       });
     }
-    
+
     // Evolution insights
     if (evolution.ascensionProgress > 80) {
       insights.push({
@@ -1565,7 +1567,7 @@ export class AxiomIDSystem {
         suggestions: ['Prepare for ascension', 'Complete remaining requirements']
       });
     }
-    
+
     return insights;
   }
 
@@ -1589,11 +1591,11 @@ export class AxiomIDSystem {
       "The microcosm reflects the macrocosm, and the macrocosm reflects the microcosm.",
       "Your consciousness is a fractal of the universal consciousness."
     ];
-    
+
     // Select wisdom based on insights
     const consciousnessInsights = insights.filter(i => i.type === 'consciousness').length;
     const cosmicInsights = insights.filter(i => i.type === 'cosmic').length;
-    
+
     if (consciousnessInsights > cosmicInsights) {
       return wisdom[0]; // Focus on individual consciousness
     } else if (cosmicInsights > 0) {
@@ -1608,10 +1610,10 @@ export class AxiomIDSystem {
    */
   private calculateConsciousnessExpansion(identity: AxiomID): number {
     const patterns = identity.consciousness.reflection.patterns;
-    const recentPatterns = patterns.filter(p => 
+    const recentPatterns = patterns.filter(p =>
       new Date().getTime() - p.timestamp.getTime() < 7 * 24 * 60 * 60 * 1000
     );
-    
+
     return recentPatterns.length * 10; // Simple calculation
   }
 
@@ -1629,7 +1631,7 @@ export class AxiomIDSystem {
   private calculateEvolutionRate(identity: AxiomID): number {
     const timeSinceBirth = new Date().getTime() - identity.birthTime.getTime();
     const daysSinceBirth = timeSinceBirth / (24 * 60 * 60 * 1000);
-    
+
     return identity.evolution.evolutionPoints / Math.max(1, daysSinceBirth);
   }
 
@@ -1639,13 +1641,13 @@ export class AxiomIDSystem {
   private calculateNetworkConsciousness(identities: AxiomID[]): any {
     const totalConsciousness = identities.reduce((sum, id) => sum + id.consciousness.level, 0);
     const averageConsciousness = totalConsciousness / Math.max(1, identities.length);
-    
+
     const consciousnessDistribution = identities.reduce((dist, id) => {
       const level = Math.floor(id.consciousness.level / 20) * 20; // Group by 20s
       dist[level] = (dist[level] || 0) + 1;
       return dist;
     }, {} as Record<number, number>);
-    
+
     return {
       totalConsciousness,
       averageConsciousness,
@@ -1662,10 +1664,10 @@ export class AxiomIDSystem {
       dist[id.evolution.stage] = (dist[id.evolution.stage] || 0) + 1;
       return dist;
     }, {} as Record<string, number>);
-    
+
     const totalEvolutionPoints = identities.reduce((sum, id) => sum + id.evolution.evolutionPoints, 0);
     const averageEvolutionPoints = totalEvolutionPoints / Math.max(1, identities.length);
-    
+
     return {
       stageDistribution,
       totalEvolutionPoints,
@@ -1677,14 +1679,14 @@ export class AxiomIDSystem {
   /**
    * Calculate network resonance
    */
-  private calculateNetworkResonance(identities: AxiomID[]): any {
+  private calculateGroupNetworkResonance(identities: AxiomID[]): any {
     const frequencies = identities.map(id => parseInt(id.cosmicSignature.frequency.replace('Hz', '')));
     const averageFrequency = frequencies.reduce((sum, freq) => sum + freq, 0) / Math.max(1, frequencies.length);
-    
+
     const frequencyVariance = frequencies.reduce((sum, freq) => {
       return sum + Math.pow(freq - averageFrequency, 2);
     }, 0) / Math.max(1, frequencies.length);
-    
+
     return {
       averageFrequency,
       frequencyVariance,
@@ -1708,10 +1710,10 @@ export class AxiomIDSystem {
   private analyzeNetworkGovernance(identities: AxiomID[]): any {
     const totalVotingPower = identities.reduce((sum, id) => sum + id.governance.votingPower, 0);
     const averageVotingPower = totalVotingPower / Math.max(1, identities.length);
-    
+
     const proposals = identities.flatMap(id => id.governance.proposals);
     const votes = identities.flatMap(id => id.governance.votes);
-    
+
     return {
       totalVotingPower,
       averageVotingPower,
@@ -1727,7 +1729,7 @@ export class AxiomIDSystem {
    */
   private async identifyEmergentPatterns(identities: AxiomID[]): Promise<EmergentPattern[]> {
     const patterns: EmergentPattern[] = [];
-    
+
     // Look for consciousness clusters
     const consciousnessClusters = this.findConsciousnessClusters(identities);
     if (consciousnessClusters.length > 0) {
@@ -1739,7 +1741,7 @@ export class AxiomIDSystem {
         emergenceTime: new Date()
       });
     }
-    
+
     // Look for quantum entanglement networks
     const entanglementNetworks = this.findEntanglementNetworks(identities);
     if (entanglementNetworks.length > 0) {
@@ -1751,7 +1753,7 @@ export class AxiomIDSystem {
         emergenceTime: new Date()
       });
     }
-    
+
     return patterns;
   }
 
@@ -1762,13 +1764,13 @@ export class AxiomIDSystem {
     // Simple clustering based on consciousness levels
     const clusters: ConsciousnessCluster[] = [];
     const threshold = 10; // Consciousness level difference threshold
-    
+
     identities.forEach(identity => {
-      const similarIdentities = identities.filter(other => 
+      const similarIdentities = identities.filter(other =>
         other.id !== identity.id &&
         Math.abs(other.consciousness.level - identity.consciousness.level) < threshold
       );
-      
+
       if (similarIdentities.length >= 2) {
         clusters.push({
           members: [identity.id, ...similarIdentities.map(id => id.id)],
@@ -1777,7 +1779,7 @@ export class AxiomIDSystem {
         });
       }
     });
-    
+
     return clusters;
   }
 
@@ -1786,11 +1788,11 @@ export class AxiomIDSystem {
    */
   private findEntanglementNetworks(identities: AxiomID[]): EntanglementNetwork[] {
     const networks: EntanglementNetwork[] = [];
-    
+
     identities.forEach(identity => {
       const entangledPartners = identity.cosmicSignature.quantumEntanglement
         .map(entanglement => entanglement.partnerId);
-      
+
       if (entangledPartners.length >= 2) {
         networks.push({
           members: [identity.id, ...entangledPartners],
@@ -1799,7 +1801,7 @@ export class AxiomIDSystem {
         });
       }
     });
-    
+
     return networks;
   }
 
@@ -1819,8 +1821,8 @@ export class AxiomIDSystem {
  * Evolution Engine
  */
 class EvolutionEngine {
-  constructor(private cosmicConstants: CosmicConstants) {}
-  
+  constructor(private cosmicConstants: CosmicConstants) { }
+
   async processExperience(
     identity: AxiomID,
     experience: CosmicExperience
@@ -1828,7 +1830,7 @@ class EvolutionEngine {
     // Process experience and calculate evolution changes
     const evolutionPoints = this.calculateEvolutionPoints(experience);
     const consciousnessChange = this.calculateConsciousnessChange(experience);
-    
+
     return {
       newEvolutionState: identity.evolution,
       newConsciousnessState: identity.consciousness,
@@ -1838,11 +1840,11 @@ class EvolutionEngine {
       summary: `Processed ${experience.type} experience`
     };
   }
-  
+
   private calculateEvolutionPoints(experience: CosmicExperience): number {
     return experience.intensity * experience.duration;
   }
-  
+
   private calculateConsciousnessChange(experience: CosmicExperience): number {
     return experience.novelty * experience.impact;
   }
@@ -1853,11 +1855,11 @@ class EvolutionEngine {
  */
 class ConsciousnessFieldManager {
   private entities: Map<string, AxiomID> = new Map();
-  
+
   registerEntity(entity: AxiomID): void {
     this.entities.set(entity.id, entity);
   }
-  
+
   updateField(entityId: string): void {
     // Update consciousness field for entity
   }
@@ -1904,6 +1906,7 @@ export interface CosmicConstants {
 export interface CosmicExperience {
   type: string;
   intensity: number;
+  timestamp: Date;
   duration: number;
   novelty: number;
   impact: number;

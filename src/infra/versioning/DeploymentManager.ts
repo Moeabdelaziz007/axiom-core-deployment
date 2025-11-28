@@ -143,7 +143,7 @@ export class DeploymentManager {
    */
   async startDeployment(config: DeploymentConfig): Promise<string> {
     const deploymentId = this.generateDeploymentId();
-    
+
     console.log(`🚀 Starting deployment: ${deploymentId}`);
     console.log(`📦 Version: ${config.version}`);
     console.log(`🌍 Environment: ${config.environmentId}`);
@@ -191,6 +191,13 @@ export class DeploymentManager {
   }
 
   /**
+   * Get deployment status
+   */
+  getDeploymentStatus(deploymentId: string): DeploymentStatus | null {
+    return this.deployments.get(deploymentId) || null;
+  }
+
+  /**
    * Execute deployment based on strategy
    */
   private async executeDeployment(deploymentId: string, config: DeploymentConfig): Promise<void> {
@@ -202,14 +209,14 @@ export class DeploymentManager {
       this.addLog(deploymentId, 'info', `Starting ${config.strategy} deployment`);
 
       const buildStart = Date.now();
-      
+
       // Step 1: Build application
       await this.executeStep(deploymentId, 'Building application', async () => {
         await this.buildApplication(config.version);
       });
-      
+
       deployment.metrics.buildTime = Date.now() - buildStart;
-      
+
       // Step 2: Create rollback point
       await this.executeStep(deploymentId, 'Creating rollback point', async () => {
         const rollbackPoint = await this.versioningSystem.createRollbackPoint(
@@ -303,7 +310,7 @@ export class DeploymentManager {
     // Run health checks on inactive environment
     await this.executeStep(deploymentId, 'Validating green environment', async () => {
       const healthResults = await this.runEnvironmentHealthChecks(inactiveEnv.id, config.healthChecks);
-      
+
       const failedChecks = healthResults.filter(r => r.status === 'fail');
       if (failedChecks.length > 0) {
         throw new Error(`Health checks failed: ${failedChecks.map(r => r.name).join(', ')}`);
@@ -341,11 +348,11 @@ export class DeploymentManager {
 
     for (let i = 0; i < instances.length; i += batchSize) {
       const batch = instances.slice(i, i + batchSize);
-      
-      await this.executeStep(deploymentId, `Updating batch ${Math.floor(i/batchSize) + 1}`, async () => {
+
+      await this.executeStep(deploymentId, `Updating batch ${Math.floor(i / batchSize) + 1}`, async () => {
         for (const instance of batch) {
           await this.updateInstance(instance.id, config.version);
-          
+
           // Health check for updated instance
           const healthResult = await this.runInstanceHealthCheck(instance.id);
           if (!healthResult.healthy) {
@@ -393,7 +400,7 @@ export class DeploymentManager {
         canaryInstances.map(i => i.id),
         10 * 60 * 1000 // 10 minutes
       );
-      
+
       if (!monitoringResult.success) {
         throw new Error(`Canary deployment failed: ${monitoringResult.issues.join(', ')}`);
       }
@@ -438,7 +445,7 @@ export class DeploymentManager {
 
     // Update all instances simultaneously
     await this.executeStep(deploymentId, 'Updating all instances', async () => {
-      const updatePromises = instances.map(instance => 
+      const updatePromises = instances.map(instance =>
         this.updateInstance(instance.id, config.version)
       );
       await Promise.all(updatePromises);
@@ -455,7 +462,7 @@ export class DeploymentManager {
    * Execute rollback
    */
   async executeRollback(
-    deploymentId: string, 
+    deploymentId: string,
     rollbackPointId: string,
     config: DeploymentConfig
   ): Promise<void> {
@@ -470,7 +477,7 @@ export class DeploymentManager {
     try {
       // Execute rollback using versioning system
       const rollbackResult = await this.versioningSystem.executeRollback(rollbackPointId);
-      
+
       if (!rollbackResult.status === 'completed') {
         throw new Error(`Rollback failed: ${rollbackResult.error}`);
       }
@@ -485,7 +492,7 @@ export class DeploymentManager {
     } catch (error) {
       deployment.status = 'failed';
       deployment.error = error instanceof Error ? error.message : String(error);
-      
+
       this.addLog(deploymentId, 'error', `Rollback failed: ${deployment.error}`);
     }
   }
@@ -497,7 +504,7 @@ export class DeploymentManager {
     console.log('🚨 EMERGENCY ROLLBACK INITIATED');
 
     const rollbackResult = await this.versioningSystem.emergencyRollback(environmentId);
-    
+
     if (rollbackResult.status === 'completed') {
       console.log(`✅ Emergency rollback completed: ${rollbackResult.rollbackPointId}`);
       return rollbackResult.rollbackPointId;
@@ -520,7 +527,7 @@ export class DeploymentManager {
       try {
         const result = await this.runHealthCheck(check);
         results.push(result);
-        
+
         // Store result for monitoring
         if (!this.healthCheckResults.has(deploymentId)) {
           this.healthCheckResults.set(deploymentId, []);
@@ -603,9 +610,9 @@ export class DeploymentManager {
     const method = check.method || 'GET';
 
     const response = await fetch(url, { method });
-    
+
     const success = response.status === (check.expectedStatus || 200);
-    
+
     return {
       success,
       details: {
@@ -642,16 +649,16 @@ export class DeploymentManager {
 
     // Measure response time
     const startTime = Date.now();
-    
+
     // Make a test request
     await this.runApiHealthCheck({
       ...check,
       type: 'api',
       endpoint: '/health'
     });
-    
+
     const responseTime = Date.now() - startTime;
-    
+
     let success = true;
     switch (check.threshold.operator) {
       case '>':
@@ -747,8 +754,8 @@ export class DeploymentManager {
    * Execute deployment step
    */
   private async executeStep(
-    deploymentId: string, 
-    stepName: string, 
+    deploymentId: string,
+    stepName: string,
     stepFunction: () => Promise<void>
   ): Promise<void> {
     const deployment = this.deployments.get(deploymentId);
@@ -835,7 +842,7 @@ export class DeploymentManager {
    * Send notifications
    */
   private async sendNotifications(
-    notifications: NotificationConfig[], 
+    notifications: NotificationConfig[],
     event: 'started' | 'completed' | 'failed' | 'rolled_back',
     deployment: DeploymentStatus
   ): Promise<void> {

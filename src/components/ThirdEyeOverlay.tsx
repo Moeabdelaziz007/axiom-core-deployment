@@ -20,7 +20,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-import { Eye, Sparkles, AlertTriangle, TrendingUp, Zap, Brain, Infinity } from 'lucide-react';
+import { Eye, Sparkles, AlertTriangle, TrendingUp, Zap, Brain } from 'lucide-react';
 import { AxiomID } from '../infra/core/AxiomID';
 import { KarmaBalance } from '../infra/core/DualityEngine';
 
@@ -116,7 +116,7 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
   const controls = useAnimation();
 
   // Default configuration
@@ -211,7 +211,7 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
     // In production, this would use actual ML models
     axiomIds.forEach(axiomId => {
       const balance = karmaBalances.get(axiomId.id);
-      
+
       // Predict potential failures
       if (balance && balance.vicePoints > balance.virtuePoints * 1.5) {
         predictions.push({
@@ -394,7 +394,7 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
     if (newState) {
       // Start scanning when activated
       await performScan();
-      
+
       // Start animation
       controls.start({
         opacity: 1,
@@ -440,27 +440,27 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
 
         // Draw connection with animation
         const pulse = Math.sin(time * 2 + connection.phase) * 0.5 + 0.5;
-        
+
         ctx.beginPath();
         ctx.moveTo(fromX, fromY);
-        
+
         // Create curved path for quantum connections
         const controlX = (fromX + toX) / 2 + Math.sin(time + connection.phase) * 50;
         const controlY = (fromY + toY) / 2 + Math.cos(time + connection.phase) * 50;
-        
+
         ctx.quadraticCurveTo(controlX, controlY, toX, toY);
-        
+
         ctx.strokeStyle = connection.color + Math.floor(pulse * 255).toString(16).padStart(2, '0');
         ctx.lineWidth = (connection.strength / 100) * 3 * pulse;
         ctx.stroke();
-        
+
         // Draw energy particles along the connection
         const particleCount = 3;
         for (let i = 0; i < particleCount; i++) {
           const t = ((time * 0.5 + i / particleCount) % 1);
           const x = (1 - t) * (1 - t) * fromX + 2 * (1 - t) * t * controlX + t * t * toX;
           const y = (1 - t) * (1 - t) * fromY + 2 * (1 - t) * t * controlY + t * t * toY;
-          
+
           ctx.beginPath();
           ctx.arc(x, y, 2, 0, Math.PI * 2);
           ctx.fillStyle = connection.color;
@@ -508,7 +508,7 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
       case 'PREDICTION':
         return <Brain className="w-4 h-4" />;
       case 'QUANTUM_ENTANGLEMENT':
-        return <Infinity className="w-4 h-4" />;
+        return <Sparkles className="w-4 h-4" />;
       default:
         return <Sparkles className="w-4 h-4" />;
     }
@@ -519,9 +519,8 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
       {/* Third Eye Trigger Button */}
       <motion.button
         onClick={toggleThirdEye}
-        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 p-4 rounded-full shadow-[0_0_30px_rgba(139,92,246,0.5)] border border-white/10 backdrop-blur-md transition-all duration-500 ${
-          isActive ? 'bg-purple-900/80 scale-110' : 'bg-black/60 hover:scale-105'
-        }`}
+        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 p-4 rounded-full shadow-[0_0_30px_rgba(139,92,246,0.5)] border border-white/10 backdrop-blur-md transition-all duration-500 ${isActive ? 'bg-purple-900/80 scale-110' : 'bg-black/60 hover:scale-105'
+          }`}
         whileHover={{ boxShadow: "0 0 50px rgba(139,92,246,0.8)" }}
         whileTap={{ scale: 0.95 }}
       >
@@ -548,10 +547,10 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
           >
             {/* Ambient Effect */}
             <div className="absolute inset-0 bg-purple-900/10 backdrop-filter backdrop-contrast-125 mix-blend-overlay" />
-            
+
             {/* Scanlines Effect */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent opacity-20 animate-pulse" />
-            
+
             {/* Quantum Connection Canvas */}
             <canvas
               ref={canvasRef}
@@ -581,12 +580,11 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
-                className={`absolute bg-black/80 border p-3 rounded-lg backdrop-blur-md pointer-events-auto cursor-pointer transform transition-all duration-300 hover:scale-105 ${
-                  insight.severity === 'critical' ? 'border-red-500/50' :
+                className={`absolute bg-black/80 border p-3 rounded-lg backdrop-blur-md pointer-events-auto cursor-pointer transform transition-all duration-300 hover:scale-105 ${insight.severity === 'critical' ? 'border-red-500/50' :
                   insight.severity === 'high' ? 'border-orange-500/50' :
-                  insight.severity === 'medium' ? 'border-yellow-500/50' :
-                  'border-blue-500/50'
-                }`}
+                    insight.severity === 'medium' ? 'border-yellow-500/50' :
+                      'border-blue-500/50'
+                  }`}
                 style={{
                   top: `${20 + (index % 3) * 150}px`,
                   left: `${20 + Math.floor(index / 3) * 300}px`,
@@ -595,26 +593,24 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
                 }}
                 onClick={() => onInsightClick?.(insight)}
               >
-                <div className={`flex items-center gap-2 text-xs font-bold mb-2 ${
-                  insight.type === 'OPPORTUNITY' ? 'text-green-300' :
+                <div className={`flex items-center gap-2 text-xs font-bold mb-2 ${insight.type === 'OPPORTUNITY' ? 'text-green-300' :
                   insight.type === 'WARNING' ? 'text-red-300' :
-                  insight.type === 'PREDICTION' ? 'text-purple-300' :
-                  'text-blue-300'
-                }`}>
+                    insight.type === 'PREDICTION' ? 'text-purple-300' :
+                      'text-blue-300'
+                  }`}>
                   {getInsightIcon(insight.type)}
                   <span>{insight.title}</span>
                 </div>
-                
+
                 <p className="text-xs text-gray-300 mb-2">{insight.insight}</p>
-                
+
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="text-gray-400">Probability:</span>
-                    <span className={`font-bold ${
-                      insight.probability > 80 ? 'text-green-400' :
+                    <span className={`font-bold ${insight.probability > 80 ? 'text-green-400' :
                       insight.probability > 60 ? 'text-yellow-400' :
-                      'text-red-400'
-                    }`}>{insight.probability}%</span>
+                        'text-red-400'
+                      }`}>{insight.probability}%</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-gray-400">Confidence:</span>
@@ -632,12 +628,11 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
                 )}
 
                 {/* Visual effect indicator */}
-                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${
-                  insight.visualEffect === 'pulse' ? 'animate-pulse' :
+                <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full ${insight.visualEffect === 'pulse' ? 'animate-pulse' :
                   insight.visualEffect === 'glow' ? 'animate-ping' :
-                  insight.visualEffect === 'wave' ? 'animate-bounce' :
-                  'animate-spin'
-                }`} style={{ backgroundColor: insight.auraColor }} />
+                    insight.visualEffect === 'wave' ? 'animate-bounce' :
+                      'animate-spin'
+                  }`} style={{ backgroundColor: insight.auraColor }} />
               </motion.div>
             ))}
 
@@ -653,11 +648,10 @@ export const ThirdEyeOverlay: React.FC<ThirdEyeOverlayProps> = ({
                 }}
               >
                 <motion.div
-                  className={`rounded-full blur-xl ${
-                    aura.pattern === 'pulse' ? 'animate-pulse' :
+                  className={`rounded-full blur-xl ${aura.pattern === 'pulse' ? 'animate-pulse' :
                     aura.pattern === 'gradient' ? 'animate-pulse' :
-                    'animate-bounce'
-                  }`}
+                      'animate-bounce'
+                    }`}
                   style={{
                     width: aura.radius * 2,
                     height: aura.radius * 2,

@@ -166,13 +166,13 @@ export interface SystemMetrics {
  * Main Axiom system orchestrator
  */
 export class AxiomSystemCore {
-  private versioningSystem: AgentVersioningSystem;
-  private migrationSystem: DatabaseMigrationSystem;
-  private deploymentManager: DeploymentManager;
-  private hotUpdateSystem: HotUpdateSystem;
+  private versioningSystem!: AgentVersioningSystem;
+  private migrationSystem!: DatabaseMigrationSystem;
+  private deploymentManager!: DeploymentManager;
+  private hotUpdateSystem!: HotUpdateSystem;
   private config: AxiomSystemConfig;
-  private metrics: SystemMetrics;
-  private status: SystemStatus;
+  private metrics!: SystemMetrics;
+  private status!: SystemStatus;
 
   constructor(config: AxiomSystemConfig = {}) {
     this.config = this.mergeConfig(config);
@@ -195,7 +195,7 @@ export class AxiomSystemCore {
     this.versioningSystem = new AgentVersioningSystem(this.config.versioning);
 
     // Initialize migration system
-    this.migrationSystem = new DatabaseMigrationSystem(this.config.migrations);
+    this.migrationSystem = new DatabaseMigrationSystem(this.getDatabaseConnection(), this.config.migrations);
 
     // Initialize deployment manager
     this.deploymentManager = new DeploymentManager(this.versioningSystem, this.config.deployment);
@@ -331,7 +331,7 @@ export class AxiomSystemCore {
    */
   private deepMerge(target: any, source: any): any {
     const result = { ...target };
-    
+
     for (const key in source) {
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
         result[key] = this.deepMerge(target[key] || {}, source[key]);
@@ -339,7 +339,7 @@ export class AxiomSystemCore {
         result[key] = source[key];
       }
     }
-    
+
     return result;
   }
 
@@ -404,19 +404,19 @@ export class AxiomSystemCore {
    */
   private updateVersionMetrics(version: VersionMetadata): void {
     this.metrics.versions.total++;
-    
+
     if (version.semanticVersion.major > this.metrics.versions.major) {
       this.metrics.versions.major = version.semanticVersion.major;
     }
-    
+
     if (version.semanticVersion.minor > this.metrics.versions.minor) {
       this.metrics.versions.minor = version.semanticVersion.minor;
     }
-    
+
     if (version.semanticVersion.patch > this.metrics.versions.patch) {
       this.metrics.versions.patch = version.semanticVersion.patch;
     }
-    
+
     this.metrics.versions.latest = version.version;
   }
 
@@ -435,7 +435,12 @@ export class AxiomSystemCore {
       version: request.version,
       environmentId: request.environment,
       strategy: request.strategy || this.config.deployment?.defaultStrategy || 'blue-green',
-      healthChecks: request.healthChecks || this.getDefaultHealthChecks(),
+      healthChecks: (request.healthChecks || this.getDefaultHealthChecks()).map(check => ({
+        ...check,
+        timeout: check.timeout || 30000,
+        retries: check.retries || 3,
+        type: check.type as any // Cast type to avoid mismatch if enums differ
+      })) as any,
       rollbackOnFailure: request.rollbackOnFailure ?? this.config.deployment?.autoRollbackOnFailure ?? true,
       timeout: this.config.deployment?.healthCheckTimeout || 300000,
       dryRun: request.dryRun || false,
@@ -496,7 +501,8 @@ export class AxiomSystemCore {
   async emergencyRollback(environmentId: string): Promise<string> {
     console.log('🚨 EMERGENCY ROLLBACK INITIATED');
 
-    const rollbackPointId = await this.versioningSystem.emergencyRollback(environmentId);
+    const rollbackResult = await this.versioningSystem.emergencyRollback(environmentId);
+    const rollbackPointId = rollbackResult.rollbackPointId;
 
     // Update metrics
     this.updateDeploymentMetrics('emergency_rollback');
@@ -514,8 +520,8 @@ export class AxiomSystemCore {
    * Check if approval is required
    */
   private requireApproval(environment: string): boolean {
-    return environment === 'production' && 
-           (this.config.deployment?.requireApprovalForProduction ?? true);
+    return environment === 'production' &&
+      (this.config.deployment?.requireApprovalForProduction ?? true);
   }
 
   /**
@@ -548,7 +554,7 @@ export class AxiomSystemCore {
    */
   private updateDeploymentMetrics(action: 'started' | 'completed' | 'failed' | 'rolled_back' | 'emergency_rollback'): void {
     this.metrics.deployments.total++;
-    
+
     switch (action) {
       case 'completed':
         this.metrics.deployments.successful++;
@@ -644,7 +650,7 @@ export class AxiomSystemCore {
   private updateMigrationMetrics(result: MigrationResult): void {
     this.metrics.migrations.executed += result.executed.length;
     this.metrics.migrations.failed += result.failed.length;
-    
+
     if (result.duration) {
       // Update average duration
       const totalDuration = this.metrics.migrations.averageDuration * (this.metrics.migrations.total - 1) + result.duration;
@@ -672,7 +678,7 @@ export class AxiomSystemCore {
   }): Promise<string> {
     console.log(`🔥 Creating hot update: ${config.version}-${config.patchVersion}`);
 
-    const hotUpdateConfig: HotUpdateConfig = {
+    const hotUpdateConfig = {
       id: '', // Will be generated
       version: config.version,
       patchVersion: config.patchVersion,
@@ -688,7 +694,7 @@ export class AxiomSystemCore {
       autoRollback: true,
       rollbackThreshold: this.config.hotUpdates?.autoRollbackThreshold || 5,
       script: config.script,
-      verificationChecks: this.getHotUpdateHealthChecks(),
+      verificationChecks: this.getHotUpdateHealthChecks() as any,
       rollbackPlan: this.generateRollbackPlan(config),
       metadata: {
         createdBy: 'axiom-system',
@@ -780,7 +786,7 @@ export class AxiomSystemCore {
    */
   private updateHotUpdateMetrics(action: 'created' | 'rolling' | 'completed' | 'failed' | 'rolled_back'): void {
     this.metrics.hotUpdates.total++;
-    
+
     switch (action) {
       case 'completed':
         this.metrics.hotUpdates.successful++;
@@ -836,7 +842,7 @@ export class AxiomSystemCore {
 
     // Update overall health
     const issues: string[] = [];
-    
+
     if (this.metrics.deployments.failed > this.metrics.deployments.successful * 0.1) {
       issues.push('High deployment failure rate');
       this.status.components.deployment = 'degraded';
@@ -848,8 +854,8 @@ export class AxiomSystemCore {
     }
 
     this.status.health.issues = issues;
-    this.status.health.overall = issues.length === 0 ? 'healthy' : 
-                                     issues.length > 2 ? 'unhealthy' : 'degraded';
+    this.status.health.overall = issues.length === 0 ? 'healthy' :
+      issues.length > 2 ? 'unhealthy' : 'degraded';
     this.status.health.lastCheck = new Date();
   }
 
@@ -893,7 +899,7 @@ export class AxiomSystemCore {
   ): Promise<void> {
     if (!this.config.notifications?.channels?.length) return;
 
-    const template = this.config.notifications.templates?.[event];
+    const template = (this.config.notifications.templates as any)?.[event];
     if (!template) return;
 
     for (const channel of this.config.notifications.channels) {
@@ -958,7 +964,7 @@ export class AxiomSystemCore {
         notifications.push({
           type: channel,
           enabled: true,
-          recipients: customNotifications?.[channel] || [],
+          recipients: (customNotifications as any)?.[channel] || [],
           events: this.config.notifications.events || ['started', 'completed', 'failed', 'rolled_back']
         });
       }
@@ -980,7 +986,7 @@ export class AxiomSystemCore {
     return {
       execute: async (query: string, params?: any[]) => ({ rows: [], rowCount: 0 }),
       transaction: async <T>(callback: (db: any) => Promise<T>) => callback({}),
-      close: async () => {}
+      close: async () => { }
     };
   }
 
@@ -996,7 +1002,7 @@ export class AxiomSystemCore {
    */
   updateConfiguration(newConfig: Partial<AxiomSystemConfig>): void {
     this.config = this.deepMerge(this.config, newConfig);
-    
+
     // Reinitialize components with new configuration
     this.initializeComponents();
   }
@@ -1017,7 +1023,7 @@ export class AxiomSystemCore {
     components: Record<string, 'healthy' | 'degraded' | 'unhealthy'>;
   }> {
     await this.updateComponentHealth();
-    
+
     return {
       healthy: this.status.health.overall === 'healthy',
       issues: this.status.health.issues,
