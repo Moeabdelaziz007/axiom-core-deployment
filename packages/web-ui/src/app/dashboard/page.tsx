@@ -4,14 +4,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DeadHandMonitor from '@/components/DeadHandMonitor';
 import CreateAgentWizard from '@/components/CreateAgentWizard';
+import MarketAnalystAgent from '@/components/MarketAnalystAgent';
+import OperationsAutomationAgent from '@/components/OperationsAutomationAgent';
 import NeuralWorkspace from '@/components/NeuralWorkspace';
 import SolanaVerifier from '@/components/SolanaVerifier';
 import XPSimulator from '@/components/XPSimulator';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Shield, Cpu, Activity, Terminal, Grid } from 'lucide-react';
+import { Shield, Cpu, Activity, Terminal, Grid, Brain } from 'lucide-react';
 
 export default function DashboardPage() {
-  const [activeView, setActiveView] = useState<'COMMAND' | 'FORGE' | 'WORKSPACE'>('COMMAND');
+  const [activeView, setActiveView] = useState<'COMMAND' | 'FORGE' | 'WORKSPACE' | 'INTELLIGENCE'>('COMMAND');
 
   return (
     <div className="min-h-screen bg-black text-cyan-500 font-mono p-4 md:p-8 relative overflow-hidden">
@@ -38,6 +40,7 @@ export default function DashboardPage() {
             { id: 'COMMAND', icon: Activity, label: 'OVERWATCH' },
             { id: 'FORGE', icon: Cpu, label: 'THE FORGE' },
             { id: 'WORKSPACE', icon: Grid, label: 'NEURAL NET' },
+            { id: 'INTELLIGENCE', icon: Brain, label: 'INTELLIGENCE' },
           ].map((item) => (
             <button
               key={item.id}
