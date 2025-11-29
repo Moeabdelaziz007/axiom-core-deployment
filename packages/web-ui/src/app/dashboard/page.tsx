@@ -6,10 +6,12 @@ import DeadHandMonitor from '@/components/DeadHandMonitor';
 import CreateAgentWizard from '@/components/CreateAgentWizard';
 import MarketAnalystAgent from '@/components/MarketAnalystAgent';
 import OperationsAutomationAgent from '@/components/OperationsAutomationAgent';
+import SwarmConsensusVisualizer from '@/components/SwarmConsensusVisualizer';
 import NeuralWorkspace from '@/components/NeuralWorkspace';
 import SolanaVerifier from '@/components/SolanaVerifier';
 import XPSimulator from '@/components/XPSimulator';
 import LiveDiagnostics from '@/components/LiveDiagnostics';
+import StreamingResponseHandler from '@/components/StreamingResponseHandler';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Shield, Cpu, Activity, Terminal, Grid, Brain } from 'lucide-react';
 
@@ -97,7 +99,7 @@ export default function DashboardPage() {
                     <div className="text-center">
                         <Activity className="w-16 h-16 text-cyan-800 mx-auto mb-4 animate-pulse" />
                         <h2 className="text-2xl font-bold text-cyan-700">GLOBAL NETWORK MAP</h2>
-                        <p className="text-cyan-900">Offline</p><div className="mt-4"><SolanaVerifier /><div className="mt-4"><XPSimulator /><div className="mt-4"><LiveDiagnostics /></div></div></div>
+                        <p className="text-cyan-900">Offline</p><div className="mt-4"><SolanaVerifier /><div className="mt-4"><XPSimulator /><div className="mt-4"><LiveDiagnostics /><div className="mt-4"><StreamingResponseHandler /></div></div></div></div>
                     </div>
                  </div>
               </div>
@@ -136,7 +138,7 @@ export default function DashboardPage() {
               className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full"
             >
               <div className="h-[600px]"><MarketAnalystAgent /></div>
-              <div className="h-[600px]"><OperationsAutomationAgent /></div>
+              <div className="h-[600px]"><OperationsAutomationAgent /><div className="col-span-1 md:col-span-2 mt-4"><SwarmConsensusVisualizer /></div></div>
             </motion.div>
           )}
         </AnimatePresence>
