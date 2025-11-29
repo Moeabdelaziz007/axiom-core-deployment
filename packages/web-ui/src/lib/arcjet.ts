@@ -1,19 +1,22 @@
-import arcjet, { shield, detectBot, tokenBucket } from '@arcjet/next';
+import arcjet, { detectBot, tokenBucket } from '@arcjet/next';
 
-export const aj = arcjet({
+const aj = arcjet({
   key: process.env.ARCJET_KEY!,
   characteristics: ['ip.src'],
   rules: [
-    shield({ mode: 'LIVE' }),
+    // Bot protection
     detectBot({
       mode: 'LIVE',
-      block: ['AUTOMATED'],
+      allow: [],
     }),
+    // Rate limiting
     tokenBucket({
       mode: 'LIVE',
-      refillRate: 500,
-      interval: 3600,
-      capacity: 500,
+      refillRate: 10,
+      interval: 60,
+      capacity: 100,
     }),
   ],
 });
+
+export default aj;
