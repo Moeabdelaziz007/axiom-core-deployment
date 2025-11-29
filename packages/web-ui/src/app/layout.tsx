@@ -16,6 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-black text-white selection:bg-neon/30">
         <WalletContextProvider>
+          <AuthProvider>
           {children}
         </WalletContextProvider>
       </body>
