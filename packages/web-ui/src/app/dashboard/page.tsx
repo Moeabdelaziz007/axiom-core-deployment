@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DeadHandMonitor from '@/components/DeadHandMonitor';
-import TheForge from '@/components/TheForge';
+import CreateAgentWizard from '@/components/CreateAgentWizard';
 import NeuralWorkspace from '@/components/NeuralWorkspace';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Shield, Cpu, Activity, Terminal, Grid } from 'lucide-react';
@@ -105,7 +105,7 @@ export default function DashboardPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.05 }}
             >
-              <TheForge />
+              <CreateAgentWizard />
             </motion.div>
           )}
 
