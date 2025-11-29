@@ -9,6 +9,7 @@ import OperationsAutomationAgent from '@/components/OperationsAutomationAgent';
 import NeuralWorkspace from '@/components/NeuralWorkspace';
 import SolanaVerifier from '@/components/SolanaVerifier';
 import XPSimulator from '@/components/XPSimulator';
+import LiveDiagnostics from '@/components/LiveDiagnostics';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Shield, Cpu, Activity, Terminal, Grid, Brain } from 'lucide-react';
 
@@ -96,7 +97,7 @@ export default function DashboardPage() {
                     <div className="text-center">
                         <Activity className="w-16 h-16 text-cyan-800 mx-auto mb-4 animate-pulse" />
                         <h2 className="text-2xl font-bold text-cyan-700">GLOBAL NETWORK MAP</h2>
-                        <p className="text-cyan-900">Offline</p><div className="mt-4"><SolanaVerifier /><div className="mt-4"><XPSimulator /></div></div>
+                        <p className="text-cyan-900">Offline</p><div className="mt-4"><SolanaVerifier /><div className="mt-4"><XPSimulator /><div className="mt-4"><LiveDiagnostics /></div></div></div>
                     </div>
                  </div>
               </div>
