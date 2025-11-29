@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { db } from '../../../../db';
-import { agents, systemLogs } from '../../../../db/schema';
+import { db } from '@/db';
+import { agents, systemLogs } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { groqViaGateway } from '../../../../lib/ai-gateway';
+import { groqViaGateway } from '@/lib/ai-gateway';
 import { generateText } from 'ai';
 
 export async function GET() {
