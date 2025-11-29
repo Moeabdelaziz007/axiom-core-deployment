@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Bot, ShieldCheck, Zap, Activity, Mail, MessageCircle, Cpu, Globe, Database, Search, Filter } from 'lucide-react';
-import { ViewMode } from '@/types';
+import { ViewMode } from '../../types';
 
 const AGENT_ROSTER = [
   // CORE
