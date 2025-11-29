@@ -10,6 +10,7 @@ export interface Agent {
   axiomId?: {
     generation: string;
     serialNumber: string;
+    directive?: string;
   };
 }
 
