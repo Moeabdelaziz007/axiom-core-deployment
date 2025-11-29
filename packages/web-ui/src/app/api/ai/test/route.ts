@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { groq, GROQ_MODELS } from '@/lib/groq';
+import { groq, GROQ_MODELS } from '../../../../lib/groq';
 
 export async function GET() {
   try {
