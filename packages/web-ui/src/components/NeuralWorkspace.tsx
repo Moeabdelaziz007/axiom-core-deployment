@@ -74,6 +74,12 @@ export default function NeuralWorkspace() {
             className={`px-3 py-1 text-xs rounded ${activeTab === 'TOPOLOGY' ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400'}`}
           >
             LOGIC TOPOLOGY
+            </button>
+            <button
+              onClick={() => setActiveTab('HOLOGRAM')}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'HOLOGRAM' ? 'bg-cyan-900/50 text-cyan-400 border border-cyan-500/30' : 'text-gray-500 hover:text-cyan-400'}`}
+            >
+              SWARM HOLOGRAM
           </button>
           <button 
             onClick={() => setActiveTab('LATTICE')}

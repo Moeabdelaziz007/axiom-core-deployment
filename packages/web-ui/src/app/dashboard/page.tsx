@@ -84,11 +84,11 @@ export default function DashboardPage() {
                     <Terminal className="w-4 h-4" /> SYSTEM LOGS
                   </h3>
                   <div className="space-y-2 text-xs font-mono text-cyan-600/80 h-48 overflow-y-auto">
-                    <p>> Initializing Quantum Core...</p>
-                    <p>> Connected to Solana Devnet</p>
-                    <p>> Dead Hand Protocol: ACTIVE</p>
-                    <p>> Neural Interface: STANDBY</p>
-                    <p className="text-cyan-400 animate-pulse">> Awaiting Operator Input_</p>
+                    <p>&gt; Initializing Quantum Core...</p>
+                    <p>&gt; Connected to Solana Devnet</p>
+                    <p>&gt; Dead Hand Protocol: ACTIVE</p>
+                    <p>&gt; Neural Interface: STANDBY</p>
+                    <p className="text-cyan-400 animate-pulse">&gt; Awaiting Operator Input_</p>
                   </div>
                 </div>
               </div>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
             </motion.div>
           )}
 
-          {activeView === 'INTELLIGENCE' <NeuralWorkspace /><NeuralWorkspace /> (
+          {activeView === 'INTELLIGENCE' && (
             <motion.div
               key="INTELLIGENCE"
               initial={{ opacity: 0, y: 20 }}
