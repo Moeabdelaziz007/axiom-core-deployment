@@ -125,6 +125,19 @@ export default function DashboardPage() {
               <NeuralWorkspace />
             </motion.div>
           )}
+
+          {activeView === 'INTELLIGENCE' <NeuralWorkspace /><NeuralWorkspace /> (
+            <motion.div
+              key="INTELLIGENCE"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full"
+            >
+              <div className="h-[600px]"><MarketAnalystAgent /></div>
+              <div className="h-[600px]"><OperationsAutomationAgent /></div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </main>
     </div>

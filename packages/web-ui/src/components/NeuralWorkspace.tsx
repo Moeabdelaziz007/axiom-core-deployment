@@ -1,160 +1,149 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ToricLattice } from '../core/topology/ToricLattice';
-import { MapperAlgo } from '../core/topology/MapperAlgo';
-import { Agent } from '@/types';
-import { Activity, Shield, Zap, Grid, Network } from 'lucide-react';
+
+// --- Types (Mocking the Core Logic for UI) ---
+interface AgentNode {
+  id: string;
+  status: 'IDLE' | 'THINKING' | 'ERROR' | 'STABLE';
+  vector: number[]; // Simulation of thought vector
+}
+
+interface MapperNode {
+  id: string;
+  x: number;
+  y: number;
+  connections: string[];
+  isHallucination: boolean;
+}
 
 export default function NeuralWorkspace() {
-  const [lattice, setLattice] = useState<any[][]>([]);
-  const [graphNodes, setGraphNodes] = useState<any[]>([]);
-  const [graphEdges, setGraphEdges] = useState<any[]>([]);
-  const [metrics, setMetrics] = useState({ stability: 100, coherence: 100 });
+  const [activeTab, setActiveTab] = useState<'LATTICE' | 'TOPOLOGY'>('TOPOLOGY');
+  const [agents, setAgents] = useState<AgentNode[]>([]);
+  const [mapperGraph, setMapperGraph] = useState<MapperNode[]>([]);
   
-  const latticeRef = useRef(new ToricLattice(8, 8));
-  const mapperRef = useRef(new MapperAlgo(10, 0.3, 0.5));
-
+  // --- Simulation Loop (The "Heartbeat") ---
   useEffect(() => {
-    // Initialize Lattice with dummy agents
-    const initLattice = () => {
-      const l = latticeRef.current;
-      for (let i = 0; i < 5; i++) {
-        l.addAgent({ id: `a_${i}`, name: `Agent ${i}`, role: 'worker', status: 'active', capabilities: [] }, i, i);
-      }
-      setLattice(l.getLatticeState());
-    };
-    initLattice();
+    // 1. Initialize Mock Swarm (e.g., 16 Agents in a 4x4 Grid)
+    const initialAgents = Array.from({ length: 16 }).map((_, i) => ({
+      id: `agent-${i}`,
+      status: 'IDLE',
+      vector: [Math.random(), Math.random()]
+    } as AgentNode));
+    setAgents(initialAgents);
 
-    // Simulation Loop
     const interval = setInterval(() => {
-      // 1. Simulate Thought Vectors (Random Walk)
-      const thoughtData = Array.from({ length: 20 }, (_, i) => ({
-        id: `t_${i}`,
-        vector: [Math.random(), Math.random(), Math.random()], // 3D thought vector
-        metadata: { timestamp: Date.now() }
-      }));
+      // Simulate "Thinking" and State Changes
+      setAgents(prev => prev.map(agent => ({
+        ...agent,
+        status: Math.random() > 0.8 ? (Math.random() > 0.5 ? 'THINKING' : 'STABLE') : (Math.random() > 0.95 ? 'ERROR' : agent.status),
+        vector: [Math.random(), Math.random()] // Thoughts changing
+      })));
 
-      // 2. Run Mapper Algorithm
-      const { nodes, edges } = mapperRef.current.run(thoughtData);
-      setGraphNodes(nodes);
-      setGraphEdges(edges);
+      // Simulate Mapper Graph Updates (Topology of thoughts)
+      // Generates 5-10 nodes, some connected, some isolated (hallucinations)
+      const nodeCount = 5 + Math.floor(Math.random() * 5);
+      const newNodes: MapperNode[] = [];
+      for (let i = 0; i < nodeCount; i++) {
+        newNodes.push({
+          id: `node-${i}`,
+          x: Math.random() * 300,
+          y: Math.random() * 200,
+          connections: i > 0 && Math.random() > 0.3 ? [`node-${i-1}`] : [],
+          isHallucination: Math.random() > 0.9 // 10% chance of loose thought
+        });
+      }
+      setMapperGraph(newNodes);
 
-      // 3. Update Metrics (Mock)
-      setMetrics(prev => ({
-        stability: Math.max(0, Math.min(100, prev.stability + (Math.random() - 0.5) * 5)),
-        coherence: nodes.length > 0 ? 100 - (nodes.length * 2) : 100 // More clusters = less coherence (fragmented logic)
-      }));
-
-    }, 2000);
+    }, 2000); // Update every 2 seconds
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="w-full h-full bg-black/90 backdrop-blur-xl border border-cyan-900/30 rounded-xl p-6 overflow-hidden flex flex-col">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-cyan-950/50 rounded-lg border border-cyan-500/30">
-            <Network className="w-6 h-6 text-cyan-400" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-cyan-100">Neural Workspace</h2>
-            <p className="text-xs text-cyan-600 font-mono">Topological Analysis Active</p>
-          </div>
-        </div>
-        <div className="flex gap-4 text-xs font-mono">
-          <div className="flex items-center gap-2 text-green-400">
-            <Shield className="w-4 h-4" />
-            <span>STABILITY: {metrics.stability.toFixed(1)}%</span>
-          </div>
-          <div className="flex items-center gap-2 text-blue-400">
-            <Zap className="w-4 h-4" />
-            <span>COHERENCE: {metrics.coherence.toFixed(1)}%</span>
-          </div>
+    <div className="w-full h-full bg-black/90 border border-cyan-900/50 rounded-xl p-4 overflow-hidden relative font-mono">
+      {/* Header & Tabs */}
+      <div className="flex justify-between items-center mb-4 border-b border-cyan-900/30 pb-2">
+        <h2 className="text-cyan-400 text-lg flex items-center gap-2">
+          <span className="animate-pulse">🧠</span> NEURAL WORKSPACE
+        </h2>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setActiveTab('TOPOLOGY')}
+            className={`px-3 py-1 text-xs rounded ${activeTab === 'TOPOLOGY' ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400'}`}
+          >
+            LOGIC TOPOLOGY
+          </button>
+          <button 
+            onClick={() => setActiveTab('LATTICE')}
+            className={`px-3 py-1 text-xs rounded ${activeTab === 'LATTICE' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400'}`}
+          >
+            TORIC LATTICE
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
-        {/* Left: Toric Lattice Visualization */}
-        <div className="bg-black/50 border border-cyan-900/30 rounded-lg p-4 flex flex-col">
-          <h3 className="text-sm font-bold text-cyan-500 mb-4 flex items-center gap-2">
-            <Grid className="w-4 h-4" /> SWARM LATTICE (Toric Topology)
-          </h3>
-          <div className="flex-1 grid grid-cols-8 gap-1 auto-rows-fr">
-            {lattice.map((row, y) => (
-              row.map((cell, x) => (
-                <motion.div
-                  key={`${x}-${y}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: 1, 
-                    backgroundColor: cell.agentId ? 'rgba(6,182,212,0.6)' : 'rgba(6,182,212,0.05)',
-                    scale: cell.agentId ? 1 : 0.9
-                  }}
-                  className="rounded-sm border border-cyan-900/20 relative group"
-                >
-                  {cell.agentId && (
-                    <div className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-black">
-                      AG
-                    </div>
-                  )}
-                </motion.div>
-              ))
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Mapper Graph Visualization */}
-        <div className="bg-black/50 border border-cyan-900/30 rounded-lg p-4 flex flex-col relative overflow-hidden">
-          <h3 className="text-sm font-bold text-purple-400 mb-4 flex items-center gap-2">
-            <Activity className="w-4 h-4" /> LOGIC TOPOLOGY (Mapper Algo)
-          </h3>
-          
-          <div className="flex-1 relative">
-            {/* Edges */}
+      {/* Main Visualization Area */}
+      <div className="relative h-[300px] w-full bg-gray-900/50 rounded-lg flex items-center justify-center p-4">
+        
+        {/* VIEW 1: MAPPER ALGO GRAPH (Topology) */}
+        {activeTab === 'TOPOLOGY' && (
+          <div className="relative w-full h-full">
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
-               {graphEdges.map((edge, i) => {
-                 // Mock positions for visualization simplicity
-                 // In a real app, use D3 or Vis.js for layout
-                 const x1 = Math.random() * 100 + '%'; 
-                 const y1 = Math.random() * 100 + '%';
-                 const x2 = Math.random() * 100 + '%';
-                 const y2 = Math.random() * 100 + '%';
-                 return (
-                   <line 
-                    key={i} 
-                    x1={x1} y1={y1} x2={x2} y2={y2} 
-                    stroke="rgba(168, 85, 247, 0.4)" 
-                    strokeWidth={edge.weight} 
-                   />
-                 );
-               })}
-            </svg>
-
-            {/* Nodes */}
-            <div className="absolute inset-0 flex flex-wrap content-center justify-center gap-4 p-4">
-              {graphNodes.map((node) => (
-                <motion.div
-                  key={node.id}
-                  layoutId={node.id}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="w-8 h-8 rounded-full bg-purple-600/50 border border-purple-400 flex items-center justify-center text-[10px] text-white font-mono shadow-[0_0_10px_rgba(168,85,247,0.4)]"
-                >
-                  {node.size}
-                </motion.div>
-              ))}
-              {graphNodes.length === 0 && (
-                <div className="text-gray-600 text-xs animate-pulse">
-                  Analyzing thought vectors...
-                </div>
+              {mapperGraph.map((node) => 
+                node.connections.map(targetId => {
+                  const target = mapperGraph.find(n => n.id === targetId);
+                  if (!target) return null;
+                  return (
+                    <line 
+                      key={`${node.id}-${targetId}`} 
+                      x1={node.x + 20} y1={node.y + 20} 
+                      x2={target.x + 20} y2={target.y + 20} 
+                      stroke="#06b6d4" 
+                      strokeWidth="1" 
+                      opacity="0.5"
+                    />
+                  );
+                })
               )}
+            </svg>
+            {mapperGraph.map((node) => (
+              <motion.div
+                key={node.id}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1, x: node.x, y: node.y }}
+                className={`absolute w-3 h-3 rounded-full shadow-[0_0_10px_currentColor] 
+                  ${node.isHallucination ? 'bg-red-500 text-red-500' : 'bg-cyan-400 text-cyan-400'}`}
+              >
+                {node.isHallucination && (
+                   <span className="absolute -top-4 -left-2 text-[8px] bg-red-900/80 px-1 rounded text-white">HALLUCINATION</span>
+                )}
+              </motion.div>
+            ))}
+             <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+              Algo: Mapper (L2-Norm) | Betti-1: {mapperGraph.filter(n => n.isHallucination).length}
             </div>
           </div>
-        </div>
+        )}
+
+        {/* VIEW 2: TORIC LATTICE (Swarm Grid) */}
+        {activeTab === 'LATTICE' && (
+          <div className="grid grid-cols-4 gap-4 w-full max-w-[400px]">
+            {agents.map((agent) => (
+              <div 
+                key={agent.id}
+                className={`h-12 w-12 rounded border flex items-center justify-center text-[10px] transition-all duration-500
+                  ${agent.status === 'ERROR' ? 'border-red-500 bg-red-900/20 text-red-400' : 
+                    agent.status === 'THINKING' ? 'border-yellow-400 bg-yellow-900/20 text-yellow-400 animate-pulse' : 
+                    'border-green-500 bg-green-900/20 text-green-400'}
+                `}
+              >
+                {agent.status === 'ERROR' ? '⚠️' : 'AI'}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
