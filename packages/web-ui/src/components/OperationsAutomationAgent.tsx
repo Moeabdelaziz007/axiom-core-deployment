@@ -2,125 +2,127 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Server, Cpu, Layers, CheckCircle, Clock, AlertCircle, Play, Pause } from 'lucide-react';
-
-const MOCK_TASKS = [
-  { id: 'TASK-101', name: 'Rebalance Liquidity Pools', status: 'RUNNING', progress: 45, priority: 'HIGH' },
-  { id: 'TASK-102', name: 'Update Oracle Feeds', status: 'PENDING', progress: 0, priority: 'CRITICAL' },
-  { id: 'TASK-103', name: 'Generate Daily Reports', status: 'COMPLETED', progress: 100, priority: 'LOW' },
-  { id: 'TASK-104', name: 'Optimize Yield Strategy', status: 'RUNNING', progress: 78, priority: 'MEDIUM' },
-];
+import { Cpu, Server, Layers, CheckCircle, Clock, Pause, Activity } from 'lucide-react';
+import { swarmEngine } from '../core/topology/SwarmConsensusEngine';
+import { transactionExecutor } from '../services/TransactionExecutor';
+import ApprovalModal from './ApprovalModal';
+import { messageBus } from '../core/communication/AgentMessageBus';
 
 export default function OperationsAutomationAgent() {
-  const [tasks, setTasks] = useState(MOCK_TASKS);
-  const [systemLoad, setSystemLoad] = useState(42);
+  const [tasks, setTasks] = useState([
+    { id: 1, name: 'System Health Check', status: 'COMPLETED', time: '10:00 AM' },
+    { id: 2, name: 'Log Rotation', status: 'PENDING', time: '12:00 PM' },
+    { id: 3, name: 'Cache Invalidation', status: 'RUNNING', time: 'NOW' },
+  ]);
+  
+  const [showApproval, setShowApproval] = useState(false);
+  const [pendingAction, setPendingAction] = useState<any>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSystemLoad(prev => Math.min(100, Math.max(20, prev + (Math.random() * 10 - 5))));
-      setTasks(prev => prev.map(task => {
-        if (task.status === 'RUNNING') {
-          const newProgress = Math.min(100, task.progress + Math.random() * 5);
-          return { ...task, progress: newProgress, status: newProgress >= 100 ? 'COMPLETED' : 'RUNNING' };
-        }
-        return task;
-      }));
-    }, 1000);
-    return () => clearInterval(interval);
+    // Listen for Consensus
+    const unsubscribe = swarmEngine.subscribe((proposalId) => {
+      const result = swarmEngine.checkConsensus(proposalId);
+      if (result && result.approved) {
+        // Fetch proposal details (mocked retrieval - in real app query engine)
+        // We assume the last proposal is the one we approved
+        const action = { 
+          type: 'BUY', 
+          payload: { asset: 'SOL', amount: 1000 }, 
+          id: proposalId,
+          details: 'Market Analyst detected Hyper-Bullish signal. Swarm Consensus reached.'
+        };
+        
+        setPendingAction(action);
+        setShowApproval(true);
+      }
+    });
+    return unsubscribe;
   }, []);
 
+  const handleApprove = async () => {
+    setShowApproval(false);
+    if (pendingAction) {
+      messageBus.publish({
+        senderId: 'Ops_Agent_01',
+        channel: 'OPS',
+        content: `⚙️ Executing Approved Action: ${pendingAction.type} ${pendingAction.payload.amount} ${pendingAction.payload.asset}`,
+        priority: 'MEDIUM'
+      });
+
+      const result = await transactionExecutor.executeMockTransaction(
+        pendingAction.type, 
+        pendingAction.payload.amount, 
+        'Devnet'
+      );
+
+      if (result.status === 'SUCCESS') {
+        messageBus.publish({
+          senderId: 'Ops_Agent_01',
+          channel: 'OPS',
+          content: `✅ Execution Successful! Sig: ${result.signature}`,
+          priority: 'HIGH'
+        });
+        
+        // Add to task list
+        setTasks(prev => [{
+          id: Date.now(),
+          name: `EXECUTE ${pendingAction.type}`,
+          status: 'COMPLETED',
+          time: 'NOW'
+        }, ...prev]);
+      } else {
+         messageBus.publish({
+          senderId: 'Ops_Agent_01',
+          channel: 'OPS',
+          content: `❌ Execution Failed: ${result.error}`,
+          priority: 'CRITICAL'
+        });
+      }
+      setPendingAction(null);
+    }
+  };
+
+  const handleReject = () => {
+    setShowApproval(false);
+    messageBus.publish({
+      senderId: 'Ops_Agent_01',
+      channel: 'OPS',
+      content: `🚫 Action Rejected by Human Operator.`,
+      priority: 'HIGH'
+    });
+    setPendingAction(null);
+  };
+
   return (
-    <div className="w-full h-full bg-black/40 backdrop-blur-md border border-cyan-900/30 rounded-xl p-6 flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-purple-900/20 border border-purple-500/30 flex items-center justify-center">
-            <Cpu className="w-6 h-6 text-purple-400" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-purple-100">OPERATIONS AGENT</h2>
-            <div className="flex items-center gap-2 text-xs text-purple-400">
-              <Server className="w-3 h-3" />
-              SYSTEM OPTIMAL
+    <>
+      <div className="bg-black/40 backdrop-blur-md border border-blue-900/30 rounded-xl p-4 space-y-4">
+        <div className="flex items-center gap-2 text-blue-400 font-bold border-b border-blue-900/30 pb-2">
+          <Cpu className="w-4 h-4" />
+          OPERATIONS AUTOMATION
+        </div>
+
+        <div className="space-y-2">
+          {tasks.map((task) => (
+            <div key={task.id} className="flex items-center justify-between bg-black/30 p-2 rounded border border-white/5">
+              <div className="flex items-center gap-2">
+                {task.status === 'COMPLETED' ? <CheckCircle className="w-3 h-3 text-green-500" /> :
+                 task.status === 'RUNNING' ? <Activity className="w-3 h-3 text-blue-500 animate-spin" /> :
+                 <Clock className="w-3 h-3 text-gray-500" />}
+                <span className="text-sm text-gray-300">{task.name}</span>
+              </div>
+              <span className="text-xs text-gray-500 font-mono">{task.time}</span>
             </div>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-xs text-purple-800 font-mono">AGENT ID</div>
-          <div className="text-sm font-bold text-purple-500">OPS-9000</div>
+          ))}
         </div>
       </div>
 
-      {/* System Health */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-black/60 border border-white/5 rounded-lg p-3 text-center">
-          <div className="text-xs text-gray-400 mb-1">CPU LOAD</div>
-          <div className="text-xl font-mono text-purple-400">{systemLoad.toFixed(1)}%</div>
-          <div className="w-full h-1 bg-gray-800 mt-2 rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-purple-500" 
-              animate={{ width: `${systemLoad}%` }}
-            />
-          </div>
-        </div>
-        <div className="bg-black/60 border border-white/5 rounded-lg p-3 text-center">
-          <div className="text-xs text-gray-400 mb-1">ACTIVE TASKS</div>
-          <div className="text-xl font-mono text-cyan-400">
-            {tasks.filter(t => t.status === 'RUNNING').length}
-          </div>
-        </div>
-        <div className="bg-black/60 border border-white/5 rounded-lg p-3 text-center">
-          <div className="text-xs text-gray-400 mb-1">UPTIME</div>
-          <div className="text-xl font-mono text-green-400">99.99%</div>
-        </div>
-      </div>
-
-      {/* Task Queue */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <h3 className="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
-          <Layers className="w-4 h-4" />
-          TASK QUEUE
-        </h3>
-        <div className="space-y-2 overflow-y-auto pr-2 custom-scrollbar">
-          <AnimatePresence>
-            {tasks.map((task) => (
-              <motion.div
-                key={task.id}
-                layout
-                className="bg-black/40 border border-white/5 rounded-lg p-3 flex items-center justify-between group hover:border-purple-500/30 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${
-                    task.status === 'RUNNING' ? 'bg-yellow-400 animate-pulse' :
-                    task.status === 'COMPLETED' ? 'bg-green-400' : 'bg-gray-600'
-                  }`} />
-                  <div>
-                    <div className="text-sm font-bold text-gray-200">{task.name}</div>
-                    <div className="text-[10px] text-gray-500 font-mono">{task.id} • {task.priority}</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  {task.status === 'RUNNING' && (
-                    <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                      <motion.div 
-                        className="h-full bg-purple-500" 
-                        animate={{ width: `${task.progress}%` }}
-                      />
-                    </div>
-                  )}
-                  {task.status === 'COMPLETED' ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  ) : task.status === 'RUNNING' ? (
-                    <Clock className="w-4 h-4 text-yellow-500 animate-spin-slow" />
-                  ) : (
-                    <Pause className="w-4 h-4 text-gray-600" />
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
+      <ApprovalModal 
+        isOpen={showApproval}
+        actionType={pendingAction?.type || 'UNKNOWN'}
+        details={pendingAction?.details || 'No details provided.'}
+        onApprove={handleApprove}
+        onReject={handleReject}
+      />
+    </>
   );
 }

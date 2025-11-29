@@ -1,9 +1,0 @@
-{
-  "name": "Axiom ID",
-  "description": "A cyberpunk neural interface for AI Agents on Solana, featuring Gemini-powered reasoning and generation.",
-  "requestFramePermissions": [
-    "microphone",
-    "camera",
-    "geolocation"
-  ]
-}

@@ -3,16 +3,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DeadHandMonitor from '../../components/DeadHandMonitor';
-import CreateAgentWizard from '@/components/CreateAgentWizard';
-import MarketAnalystAgent from '@/components/MarketAnalystAgent';
-import OperationsAutomationAgent from '@/components/OperationsAutomationAgent';
-import SwarmConsensusVisualizer from '@/components/SwarmConsensusVisualizer';
-import AgentChatInterface from '@/components/AgentChatInterface';
-import NeuralWorkspace from '@/components/NeuralWorkspace';
-import SolanaVerifier from '@/components/SolanaVerifier';
-import XPSimulator from '@/components/XPSimulator';
-import LiveDiagnostics from '@/components/LiveDiagnostics';
-import StreamingResponseHandler from '@/components/StreamingResponseHandler';
+import CreateAgentWizard from '../../components/CreateAgentWizard';
+import MarketAnalystAgent from '../../components/MarketAnalystAgent';
+import OperationsAutomationAgent from '../../components/OperationsAutomationAgent';
+import SwarmConsensusVisualizer from '../../components/SwarmConsensusVisualizer';
+import AgentChatInterface from '../../components/AgentChatInterface';
+import NeuralWorkspace from '../../components/NeuralWorkspace';
+import SolanaVerifier from '../../components/SolanaVerifier';
+import XPSimulator from '../../components/XPSimulator';
+import LiveDiagnostics from '../../components/LiveDiagnostics';
+import StreamingResponseHandler from '../../components/StreamingResponseHandler';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Shield, Cpu, Activity, Terminal, Grid, Brain } from 'lucide-react';
 

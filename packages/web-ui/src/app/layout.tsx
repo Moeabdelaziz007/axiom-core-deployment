@@ -18,6 +18,7 @@ export default function RootLayout({
         <WalletContextProvider>
           <AuthProvider>
           {children}
+        </AuthProvider>
         </WalletContextProvider>
       </body>
     </html>

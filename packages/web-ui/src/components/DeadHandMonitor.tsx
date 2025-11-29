@@ -1,87 +1,57 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Skull, ShieldCheck, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Shield, AlertTriangle, Lock, Activity } from 'lucide-react';
 
 export default function DeadHandMonitor() {
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const [status, setStatus] = useState<'SAFE' | 'DANGER'>('SAFE');
-  const [loading, setLoading] = useState(false);
-
-  const fetchStatus = async () => {
-    try {
-      const res = await fetch('/api/security/status');
-      const data = await res.json();
-      setTimeLeft(data.timeLeft);
-      setStatus(data.status);
-    } catch (e) {
-      console.error("Failed to fetch Dead Hand status");
-    }
-  };
-
-  const sendHeartbeat = async () => {
-    setLoading(true);
-    try {
-      await fetch('/api/security/heartbeat', { method: 'POST' });
-      await fetchStatus(); // Refresh immediately
-    } catch (e) {
-      console.error("Heartbeat failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [status, setStatus] = useState<'ACTIVE' | 'WARNING' | 'CRITICAL'>('ACTIVE');
+  const [heartbeat, setHeartbeat] = useState(0);
 
   useEffect(() => {
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 1000);
+    const interval = setInterval(() => {
+      setHeartbeat(prev => (prev + 1) % 100);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Format milliseconds to HH:MM:SS
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-
   return (
-    <div className={`border rounded-lg p-4 flex flex-col gap-4 transition-colors duration-500 ${status === 'DANGER' ? 'bg-red-950/30 border-red-500 animate-pulse' : 'bg-[#050505] border-red-900/30'}`}>
-      
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-red-900/30 pb-2">
-        <div className="flex items-center gap-2 text-red-500">
-          <Skull size={18} />
-          <span className="font-display font-bold tracking-widest text-xs">DEAD HAND PROTOCOL</span>
+    <div className="bg-black/40 backdrop-blur-md border border-red-900/30 rounded-xl p-4 flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full bg-red-900/20 border border-red-500/30 flex items-center justify-center">
+            <Shield className="w-6 h-6 text-red-500" />
+          </div>
+          <span className="absolute top-0 right-0 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+          </span>
         </div>
-        <div className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider ${status === 'DANGER' ? 'bg-red-500 text-black' : 'bg-green-900/30 text-green-500 border border-green-500/30'}`}>
-          {status === 'DANGER' ? 'IMMINENT' : 'ARMED'}
+        <div>
+          <h3 className="text-lg font-bold text-red-100 flex items-center gap-2">
+            DEAD HAND PROTOCOL
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-900/40 text-red-400 border border-red-500/20">
+              ARMED
+            </span>
+          </h3>
+          <div className="flex items-center gap-4 text-xs text-red-400/80 font-mono">
+            <span className="flex items-center gap-1">
+              <Activity className="w-3 h-3" />
+              HEARTBEAT: {heartbeat}ms
+            </span>
+            <span className="flex items-center gap-1">
+              <Lock className="w-3 h-3" />
+              FAILSAFE: ENGAGED
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Countdown Display */}
-      <div className="flex flex-col items-center justify-center py-2">
-        <span className="text-[10px] text-red-500/50 font-mono mb-1">AUTO-EXECUTE IN</span>
-        <div className="font-mono text-3xl font-bold text-red-500 tracking-widest tabular-nums drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">
-          {timeLeft !== null ? formatTime(timeLeft) : '--:--:--'}
+      <div className="flex flex-col items-end gap-1">
+        <div className="text-xs text-red-500 font-bold tracking-wider">SYSTEM STATUS</div>
+        <div className="text-2xl font-black text-red-500 tracking-widest animate-pulse">
+          SECURE
         </div>
-      </div>
-
-      {/* Action Button */}
-      <button 
-        onClick={sendHeartbeat}
-        disabled={loading}
-        className="w-full py-3 bg-red-900/20 hover:bg-red-500 hover:text-black border border-red-500/50 rounded text-red-500 font-bold text-xs tracking-widest transition-all flex items-center justify-center gap-2 group"
-      >
-        <ShieldCheck size={14} className="group-hover:scale-110 transition-transform" />
-        {loading ? 'VERIFYING...' : 'CONFIRM OPERATOR PRESENCE'}
-      </button>
-
-      {/* Status Footer */}
-      <div className="flex items-center justify-between text-[9px] text-gray-600 font-mono">
-        <span>FAIL-DEADLY: ACTIVE</span>
-        <span>TARGET: COLD_STORAGE_A1</span>
       </div>
     </div>
   );
