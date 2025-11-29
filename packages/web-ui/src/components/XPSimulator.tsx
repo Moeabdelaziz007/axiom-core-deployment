@@ -70,9 +70,6 @@ export default function XPSimulator() {
         <div className="relative w-64 h-64">
            {/* Passing props to Mandala - assuming these are the correct ones based on context */}
            <AxiomHolographicMandala 
-             agentState={agentState}
-             level={level}
-             xp={xp}
            />
         </div>
       </div>

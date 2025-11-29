@@ -6,6 +6,11 @@ export interface Agent {
   role: string;
   status: 'active' | 'idle' | 'offline';
   capabilities: string[];
+  image?: string;
+  axiomId?: {
+    generation: string;
+    serialNumber: string;
+  };
 }
 
 export interface AgentMessage {

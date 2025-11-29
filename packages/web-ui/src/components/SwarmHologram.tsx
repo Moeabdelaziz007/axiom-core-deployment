@@ -18,7 +18,7 @@ interface SwarmLink {
 }
 
 export default function SwarmHologram() {
-  const fgRef = useRef<any>();
+  const fgRef = useRef<any>(null);
   const [graphData, setGraphData] = useState<{ nodes: SwarmNode[], links: SwarmLink[] }>({ nodes: [], links: [] });
   const [systemHealth, setSystemHealth] = useState<number>(100); // 0-100, where 100 is healthy
   const [swarmSize, setSwarmSize] = useState<number>(20); // Number of agents (Stress Test)

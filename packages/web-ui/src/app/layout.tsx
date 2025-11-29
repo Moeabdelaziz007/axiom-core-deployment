@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { WalletContextProvider } from "../components/WalletContextProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Axiom ID | Quantum Agentic OS",
@@ -16,9 +17,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-black text-white selection:bg-neon/30">
         <WalletContextProvider>
-          <AuthProvider>
           {children}
-        </AuthProvider>
+          <SpeedInsights />
         </WalletContextProvider>
       </body>
     </html>

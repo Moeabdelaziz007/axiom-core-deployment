@@ -19,7 +19,7 @@ interface MapperNode {
 }
 
 export default function NeuralWorkspace() {
-  const [activeTab, setActiveTab] = useState<'LATTICE' | 'TOPOLOGY'>('TOPOLOGY');
+  const [activeTab, setActiveTab] = useState<'LATTICE' | 'TOPOLOGY' | 'HOLOGRAM'>('TOPOLOGY');
   const [agents, setAgents] = useState<AgentNode[]>([]);
   const [mapperGraph, setMapperGraph] = useState<MapperNode[]>([]);
   
