@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import DeadHandMonitor from '@/components/DeadHandMonitor';
+import DeadHandMonitor from '../../components/DeadHandMonitor';
 import CreateAgentWizard from '@/components/CreateAgentWizard';
 import MarketAnalystAgent from '@/components/MarketAnalystAgent';
 import OperationsAutomationAgent from '@/components/OperationsAutomationAgent';
 import SwarmConsensusVisualizer from '@/components/SwarmConsensusVisualizer';
+import AgentChatInterface from '@/components/AgentChatInterface';
 import NeuralWorkspace from '@/components/NeuralWorkspace';
 import SolanaVerifier from '@/components/SolanaVerifier';
 import XPSimulator from '@/components/XPSimulator';
@@ -138,7 +139,7 @@ export default function DashboardPage() {
               className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full"
             >
               <div className="h-[600px]"><MarketAnalystAgent /></div>
-              <div className="h-[600px]"><OperationsAutomationAgent /><div className="col-span-1 md:col-span-2 mt-4"><SwarmConsensusVisualizer /></div></div>
+              <div className="h-[600px]"><OperationsAutomationAgent /><div className="col-span-1 md:col-span-2 mt-4"><SwarmConsensusVisualizer /></div><div className="col-span-1 md:col-span-2 mt-4"><AgentChatInterface /></div></div>
             </motion.div>
           )}
         </AnimatePresence>
