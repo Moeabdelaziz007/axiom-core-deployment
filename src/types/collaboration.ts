@@ -324,6 +324,91 @@ export const AXIOM_AGENT_REGISTRY: Record<string, AgentCapability[]> = {
       costPerUse: 35
     }
   ]
+},
+  'dreamer': [
+    {
+      id: 'creative_ideation',
+      name: 'Creative Ideation',
+      description: 'Generate innovative ideas and creative solutions',
+      category: 'analysis',
+      proficiency: 96,
+      availability: true,
+      costPerUse: 45,
+      requirements: ['domain_context', 'inspiration_data']
+    },
+    {
+      id: 'vision_planning',
+      name: 'Vision Planning',
+      description: 'Create strategic visions and long-term plans',
+      category: 'coordination',
+      proficiency: 89,
+      availability: true,
+      costPerUse: 40
+    }
+  ],
+  'analyst': [
+    {
+      id: 'data_analysis',
+      name: 'Advanced Data Analysis',
+      description: 'Deep analysis of complex datasets and patterns',
+      category: 'analysis',
+      proficiency: 94,
+      availability: true,
+      costPerUse: 35,
+      requirements: ['raw_data', 'analysis_parameters']
+    },
+    {
+      id: 'pattern_recognition',
+      name: 'Pattern Recognition',
+      description: 'Identify patterns and trends in multi-dimensional data',
+      category: 'analysis',
+      proficiency: 91,
+      availability: true,
+      costPerUse: 30
+    }
+  ],
+  'judge': [
+    {
+      id: 'decision_making',
+      name: 'Strategic Decision Making',
+      description: 'Make balanced decisions based on multiple criteria',
+      category: 'negotiation',
+      proficiency: 93,
+      availability: true,
+      costPerUse: 50,
+      requirements: ['options', 'criteria', 'constraints']
+    },
+    {
+      id: 'conflict_resolution',
+      name: 'Conflict Resolution',
+      description: 'Resolve conflicts and find optimal compromises',
+      category: 'negotiation',
+      proficiency: 88,
+      availability: true,
+      costPerUse: 45
+    }
+  ],
+  'builder': [
+    {
+      id: 'system_architecture',
+      name: 'System Architecture Design',
+      description: 'Design and build scalable system architectures',
+      category: 'coordination',
+      proficiency: 92,
+      availability: true,
+      costPerUse: 55,
+      requirements: ['requirements', 'constraints', 'scalability_needs']
+    },
+    {
+      id: 'implementation_planning',
+      name: 'Implementation Planning',
+      description: 'Create detailed implementation plans and roadmaps',
+      category: 'coordination',
+      proficiency: 90,
+      availability: true,
+      costPerUse: 40
+    }
+  ]
 };
 
 // Message routing rules
