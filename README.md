@@ -10,6 +10,11 @@ First bilingual AI agent platform with native Web3 execution capabilities, servi
 
 ### 🤖 Multi-Agent Architecture
 
+- **Neural Workspace**: Dynamic agent swarm visualization with real-time LangGraph events
+- **Dreamer** 🌟: Creative ideation and vision planning
+- **Analyst** 📊: Data analysis and pattern recognition
+- **Judge** ⚖️: Decision making and conflict resolution
+- **Builder** 🔨: System architecture and implementation
 - **Aqar** (عقار): Real estate valuation and property management
 - **Tajer** (تاجر): E-commerce negotiation and blockchain trading
 - **Sofra** (سفرة): Customer experience and sentiment analysis
@@ -47,6 +52,15 @@ First bilingual AI agent platform with native Web3 execution capabilities, servi
 - **Function Calling**: Gemini-powered tool execution with real capabilities
 - **Real-time Communication**: Instant response with typing indicators
 - **Tool Integration**: Direct access to blockchain, database, and external APIs
+
+### 🧠 Neural Workspace
+
+**Dynamic Agent Swarm Visualization** - Real-time monitoring and control interface
+
+- **Live Agent Monitoring**: Real-time visualization of agent states and activities
+- **SSE Integration**: Server-Sent Events for instant LangGraph event streaming
+- **Interactive Control**: Direct agent interaction and workflow triggering
+- **Responsive Grid**: Adaptive layout for different screen sizes and agent counts
 
 ### 🎨 Professional UI
 
@@ -191,6 +205,9 @@ curl -X POST "http://localhost:3000/api/tts/google" \
 ### Phase 1: Production Launch ✅
 
 - [x] Core agent platform with chat interface
+- [x] Neural Workspace with real-time agent swarm visualization
+- [x] SSE integration for LangGraph event streaming
+- [x] Dynamic agent types: Dreamer, Analyst, Judge, Builder
 - [x] Solana ADK integration for autonomous operations
 - [x] Bilingual Quantum Guide with voice capabilities
 - [x] Professional Axiom Blue theme implementation
@@ -217,6 +234,12 @@ curl -X POST "http://localhost:3000/api/tts/google" \
 
 ### 📚 Documentation
 
+#### Neural Workspace
+- **🚀 Quick Start**: [5-minute setup guide](./docs/NEURAL_WORKSPACE_QUICK_START.md)
+- **📖 Complete Guide**: [Comprehensive documentation](./docs/NEURAL_WORKSPACE_GUIDE.md)
+- **🔌 API Reference**: [Technical API documentation](./docs/NEURAL_WORKSPACE_API_REFERENCE.md)
+
+#### General Documentation
 - **API Reference**: Complete REST API documentation
 - **Agent Development**: Guide for creating custom agents
 - **Integration Examples**: Code samples and best practices
