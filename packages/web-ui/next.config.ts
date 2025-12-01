@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname, '../../'),
   },
-  transpilePackages: ['@solana/web3.js', 'ai', '@langchain/langgraph', '@langchain/core', 'zod'],
+  transpilePackages: ['@solana/web3.js', '@solana/wallet-adapter-react-ui', '@solana/wallet-adapter-react', '@solana/wallet-adapter-base', '@solana/wallet-adapter-wallets', 'ai', '@langchain/langgraph', '@langchain/core', 'zod', '@noble/curves', '@noble/hashes'],
   async headers() {
     return [
       {
