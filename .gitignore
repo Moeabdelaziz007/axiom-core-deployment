@@ -53,7 +53,7 @@ Applications/
 Downloads/
 # Public/ - REMOVED: This is needed for deployment
 apps/
-packages/
+# packages/
 # src/ - REMOVED: This is needed for deployment
 infrastructure/
 # tools/ - REMOVED: Needed for agent tools API
