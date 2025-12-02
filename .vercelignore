@@ -5,7 +5,7 @@ node_modules
 packages/*/node_modules
 packages/*/.next
 packages/*/.turbo
-src
+/src
 coverage
 tests
 scripts
