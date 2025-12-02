@@ -2,17 +2,19 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import DeadHandMonitor from '../../components/DeadHandMonitor';
-import TheForge from '../../components/TheForge';
-import MarketAnalystAgent from '../../components/MarketAnalystAgent';
-import OperationsAutomationAgent from '../../components/OperationsAutomationAgent';
-import SwarmConsensusVisualizer from '../../components/SwarmConsensusVisualizer';
-import AgentChatInterface from '../../components/AgentChatInterface';
-import NeuralWorkspace from '../../components/NeuralWorkspace';
-import SolanaVerifier from '../../components/SolanaVerifier';
-import XPSimulator from '../../components/XPSimulator';
-import LiveDiagnostics from '../../components/LiveDiagnostics';
-import StreamingResponseHandler from '../../components/StreamingResponseHandler';
+import {
+  DeadHandMonitor,
+  TheForge,
+  MarketAnalystAgent,
+  OperationsAutomationAgent,
+  SwarmConsensusVisualizer,
+  AgentChatInterface,
+  NeuralWorkspace,
+  SolanaVerifier,
+  XPSimulator,
+  LiveDiagnostics,
+  StreamingResponseHandler
+} from '@components';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Shield, Cpu, Activity, Terminal, Grid, Brain } from 'lucide-react';
 
@@ -100,7 +102,11 @@ export default function DashboardPage() {
                     <div className="text-center">
                         <Activity className="w-16 h-16 text-cyan-800 mx-auto mb-4 animate-pulse" />
                         <h2 className="text-2xl font-bold text-cyan-700">GLOBAL NETWORK MAP</h2>
-                        <p className="text-cyan-900">Offline</p><div className="mt-4"><SolanaVerifier /><div className="mt-4"><XPSimulator /><div className="mt-4"><LiveDiagnostics /><div className="mt-4"><StreamingResponseHandler /></div></div></div></div>
+                        <p className="text-cyan-900">Offline</p>
+                        <div className="mt-4"><SolanaVerifier /></div>
+                        <div className="mt-4"><XPSimulator /></div>
+                        <div className="mt-4"><LiveDiagnostics /></div>
+                        <div className="mt-4"><StreamingResponseHandler /></div>
                     </div>
                  </div>
               </div>
@@ -139,7 +145,9 @@ export default function DashboardPage() {
               className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full"
             >
               <div className="h-[600px]"><MarketAnalystAgent /></div>
-              <div className="h-[600px]"><OperationsAutomationAgent /><div className="col-span-1 md:col-span-2 mt-4"><SwarmConsensusVisualizer /></div><div className="col-span-1 md:col-span-2 mt-4"><AgentChatInterface /></div></div>
+              <div className="h-[600px]"><OperationsAutomationAgent /></div>
+              <div className="col-span-1 md:col-span-2 mt-4"><SwarmConsensusVisualizer /></div>
+              <div className="col-span-1 md:col-span-2 mt-4"><AgentChatInterface /></div>
             </motion.div>
           )}
         </AnimatePresence>

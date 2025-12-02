@@ -1,0 +1,203 @@
+# =============================================================================
+# VERCEL IGNORE FILE FOR AXIOM ID DEPLOYMENT
+# =============================================================================
+# This file specifies which files and directories should be excluded
+# from Vercel deployment to optimize build time and reduce bundle size
+# =============================================================================
+
+# =============================================================================
+# DEVELOPMENT AND TESTING FILES
+# =============================================================================
+
+# Test files and directories
+**/__tests__/
+**/*.test.ts
+**/*.test.tsx
+**/*.test.js
+**/*.test.jsx
+**/*.spec.ts
+**/*.spec.tsx
+**/*.spec.js
+**/*.spec.jsx
+
+# Test configuration files
+jest.config.*
+jest.setup.*
+vitest.config.*
+cypress.config.*
+playwright.config.*
+
+# Test coverage reports
+coverage/
+*.lcov
+.nyc_output/
+
+# =============================================================================
+# DEVELOPMENT TOOLS AND CONFIGURATIONS
+# =============================================================================
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =============================================================================
+# SOURCE CONTROL AND DOCUMENTATION
+# =============================================================================
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Documentation files (excluding README.md)
+*.md
+!README.md
+docs/
+
+# =============================================================================
+# BUILD ARTIFACTS AND DEPENDENCIES
+# =============================================================================
+
+# Node modules (will be installed during build)
+node_modules/
+packages/*/node_modules/
+
+# Build artifacts (will be generated during build)
+.next/
+out/
+dist/
+build/
+.cache/
+
+# =============================================================================
+# ENVIRONMENT AND CONFIGURATION FILES
+# =============================================================================
+
+# Environment files (actual values should be set in Vercel dashboard)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Package manager files (not needed in deployment)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# =============================================================================
+# LOGS AND TEMPORARY FILES
+# =============================================================================
+
+# Log files
+*.log
+logs/
+server.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# =============================================================================
+# DATABASE AND DATA FILES
+# =============================================================================
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+local.db
+
+# Database migrations (should be run separately)
+drizzle/
+migrations/
+
+# =============================================================================
+# SCRIPTS AND TOOLS
+# =============================================================================
+
+# Development and deployment scripts
+scripts/
+deploy.sh
+*.sh.skip
+
+# Tool configuration files
+.eslintrc.*
+.prettierrc.*
+.stylelintrc.*
+
+# =============================================================================
+# MONITORING AND ANALYTICS
+# =============================================================================
+
+# Monitoring and analytics files
+*.perf
+*.profile
+.nyc_output/
+
+# =============================================================================
+# MISC FILES
+# =============================================================================
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Large media files that shouldn't be deployed
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+
+# Audio files (excluding necessary ones)
+test_*.mp3
+test_*.wav
+test_*.ogg
+
+# Large image files that aren't needed for production
+*.psd
+*.ai
+*.sketch
+
+# =============================================================================
+# SPECIFIC TO AXIOM ID PROJECT
+# =============================================================================
+
+# Quantum command center (development only)
+quantum_command_center/
+
+# Temporary resources
+temp_resources.ts
+
+# Research and development files
+PHASE3_INTELLIGENCE_OPS_PLAN.md
+ENHANCED_DIGITAL_SOUL_PROTOCOL_RESEARCH_ARCHITECTURE.md
+BACKEND_INFRASTRUCTURE_AUDIT_REPORT.md
+COLLABORATION_SYSTEM_README.md
+DEPLOYMENT_*.md
+AXIOM_PAYMENT_ARCHITECTURE_PLAN.md
+
+# Disabled components
+**/*.disabled
+
+# Skip files
+**/*.skip

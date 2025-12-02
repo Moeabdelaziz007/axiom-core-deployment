@@ -324,8 +324,11 @@ export const AXIOM_AGENT_REGISTRY: Record<string, AgentCapability[]> = {
       costPerUse: 35
     }
   ]
-},
-  'dreamer': [
+}
+};
+
+export const AXIOM_AGENT_REGISTRY_EXTENDED: Record<string, AgentCapability[]> = {
+'dreamer': [
     {
       id: 'creative_ideation',
       name: 'Creative Ideation',

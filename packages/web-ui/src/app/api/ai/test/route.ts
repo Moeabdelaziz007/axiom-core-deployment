@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { groq, GROQ_MODELS } from '../../../../lib/groq';
+import { aiEngine } from '../../../../lib/ai-engine';
 
 export async function GET() {
   try {
-    const chatCompletion = await groq.chat.completions.create({
+    const chatCompletion = await aiEngine.groq.chat.completions.create({
       messages: [
         {
           role: 'system',
@@ -14,7 +14,7 @@ export async function GET() {
           content: 'Status check.',
         },
       ],
-      model: GROQ_MODELS.FAST,
+      model: aiEngine.models.FAST,
       temperature: 0.5,
       max_tokens: 50,
     });

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,6 +7,9 @@
 :root {
   --background: #000000;
   --foreground: #e5e7eb;
+  --axiom-cyan: #00F0FF;
+  --axiom-purple: #7000FF;
+  --axiom-glass: rgba(255, 255, 255, 0.03);
 }
 
 body {
@@ -78,4 +81,66 @@ body {
 
 .neon-text-glow {
   text-shadow: 0 0 10px rgba(0, 243, 255, 0.7);
+}
+
+/* Axiom Landing Page Utilities */
+@utility heading-hero {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+@utility heading-section {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+@utility text-gradient-cyan-purple {
+  background: linear-gradient(135deg, var(--axiom-cyan) 0%, var(--axiom-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility text-gradient-gold {
+  background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass Panel Effect */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 240, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(0, 240, 255, 0.3);
+  box-shadow: 0 8px 40px rgba(0, 240, 255, 0.2);
+  transform: translateY(-4px);
+}
+
+/* Circuit Pattern Background */
+.circuit-pattern {
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Holographic Glow */
+.holo-glow {
+  box-shadow: 
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 40px rgba(112, 0, 255, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
 }

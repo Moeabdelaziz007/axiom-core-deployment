@@ -1,0 +1,149 @@
+{
+  "version": 2,
+  "name": "axiom-id",
+  "domains": [
+    "axiomid.app",
+    "www.axiomid.app"
+  ],
+  "buildCommand": "cd packages/web-ui && npm run build",
+  "outputDirectory": "packages/web-ui/.next",
+  "installCommand": "cd packages/web-ui && npm install",
+  "framework": "nextjs",
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_APP_URL": "https://axiomid.app"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/www/:path*",
+      "destination": "https://axiomid.app/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/www",
+      "destination": "https://axiomid.app",
+      "permanent": true
+    },
+    {
+      "source": "/:path(www.*)",
+      "destination": "https://axiomid.app/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/ai/:path*",
+      "destination": "/api/ai/:path*"
+    },
+    {
+      "source": "/api/agent/:path*",
+      "destination": "/api/agent/:path*"
+    },
+    {
+      "source": "/api/webhooks/:path*",
+      "destination": "/api/webhooks/:path*"
+    },
+    {
+      "source": "/api/monitoring/:path*",
+      "destination": "/api/monitoring/:path*"
+    },
+    {
+      "source": "/api/pay/:path*",
+      "destination": "/api/pay/:path*"
+    },
+    {
+      "source": "/api/performance/:path*",
+      "destination": "/api/performance/:path*"
+    },
+    {
+      "source": "/api/staking/:path*",
+      "destination": "/api/staking/:path*"
+    },
+    {
+      "source": "/api/tts/:path*",
+      "destination": "/api/tts/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/api/webhooks/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-DNS-Prefetch-Control",
+          "value": "on"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "packages/web-ui/src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_APP_URL": "https://axiomid.app",
+    "NODE_ENV": "production"
+  }
+}

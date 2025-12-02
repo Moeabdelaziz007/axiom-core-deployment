@@ -1165,7 +1165,11 @@ export class RealtimeCommunicationSystem {
       };
     }
   }
-  capabilities: any
+
+  async joinSession(
+    sessionId: string,
+    participantId: string,
+    capabilities: any
   ): Promise<JoinSessionResult> {
     const session = this.sessions.get(sessionId);
     if (!session) {

@@ -3,6 +3,52 @@ import { render, screen } from '@testing-library/react';
 import { AxiomDigitalMandala } from '../AxiomDigitalMandala';
 import { AgentIdentity } from '@/types/identity';
 
+// Mock framer-motion to avoid rendering issues in test environment
+jest.mock('framer-motion', () => {
+  const React = require('react');
+  
+  const createMotionComponent = (tag: string) => {
+    const MotionComponent = React.forwardRef<any, any>((props, ref) => {
+      return React.createElement(tag, { ...props, ref });
+    });
+    return MotionComponent;
+  };
+
+  return {
+    motion: {
+      div: createMotionComponent('div'),
+      span: createMotionComponent('span'),
+      svg: createMotionComponent('svg'),
+      circle: createMotionComponent('circle'),
+      g: createMotionComponent('g'),
+      path: createMotionComponent('path'),
+      rect: createMotionComponent('rect')
+    },
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+    useAnimation: () => ({
+      start: jest.fn(),
+      stop: jest.fn(),
+      set: jest.fn()
+    }),
+    useMotionValue: (initial: any) => ({
+      value: initial,
+      set: jest.fn(),
+      onChange: jest.fn()
+    }),
+    useInView: () => false,
+    useScroll: () => ({
+      scrollY: { value: 0, onChange: jest.fn() },
+      scrollX: { value: 0, onChange: jest.fn() }
+    }),
+    useTransform: (value: any, transformer: any) => transformer(value),
+    useSpring: () => ({}),
+    useDrag: () => [[], {}] as any,
+    PanInfo: {},
+    MotionConfig: ({ children }: { children: React.ReactNode }) => children,
+    LayoutGroup: ({ children }: { children: React.ReactNode }) => children
+  };
+});
+
 // Mock identity data for testing
 const mockIdentity: AgentIdentity = {
   id: 'test-agent-1',

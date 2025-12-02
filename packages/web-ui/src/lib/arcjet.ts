@@ -7,7 +7,7 @@ const aj = arcjet({
     // Bot protection
     detectBot({
       mode: 'LIVE',
-      allow: [],
+      allow: ['CURL'], // Allow curl for testing
     }),
     // Rate limiting
     tokenBucket({

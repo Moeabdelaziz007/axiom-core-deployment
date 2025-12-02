@@ -151,7 +151,7 @@ export async function researchWithGoogle(query: string): Promise<{
     // DEBUG: Log model type and available methods
     console.log('🔍 DEBUG: Google Research model type:', typeof model);
     console.log('🔍 DEBUG: Google Research model methods:', Object.getOwnPropertyNames(model));
-    console.log('🔍 DEBUG: Google Research model.generateText type:', typeof model.generateText);
+    // console.log('🔍 DEBUG: Google Research model.generateText type:', typeof model.generateText);
     console.log('🔍 DEBUG: Google Research model specificationVersion:', model.specificationVersion);
     console.log('🔍 DEBUG: Google Research model provider:', model.provider);
     
@@ -162,8 +162,7 @@ export async function researchWithGoogle(query: string): Promise<{
       prompt: `Research and provide comprehensive information about: ${query}`,
       tools: [
         {
-          type: 'provider-defined',
-          toolName: 'google_search'
+          name: 'google_search'
         }
       ]
     });

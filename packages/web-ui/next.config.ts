@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // distDir removed to fix Vercel path issue
+  // Fixed Vercel deployment configuration - removed export mode to allow custom headers and rewrites
   turbopack: {
     root: path.resolve(__dirname, '../../'),
   },

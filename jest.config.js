@@ -2,10 +2,10 @@ module.exports = {
   // Test Environment
   preset: 'ts-jest',
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/src/testing/setup-jest.ts'],
+  setupFilesAfterEnv: [],
   
   // Test Discovery
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/src', '<rootDir>/packages'],
   testMatch: [
     '**/__tests__/**/*.ts',
     '**/__tests__/**/*.tsx',
@@ -19,8 +19,62 @@ module.exports = {
     '/coverage/'
   ],
   
+  // Projects configuration for different test environments
+  projects: [
+    {
+      displayName: 'node',
+      testEnvironment: 'node',
+      testMatch: [
+        '**/__tests__/**/*.ts',
+        '**/?(*.)+(spec|test).ts'
+      ],
+      preset: 'ts-jest',
+      setupFilesAfterEnv: [],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+        '^@testing/(.*)$': '<rootDir>/src/testing/$1',
+        '^@infra/(.*)$': '<rootDir>/src/infra/$1',
+        '^@types/(.*)$': '<rootDir>/src/types/$1'
+      },
+      transform: {
+        '^.+\\.ts$': 'ts-jest'
+      },
+      globals: {
+        'ts-jest': {
+          tsconfig: 'tsconfig.json',
+          isolatedModules: true
+        }
+      }
+    },
+    {
+      displayName: 'jsdom',
+      testEnvironment: 'jsdom',
+      testMatch: [
+        '**/__tests__/**/*.tsx',
+        '**/?(*.)+(spec|test).tsx'
+      ],
+      preset: 'ts-jest',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+        '^@testing/(.*)$': '<rootDir>/src/testing/$1',
+        '^@infra/(.*)$': '<rootDir>/src/infra/$1',
+        '^@types/(.*)$': '<rootDir>/src/types/$1'
+      },
+      transform: {
+        '^.+\\.tsx$': 'ts-jest'
+      },
+      globals: {
+        'ts-jest': {
+          tsconfig: 'tsconfig.json',
+          isolatedModules: true
+        }
+      }
+    }
+  ],
+  
   // Module Resolution
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@testing/(.*)$': '<rootDir>/src/testing/$1',
     '^@infra/(.*)$': '<rootDir>/src/infra/$1',
