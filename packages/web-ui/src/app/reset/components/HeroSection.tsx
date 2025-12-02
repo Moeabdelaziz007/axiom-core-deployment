@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from '@/components/reset/FeatureCard';
 import dynamic from 'next/dynamic';
-import { FeatureCard } from '@/components/reset/FeatureCard';
+
 // Lazy load MatrixRain with no SSR to avoid hydration mismatches
 const MatrixRain = dynamic(() => import('@/components/effects/MatrixRain').then(mod => mod.MatrixRain), {
   ssr: false

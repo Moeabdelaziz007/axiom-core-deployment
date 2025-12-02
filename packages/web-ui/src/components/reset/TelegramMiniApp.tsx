@@ -148,7 +148,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
     setInputText('');
 
     // Simulate agent response
-    setTimeout(() => {
+    setTimeout(async () => {
       const agentResponse = await generateAgentResponse(inputText);
       const responseMessage: TelegramMessage = {
         id: (Date.now() + 1).toString(),
@@ -297,8 +297,8 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.sender === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800 text-white border border-gray-700'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-white border border-gray-700'
                 }`}>
                 <div className="flex items-center space-x-2 mb-1">
                   {message.sender === 'agent' && <Bot className="w-4 h-4 text-blue-400" />}
@@ -346,9 +346,9 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
 
                   <div className="flex items-center space-x-2">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${task.status === 'completed' ? 'bg-green-600 text-white' :
-                        task.status === 'in_progress' ? 'bg-yellow-600 text-white' :
-                          task.status === 'verified' ? 'bg-blue-600 text-white' :
-                            'bg-gray-600 text-gray-200'
+                      task.status === 'in_progress' ? 'bg-yellow-600 text-white' :
+                        task.status === 'verified' ? 'bg-blue-600 text-white' :
+                          'bg-gray-600 text-gray-200'
                       }`}>
                       {task.status === 'pending' && t('telegram.tasks.status.pending')}
                       {task.status === 'in_progress' && t('telegram.tasks.status.inProgress')}

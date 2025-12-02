@@ -1,7 +1,8 @@
 'use client';
+/**
  * Matrix - style text rain effect for Soul injection
-  * Creates falling green characters like in The Matrix
-    */
+ * Creates falling green characters like in The Matrix
+ */
 
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
