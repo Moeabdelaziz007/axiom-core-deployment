@@ -1,0 +1,17 @@
+# Vercel Ignore File
+.git
+.vercel
+node_modules
+packages/*/node_modules
+packages/*/.next
+packages/*/.turbo
+src
+coverage
+tests
+scripts
+quantum_command_center
+*.mp3
+*.db
+*.log
+*.tmp
+.DS_Store

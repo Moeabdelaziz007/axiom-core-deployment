@@ -82,3 +82,4 @@ web-project/
 # Exclude system and hidden files
 .*
 !.gitignore
+!.vercelignore
