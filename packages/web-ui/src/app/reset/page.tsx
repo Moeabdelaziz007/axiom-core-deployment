@@ -36,7 +36,7 @@ export default function ResetLandingPage() {
       </div>
 
       {/* Hero Section */}
-      <HeroSection language={language} onCTAClick={handleCTAClick} />
+      <HeroSection language={language} />
 
       {/* Value Proposition */}
       <ValueProposition language={language} />
