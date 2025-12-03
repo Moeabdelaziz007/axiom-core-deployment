@@ -34,16 +34,16 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
         {
             id: 'tajer',
             name: language === 'ar' ? 'تاجر (Tajer)' : 'Tajer',
-            role: language === 'ar' ? 'مُضيفك في الساحل' : 'Your Host in Sahel',
+            role: language === 'ar' ? 'مُضيفك في الساحل والعقارات' : 'Your Host for Rentals & Real Estate',
             desc: language === 'ar'
-                ? 'أجّر شاليهك في الساحل أو الجونة مباشرة. موقع حجز خاص بيك من غير سماسرة.'
-                : 'Rent your chalet in Sahel or Gouna directly. Your own booking site with zero brokers.',
+                ? 'أجّر شاليهك في الساحل، شرم، أو رأس الحكمة. كمان شقق للطلبة في القاهرة. موقع حجز خاص بيك من غير سماسرة.'
+                : 'Rent your chalet in Sahel, Sharm, or Ras El Hekma. Also student apartments in Cairo. Your own booking site with zero brokers.',
             color: 'blue',
             icon: Palmtree,
             features: [
-                language === 'ar' ? 'حجز مباشر' : 'Direct Booking',
-                language === 'ar' ? 'إدارة حجوزات' : 'Booking Management',
-                language === 'ar' ? 'تسويق آلي' : 'Auto-Marketing',
+                language === 'ar' ? 'ساحل • شرم • رأس الحكمة' : 'Sahel • Sharm • Ras El Hekma',
+                language === 'ar' ? 'شقق طلبة في القاهرة' : 'Student Housing in Cairo',
+                language === 'ar' ? 'حجز مباشر بدون سماسرة' : 'Direct Booking, No Brokers',
             ]
         },
         {
@@ -115,7 +115,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                         {/* Platform Mockup Side */}
                         <div className="flex-1 w-full">
                             <div className={`relative rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl overflow-hidden shadow-2xl group ${agent.color === 'orange' ? 'shadow-orange-500/20' :
-                                agent.color === 'blue' ? 'shadow-blue-500/20' : 'shadow-green-500/20'
+                                    agent.color === 'blue' ? 'shadow-blue-500/20' : 'shadow-green-500/20'
                                 }`}>
                                 {/* Browser Bar */}
                                 <div className="h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2">
@@ -129,30 +129,97 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
 
                                 {/* Platform Content Mockup */}
                                 <div className="aspect-video relative p-6 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-700">
-                                    {/* Background Grid */}
-                                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
+                                    {/* Animated Background Grid */}
+                                    <motion.div
+                                        animate={{
+                                            backgroundPosition: ['0px 0px', '40px 40px'],
+                                        }}
+                                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                                        className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"
+                                    />
 
-                                    {/* UI Elements */}
+                                    {/* Realistic UI Elements */}
                                     <div className="w-full max-w-xs space-y-4 relative z-10">
-                                        <div className={`h-8 w-3/4 rounded mx-auto ${agent.color === 'orange' ? 'bg-orange-500/20' :
-                                            agent.color === 'blue' ? 'bg-blue-500/20' : 'bg-green-500/20'
-                                            }`} />
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="h-24 rounded bg-white/5 border border-white/10" />
-                                            <div className="h-24 rounded bg-white/5 border border-white/10" />
+                                        {/* Header */}
+                                        <motion.div
+                                            animate={{ opacity: [0.5, 1, 0.5] }}
+                                            transition={{ duration: 3, repeat: Infinity }}
+                                            className={`h-10 rounded-lg mx-auto flex items-center justify-center text-xs font-bold ${agent.color === 'orange' ? 'bg-orange-500/20 text-orange-400' :
+                                                    agent.color === 'blue' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
+                                                }`}
+                                        >
+                                            {agent.id === 'sofra' && (language === 'ar' ? 'قائمة الطعام' : 'Menu')}
+                                            {agent.id === 'tajer' && (language === 'ar' ? 'وحداتنا المتاحة' : 'Available Units')}
+                                            {agent.id === 'drmoe' && (language === 'ar' ? 'الأدوية المتوفرة' : 'Available Medicines')}
+                                        </motion.div>
+
+                                        {/* Content Grid */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {[1, 2, 3, 4].map((i) => (
+                                                <motion.div
+                                                    key={i}
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                                                    className="h-20 rounded-lg bg-white/5 border border-white/10 p-2 flex flex-col justify-between"
+                                                >
+                                                    <div className="h-2 w-3/4 rounded bg-white/20" />
+                                                    <div className="h-1.5 w-1/2 rounded bg-white/10" />
+                                                </motion.div>
+                                            ))}
                                         </div>
-                                        <div className="h-4 w-1/2 rounded mx-auto bg-white/10" />
+
+                                        {/* CTA Button */}
+                                        <motion.div
+                                            animate={{ scale: [1, 1.05, 1] }}
+                                            transition={{ duration: 2, repeat: Infinity }}
+                                            className={`h-8 rounded-lg flex items-center justify-center text-xs font-bold ${agent.color === 'orange' ? 'bg-orange-600' :
+                                                    agent.color === 'blue' ? 'bg-blue-600' : 'bg-green-600'
+                                                }`}
+                                        >
+                                            {language === 'ar' ? 'اطلب الآن' : 'Order Now'}
+                                        </motion.div>
                                     </div>
 
-                                    {/* Floating Icon */}
-                                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full flex items-center justify-center blur-xl opacity-20 ${agent.color === 'orange' ? 'bg-orange-500' :
-                                        agent.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
-                                        }`} />
+                                    {/* Floating Holographic Icon */}
+                                    <motion.div
+                                        animate={{
+                                            y: [-10, 10, -10],
+                                            rotate: [0, 5, -5, 0],
+                                            scale: [1, 1.1, 1]
+                                        }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center blur-2xl opacity-20 ${agent.color === 'orange' ? 'bg-orange-500' :
+                                                agent.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                                            }`}
+                                    />
+
+                                    {/* Particle Effects */}
+                                    {[...Array(5)].map((_, i) => (
+                                        <motion.div
+                                            key={i}
+                                            className={`absolute w-1 h-1 rounded-full ${agent.color === 'orange' ? 'bg-orange-400' :
+                                                    agent.color === 'blue' ? 'bg-blue-400' : 'bg-green-400'
+                                                }`}
+                                            animate={{
+                                                x: [0, (Math.random() - 0.5) * 200],
+                                                y: [0, (Math.random() - 0.5) * 200],
+                                                opacity: [1, 0],
+                                            }}
+                                            transition={{
+                                                duration: 3,
+                                                repeat: Infinity,
+                                                delay: i * 0.5,
+                                            }}
+                                        />
+                                    ))}
                                 </div>
 
                                 {/* Overlay Text */}
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <p className="text-white font-bold tracking-widest uppercase">View Live Demo</p>
+                                    <p className="text-white font-bold tracking-widest uppercase">
+                                        {language === 'ar' ? 'شاهد العرض التوضيحي' : 'View Live Demo'}
+                                    </p>
                                 </div>
                             </div>
                         </div>
