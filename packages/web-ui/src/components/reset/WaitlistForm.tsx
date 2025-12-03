@@ -23,14 +23,35 @@ export const WaitlistForm = () => {
         if (!email) return;
 
         setLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Generate random queue position for gamification
-        const randomPosition = Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
-        setQueuePosition(randomPosition);
-        setSubmitted(true);
-        setLoading(false);
+        try {
+            const response = await fetch("https://formspree.io/f/xblqrblj", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    interests: interests,
+                    total_price: totalPrice.toFixed(2),
+                    timestamp: new Date().toISOString()
+                })
+            });
+
+            if (response.ok) {
+                // Generate random queue position for gamification
+                const randomPosition = Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
+                setQueuePosition(randomPosition);
+                setSubmitted(true);
+            } else {
+                console.error("Formspree submission failed");
+                // Optional: Handle error state in UI
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const totalPrice = (interests.website ? 1.00 : 0) + (interests.chatbot ? 0.99 : 0);
