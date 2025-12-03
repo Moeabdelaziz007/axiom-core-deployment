@@ -19,7 +19,7 @@ export interface SectorCardProps {
 }
 
 export interface FeatureCardProps {
-    type: 'SHIFT' | 'FUEL' | 'DROP' | 'SCAN';
+    type: 'SHIFT' | 'FUEL' | 'DROP' | 'SCAN' | 'SOFRA' | 'TAJER' | 'DR. MOE';
     title: string;
     description: string;
     icon: LucideIcon;
