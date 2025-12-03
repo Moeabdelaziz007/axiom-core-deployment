@@ -3,10 +3,7 @@
 import React, { useState } from 'react';
 import { HeroSection } from './components/HeroSection';
 import { ValueProposition } from './components/ValueProposition';
-import { SectorShowcase } from './components/SectorShowcase';
-import { AgentRecruitment } from './components/AgentRecruitment';
 import { TelegramMiniApp } from '@/components/reset/TelegramMiniApp';
-import { MerchantOfferCard } from '@/components/reset/MerchantOfferCard';
 import { Footer } from './components/Footer';
 import { Language } from '@/types/reset';
 
@@ -41,24 +38,8 @@ export default function ResetLandingPage() {
       {/* Value Proposition */}
       <ValueProposition language={language} />
 
-      {/* Merchant Offer Card */}
-      <section className="py-20 px-4">
-        <MerchantOfferCard
-          language={language}
-          onCTAClick={handleCTAClick}
-        />
-        <div className="text-center mt-8">
-          <p className="text-[#00F0FF] font-orbitron text-lg tracking-wider animate-pulse">
-            $1.99/mo after 30 days. 0% Commission.
-          </p>
-        </div>
-      </section>
-
-      {/* Sector Showcase */}
-      <SectorShowcase language={language} />
-
-      {/* Agent Recruitment */}
-      <AgentRecruitment language={language} onSignUpClick={handleSignUpClick} />
+      {/* Value Proposition */}
+      <ValueProposition language={language} />
 
       {/* Telegram Mini App Interface */}
       <TelegramMiniApp language={language} onAgentTaskUpdate={(taskId, status) => {
