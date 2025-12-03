@@ -7,6 +7,7 @@ import { SectorShowcase } from './components/SectorShowcase';
 import { AgentRecruitment } from './components/AgentRecruitment';
 import { TelegramMiniApp } from '@/components/reset/TelegramMiniApp';
 import { MerchantOfferCard } from '@/components/reset/MerchantOfferCard';
+import { Footer } from './components/Footer';
 import { Language } from '@/types/reset';
 
 export default function ResetLandingPage() {
@@ -65,13 +66,7 @@ export default function ResetLandingPage() {
       }} />
 
       {/* Footer */}
-      <footer className="relative py-12 px-4 border-t border-white/10">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-white/60">
-            © 2025 Axiom RESET. Part of the Axiom ID Ecosystem.
-          </p>
-        </div>
-      </footer>
+      <Footer language={language} />
     </main>
   );
 }

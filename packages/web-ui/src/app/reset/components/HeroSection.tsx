@@ -24,6 +24,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onCTAClick,
 }) => {
   const { t } = useTranslation(language);
+  const isRTL = language === 'ar';
 
   const features = [
     {
@@ -53,14 +54,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-20 px-4">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-20 px-4" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Matrix Rain Background Effect */}
       <div className="absolute inset-0 opacity-20">
         <MatrixRain isActive={true} />
       </div>
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/50 to-[#050505]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto w-full">
@@ -69,15 +70,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-orbitron font-bold mb-6 text-glow">
+          <div className="inline-block mb-4 px-4 py-1 rounded-full border border-[#00F0FF]/30 bg-[#00F0FF]/10 text-[#00F0FF] text-sm tracking-widest uppercase font-mono">
+            {language === 'ar' ? 'نظام التشغيل السيادي' : 'SOVEREIGN OPERATING SYSTEM'}
+          </div>
+
+          <h1 className={`text-5xl md:text-7xl lg:text-9xl font-black mb-8 text-glow leading-tight ${isRTL ? 'font-sans' : 'font-orbitron'}`}>
             <span className="bg-gradient-to-r from-[#00F0FF] via-white to-[#00F0FF] bg-clip-text text-transparent">
               {t('hero.title')}
             </span>
           </h1>
+
           <div
-            className="text-xl md:text-2xl text-white font-orbitron tracking-wider mb-8"
+            className={`text-xl md:text-3xl text-gray-300 font-light tracking-wide mb-12 max-w-4xl mx-auto leading-relaxed ${isRTL ? 'font-sans' : 'font-sans'}`}
             dangerouslySetInnerHTML={{ __html: t('hero.subtitle') }}
           />
 
@@ -90,10 +96,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <Button
               onClick={onCTAClick}
               size="lg"
-              className="btn-neon text-lg px-12 py-6 group"
+              className="relative overflow-hidden group bg-[#00F0FF] text-black hover:bg-white hover:text-black transition-all duration-300 text-xl px-16 py-8 rounded-none clip-path-polygon"
             >
-              {t('hero.cta')}
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span className="relative z-10 font-bold tracking-widest flex items-center gap-3">
+                {t('hero.cta')}
+                <ArrowRight className={`w-6 h-6 transition-transform ${isRTL ? 'rotate-180 group-hover:-translate-x-2' : 'group-hover:translate-x-2'}`} />
+              </span>
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             </Button>
           </motion.div>
         </motion.div>
