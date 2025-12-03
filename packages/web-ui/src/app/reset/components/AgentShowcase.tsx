@@ -217,10 +217,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </motion.div>
                 ))}
-        </div>
+            </div>
         </section >
     );
 };
