@@ -61,6 +61,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ language = 'en' 
                 language === 'ar' ? 'تحليلات مبيعات' : 'Sales Analytics',
                 language === 'ar' ? '0% عمولة توصيل' : '0% Delivery Commission',
                 language === 'ar' ? 'دومين خاص (اختياري)' : 'Custom Domain (Optional)',
+                language === 'ar' ? 'حقن الروح (قريباً)' : 'Soul Injection (Coming Soon)',
             ]
         }
     ];

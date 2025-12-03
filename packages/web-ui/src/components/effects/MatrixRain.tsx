@@ -99,7 +99,7 @@ export const MatrixRain: React.FC<MatrixRainProps> = ({ isActive, onComplete }) 
           >
             <div className="flex items-center justify-center h-full">
               <div className="text-green-400 text-6xl font-bold animate-pulse">
-                SOUL INJECTION ACTIVE
+                {/* SOUL INJECTION ACTIVE */}
               </div>
             </div>
           </motion.div>
