@@ -50,6 +50,38 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ language = 'en' }) =
                             : 'Our Vision: To make advanced technology accessible to everyone, starting at the price of a cup of coffee.'}
                     </p>
                 </motion.div>
+
+                {/* Founder Section */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-20 pt-10 border-t border-white/10"
+                >
+                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 inline-block text-left relative overflow-hidden group hover:border-cyan-500/30 transition-colors duration-500">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 blur-2xl rounded-full -mr-10 -mt-10" />
+
+                        <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-widest mb-2 font-orbitron">
+                            {language === 'ar' ? 'المؤسس & المطور' : 'Founder & Lead Engineer'}
+                        </h3>
+                        <h4 className="text-2xl font-bold text-white mb-4">
+                            Mohamed Hossameldin
+                        </h4>
+                        <p className="text-gray-400 text-sm leading-relaxed max-w-lg mb-6">
+                            {language === 'ar'
+                                ? 'مهندس برمجيات مصري شغوف ببناء الأنظمة الذكية. أؤمن بأن الكود هو اللغة التي ستعيد تشكيل اقتصادنا.'
+                                : 'An Egyptian Full Stack Engineer passionate about building intelligent systems. I believe code is the language that will reshape our economy.'}
+                        </p>
+
+                        <div className="flex gap-4 text-sm text-gray-500">
+                            <a href="mailto:amrikyy@gmail.com" className="hover:text-white transition-colors flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                amrikyy@gmail.com
+                            </a>
+                        </div>
+                    </div>
+                </motion.div>
             </div>
         </section>
     );

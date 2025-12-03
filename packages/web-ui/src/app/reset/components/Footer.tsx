@@ -60,48 +60,19 @@ export const Footer: React.FC<FooterProps> = ({ language }) => {
                             <li><a href="#" className="text-gray-400 hover:text-[#00F0FF] transition-colors">{t('footer.privacy')}</a></li>
                         </ul>
                     </div>
-                    {/* Contact Info Column */}
-                    <div>
-                        <h3 className="text-white font-bold mb-6 font-orbitron tracking-wide">Contact</h3>
-                        <ul className="space-y-3 text-sm">
-                            <li className="text-gray-400">
-                                <span className="text-cyan-400">WhatsApp:</span>{' '}
-                                <a href="https://wa.me/17706160211" className="hover:text-cyan-400 transition-colors">
-                                    +1 770 616 0211
-                                </a>
-                            </li>
-                            <li className="text-gray-400">
-                                <span className="text-cyan-400">Call:</span>{' '}
-                                <a href="tel:+201094228044" className="hover:text-cyan-400 transition-colors">
-                                    +20 109 422 8044
-                                </a>
-                            </li>
-                            <li className="text-gray-400">
-                                <span className="text-cyan-400">Email:</span>{' '}
-                                <a href="mailto:amrikyy@gmail.com" className="hover:text-cyan-400 transition-colors">
-                                    amrikyy@gmail.com
-                                </a>
-                            </li>
-                        </ul>
+                    {/* Bottom Bar */}
+                    <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div className="text-center md:text-left">
+                            <p className="text-gray-500 text-sm">
+                                © 2024 Axiom Reset. All rights reserved.
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-500 text-sm">
+                            <Globe size={14} />
+                            <span>Cairo, Egypt</span>
+                        </div>
                     </div>
                 </div>
-
-                {/* Bottom Bar */}
-                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div className="text-center md:text-left">
-                        <p className="text-white font-bold mb-1">
-                            Mohamed Hossameldin Abdelaziz
-                        </p>
-                        <p className="text-gray-500 text-sm">
-                            Solo Full Stack Engineer
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-500 text-sm">
-                        <Globe size={14} />
-                        <span>Cairo, Egypt</span>
-                    </div>
-                </div>
-            </div>
         </footer>
     );
 };
