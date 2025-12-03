@@ -141,7 +141,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
       sender: 'user',
       timestamp: new Date(),
       status: 'sent',
-      location: currentLocation || undefined
+      location: currentLocation ? { ...currentLocation, address: 'Current Location' } : undefined
     };
 
     setMessages(prev => [...prev, newMessage]);
@@ -178,7 +178,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
     if (lowerMessage.includes('location') || lowerMessage.includes('where')) {
       return {
         text: `📍 ${t('telegram.agent.locationResponse')}: ${currentLocation?.lat || 24.7136}, ${currentLocation?.lng || 46.6753}`,
-        location: currentLocation || undefined
+        location: currentLocation ? { ...currentLocation, address: 'Current Location' } : undefined
       };
     }
 
@@ -357,7 +357,9 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
                     </span>
 
                     {task.quantumVerified && (
-                      <Shield className="w-4 h-4 text-purple-400" title="Quantum Verified" />
+                      <span title="Quantum Verified">
+                        <Shield className="w-4 h-4 text-purple-400" />
+                      </span>
                     )}
                   </div>
                 </div>

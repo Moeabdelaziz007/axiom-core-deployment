@@ -55,7 +55,7 @@ export class MPCKeyManager {
     // Simple Shamir's Secret Sharing simulation
     // In a real implementation, this would use proper MPC cryptography
     // For demo purposes, we'll simulate the share generation
-    
+
     for (let i = 0; i < participants.length; i++) {
       const share = {
         shareId: crypto.randomBytes(8).toString('hex'),
@@ -63,7 +63,7 @@ export class MPCKeyManager {
         encryptedShare: this.encryptShare(privateKey, participants[i], i),
         shareHolder: participants[i],
         createdAt: Date.now(),
-        status: 'active'
+        status: 'active' as const
       };
       shares.push(share);
     }
@@ -79,12 +79,12 @@ export class MPCKeyManager {
 
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipher(MPCKeyManager.ENCRYPTION_ALGORITHM, key);
-    
+
     let encrypted = cipher.update(secret, 'utf8');
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-    
+
     const authTag = cipher.getAuthTag();
-    
+
     return Buffer.concat([iv, encrypted, authTag]).toString('hex');
   }
 
@@ -97,13 +97,13 @@ export class MPCKeyManager {
   ): Promise<MPCKeyConfig> {
     const keyId = crypto.randomBytes(32).toString('hex');
     const publicKey = this.generatePublicKey();
-    
+
     // Generate master key (in real implementation, this would be MPC-generated)
     const masterKey = crypto.randomBytes(64).toString('hex');
-    
+
     // Generate shares for participants
     const shares = this.generateKeyShares(masterKey, participants, threshold);
-    
+
     const keyConfig: MPCKeyConfig = {
       keyId,
       publicKey,
@@ -136,7 +136,7 @@ export class MPCKeyManager {
     metadata?: any
   ): Promise<MPCOperation> {
     const operationId = crypto.randomBytes(32).toString('hex');
-    
+
     const operation: MPCOperation = {
       operationId,
       type: operationType,
@@ -150,12 +150,12 @@ export class MPCKeyManager {
     };
 
     console.log(`🔄 MPC Operation initiated: ${operationType} for key ${keyId}`);
-    
+
     // In a real implementation, this would:
     // 1. Notify participants to contribute their shares
     // 2. Collect shares and reconstruct the operation
     // 3. Execute the operation securely
-    
+
     return operation;
   }
 
@@ -165,9 +165,9 @@ export class MPCKeyManager {
     currentParticipants: string[],
     newParticipants?: string[]
   ): Promise<{
-      newKeyConfig: MPCKeyConfig;
-      rotationOperation: MPCOperation;
-    }> {
+    newKeyConfig: MPCKeyConfig;
+    rotationOperation: MPCOperation;
+  }> {
     const newKeyConfig = await this.createMPCKey(
       'system', // System-initiated rotation
       `rotated_${keyId}`,
@@ -183,7 +183,7 @@ export class MPCKeyManager {
     );
 
     console.log(`🔄 MPC Key rotation initiated: ${keyId} -> ${newKeyConfig.keyId}`);
-    
+
     return {
       newKeyConfig,
       rotationOperation
@@ -200,7 +200,7 @@ export class MPCKeyManager {
     // 1. Validate shares
     // 2. Reconstruct the master key using threshold cryptography
     // 3. Generate new public key
-    
+
     const recoveredKeyConfig: MPCKeyConfig = {
       keyId: `${keyId}_recovered`,
       publicKey: this.generatePublicKey(),
@@ -212,7 +212,7 @@ export class MPCKeyManager {
     };
 
     console.log(`🔓 MPC Key recovered: ${keyId} from ${shares.length} shares`);
-    
+
     return recoveredKeyConfig;
   }
 
@@ -257,7 +257,7 @@ export class MPCKeyManager {
   } {
     // In a real implementation, this would query the database
     // For demo purposes, we'll return a mock status
-    
+
     const config: MPCKeyConfig = {
       keyId,
       publicKey: this.generatePublicKey(),
@@ -298,21 +298,21 @@ export class MPCKeyManager {
     // Encrypt the entire key configuration for backup
     const backupData = JSON.stringify(keyConfig);
     const backupKey = crypto.randomBytes(32).toString('hex');
-    
+
     const key = crypto.createHash('sha256')
       .update(backupKey)
       .digest('hex');
-    
+
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipher(MPCKeyManager.ENCRYPTION_ALGORITHM, key);
-    
+
     let encrypted = cipher.update(backupData, 'utf8');
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-    
+
     const authTag = cipher.getAuthTag();
-    
+
     const encryptedBackup = Buffer.concat([iv, encrypted, authTag]).toString('hex');
-    
+
     // Distribute to backup locations
     const locations = backupLocations.map(location => ({
       location,
@@ -349,10 +349,10 @@ export class MPCKeyManager {
     purpose: string
   ): MPCKeyConfig {
     const childKeyId = `${parentKeyConfig.keyId}_${derivationPath}`;
-    
+
     // In a real implementation, this would use hierarchical deterministic key derivation
     // For demo purposes, we'll simulate the derivation
-    
+
     const childKeyConfig: MPCKeyConfig = {
       keyId: childKeyId,
       publicKey: this.generatePublicKey(),
@@ -366,7 +366,7 @@ export class MPCKeyManager {
     };
 
     console.log(`🔑 Derived child key: ${childKeyId} for purpose: ${purpose}`);
-    
+
     return childKeyConfig;
   }
 }
@@ -416,11 +416,11 @@ export const MPCUtils = {
   generateRotationSchedule: (config: MPCKeyConfig): Date[] => {
     const schedule: Date[] = [];
     const now = Date.now();
-    
+
     // Rotate every 30 days for demo purposes
     for (let i = 1; i <= 12; i++) {
       const rotationDate = new Date(config.createdAt + (i * 30 * 24 * 60 * 60 * 1000));
-      if (rotationDate > now) {
+      if (rotationDate.getTime() > now) {
         schedule.push(rotationDate);
       }
     }

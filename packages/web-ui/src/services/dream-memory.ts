@@ -19,9 +19,9 @@ export interface StoredDream {
   title: string | null;
   metadata: string | null;
   sessionId: string | null;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  userId: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }
 
 /**
@@ -42,7 +42,7 @@ export class DreamMemory {
         .where(eq(syntheticDreams.userId, userId))
         .orderBy(desc(syntheticDreams.createdAt))
         .limit(3);
-      
+
       logDreamEvent('DreamMemory', 'Retrieved Dreams', `Found ${dreams.length} dreams for user ${userId}`);
       return dreams;
     } catch (error) {
@@ -60,7 +60,7 @@ export class DreamMemory {
   static async saveDream(dreamData: DreamData): Promise<string | null> {
     try {
       const dreamId = nanoid();
-      
+
       await db.insert(syntheticDreams).values({
         id: dreamId,
         content: dreamData.content,
@@ -70,7 +70,7 @@ export class DreamMemory {
         sessionId: dreamData.sessionId || null,
         updatedAt: new Date()
       });
-      
+
       logDreamEvent('DreamMemory', 'Saved Dream', `Dream ${dreamId} saved for user ${dreamData.userId}`);
       return dreamId;
     } catch (error) {

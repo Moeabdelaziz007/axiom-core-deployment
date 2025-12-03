@@ -46,10 +46,10 @@ const initialStateImpl = initialState;
 const dreamNode = async (state: DreamStateType, config?: RunnableConfig) => {
   console.log("☁️ Dreaming...");
   logDreamEvent('Al-Khayal', 'Starting Dream Process', `Seed: ${state.seed}, User: ${state.userId}`);
-  
+
   let memoryContext = "";
   let dream = "";
-  
+
   try {
     // Step A: Retrieval - Get memory context from database
     const lastDreams = await DreamMemory.getLastThreeDreams(state.userId);
@@ -59,11 +59,11 @@ const dreamNode = async (state: DreamStateType, config?: RunnableConfig) => {
     logDreamEvent('Al-Khayal', 'Memory Error', `Failed to retrieve memory: ${error}`);
     memoryContext = "Memory Context: Unable to retrieve previous dreams.";
   }
-  
+
   try {
     // Step B: Generation - Generate new dream with memory context
     const model = aiEngine.getModel('SMART');
-    
+
     const systemPrompt = `
       You are Al-Khayal (The Dreamer), a visionary sci-fi writer and futurist.
       Your goal is to take a "seed" concept and hallucinate a vivid, detailed future scenario around it.
@@ -103,7 +103,7 @@ const dreamNode = async (state: DreamStateType, config?: RunnableConfig) => {
       dream = `Dream generation failed. Seed: ${state.seed}`;
     }
   }
-  
+
   try {
     // Step C: Persistence - Save the new dream to database
     const dreamId = await DreamMemory.saveDream({
@@ -117,7 +117,7 @@ const dreamNode = async (state: DreamStateType, config?: RunnableConfig) => {
       userId: state.userId,
       sessionId: config?.configurable?.sessionId
     });
-    
+
     if (dreamId) {
       logDreamEvent('Al-Khayal', 'Dream Saved', `Dream persisted with ID: ${dreamId}`);
     } else {
@@ -127,7 +127,7 @@ const dreamNode = async (state: DreamStateType, config?: RunnableConfig) => {
     logDreamEvent('Al-Khayal', 'Persistence Error', `Failed to save dream: ${error}`);
     // Continue with the flow even if persistence fails
   }
-  
+
   return { dreamLog: [...state.dreamLog, dream] };
 };
 
@@ -145,7 +145,7 @@ const judgeNode = async (state: DreamStateType, config?: RunnableConfig) => {
   logDreamEvent('Al-Hakam', 'Evaluating Insight', JSON.stringify(state.structuredData));
   const evaluation = await judgeAgent(state.structuredData);
   logDreamEvent('Al-Hakam', 'Verdict', `Score: ${(evaluation as any).final_score}, Decision: ${(evaluation as any).decision}`);
-  return { 
+  return {
     qualityScore: (evaluation as any).final_score,
     feedback: [...state.feedback, (evaluation as any).feedback]
   };
@@ -169,7 +169,7 @@ const shouldRefine = (state: DreamStateType) => {
 // Create the graph
 export const createDreamGraph = (userId: string) => {
   console.log("🔍 DEBUG: Creating dream graph with LangGraph v1.0.2 API");
-  
+
   // Use the Annotation.Root approach for v1.0.2
   const workflow = new StateGraph(DreamState);
 
@@ -180,24 +180,24 @@ export const createDreamGraph = (userId: string) => {
   workflow.addNode("build", buildNode);
 
   console.log("🔍 DEBUG: Adding edges to the workflow");
-  
+
   // Add edges with proper node references
-  workflow.addEdge("__start__", "dream");
-  workflow.addEdge("dream", "analyze");
-  workflow.addEdge("analyze", "judge");
-  
+  workflow.addEdge(START, "dream" as any);
+  workflow.addEdge("dream" as any, "analyze" as any);
+  workflow.addEdge("analyze" as any, "judge" as any);
+
   // Conditional edge from Judge - using proper mapping
   console.log("🔍 DEBUG: Adding conditional edges from judge node");
   workflow.addConditionalEdges(
-    "judge",
+    "judge" as any,
     shouldRefine,
     {
-      dream: "dream",
-      build: "build"
+      dream: "dream" as any,
+      build: "build" as any
     }
   );
 
-  workflow.addEdge("build", END);
+  workflow.addEdge("build" as any, END as any);
 
   console.log("🔍 DEBUG: Compiling the workflow");
   return workflow.compile();

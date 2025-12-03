@@ -16,7 +16,7 @@
  * Post-Quantum Lattice-Based Cryptography
  * Implements Kyber KEM (Key Encapsulation Mechanism) - NIST Round 3 Finalist
  */
-export class PostQuantumKyber {
+class PostQuantumKyber {
   private static readonly KYBER512 = 'kyber512';
   private static readonly KYBER768 = 'kyber768';
   private static readonly KYBER1024 = 'kyber1024';
@@ -30,11 +30,11 @@ export class PostQuantumKyber {
     const keySize = securityLevel;
     const seed = new Uint8Array(32);
     crypto.getRandomValues(seed);
-    
+
     // Simulate Kyber key generation (in production, use actual PQ library)
     const publicKey = await this.derivePublicKey(seed, keySize);
     const privateKey = await this.derivePrivateKey(seed, keySize);
-    
+
     return {
       publicKey: {
         algorithm: `Kyber${keySize}`,
@@ -67,10 +67,10 @@ export class PostQuantumKyber {
     // Simulate Kyber encapsulation
     const sharedSecret = new Uint8Array(32);
     crypto.getRandomValues(sharedSecret);
-    
+
     const ciphertext = await this.quantumEncrypt(plaintext, publicKey.key);
     const encapsulatedKey = await this.combineWithSharedSecret(ciphertext, sharedSecret);
-    
+
     return {
       ciphertext: encapsulatedKey,
       sharedSecret,
@@ -92,7 +92,7 @@ export class PostQuantumKyber {
     // Simulate Kyber decapsulation
     const ciphertext = await this.extractFromEncapsulation(encapsulation.ciphertext);
     const sharedSecret = await this.quantumDecrypt(ciphertext, privateKey.key);
-    
+
     return sharedSecret;
   }
 
@@ -102,7 +102,7 @@ export class PostQuantumKyber {
 
   private static async derivePublicKey(seed: Uint8Array, keySize: number): Promise<Uint8Array> {
     // Simulate quantum-resistant key derivation
-    const hash = await crypto.subtle.digest('SHA-256', seed);
+    const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', seed as BufferSource));
     const keyMaterial = new Uint8Array(keySize / 8);
     for (let i = 0; i < keyMaterial.length; i++) {
       keyMaterial[i] = hash[i % hash.length] ^ (i * 0x5a);
@@ -112,7 +112,7 @@ export class PostQuantumKyber {
 
   private static async derivePrivateKey(seed: Uint8Array, keySize: number): Promise<Uint8Array> {
     // Simulate quantum-resistant private key derivation
-    const hash = await crypto.subtle.digest('SHA-512', seed);
+    const hash = new Uint8Array(await crypto.subtle.digest('SHA-512', seed as BufferSource));
     const keyMaterial = new Uint8Array(keySize / 4);
     for (let i = 0; i < keyMaterial.length; i++) {
       keyMaterial[i] = hash[i % hash.length] ^ (i * 0x3c);
@@ -155,7 +155,7 @@ export class PostQuantumKyber {
  * Post-Quantum Digital Signatures
  * Implements Dilithium - NIST Round 3 Finalist for Digital Signatures
  */
-export class PostQuantumDilithium {
+class PostQuantumDilithium {
   private static readonly DILITHIUM2 = 'dilithium2';
   private static readonly DILITHIUM3 = 'dilithium3';
   private static readonly DILITHIUM5 = 'dilithium5';
@@ -168,10 +168,10 @@ export class PostQuantumDilithium {
   static async generateSigningKeyPair(securityLevel: 2 | 3 | 5 = 3): Promise<QuantumSigningKeyPair> {
     const seed = new Uint8Array(64);
     crypto.getRandomValues(seed);
-    
+
     const publicKey = await this.deriveSigningPublicKey(seed, securityLevel);
     const privateKey = await this.deriveSigningPrivateKey(seed, securityLevel);
-    
+
     return {
       publicKey: {
         algorithm: `Dilithium${securityLevel}`,
@@ -203,9 +203,9 @@ export class PostQuantumDilithium {
    */
   static async sign(privateKey: QuantumPrivateKey, message: Uint8Array): Promise<QuantumSignature> {
     // Simulate Dilithium signing
-    const messageHash = await crypto.subtle.digest('SHA-512', message);
+    const messageHash = await crypto.subtle.digest('SHA-512', message as BufferSource);
     const signature = await this.quantumSign(messageHash, privateKey.key);
-    
+
     return {
       signature,
       metadata: {
@@ -226,9 +226,9 @@ export class PostQuantumDilithium {
    */
   static async verify(publicKey: QuantumPublicKey, message: Uint8Array, signature: QuantumSignature): Promise<boolean> {
     // Simulate Dilithium verification
-    const messageHash = await crypto.subtle.digest('SHA-512', message);
+    const messageHash = await crypto.subtle.digest('SHA-512', message as BufferSource);
     const expectedSignature = await this.quantumSign(messageHash, publicKey.key);
-    
+
     return this.compareSignatures(signature.signature, expectedSignature);
   }
 
@@ -237,7 +237,7 @@ export class PostQuantumDilithium {
   // ============================================================================
 
   private static async deriveSigningPublicKey(seed: Uint8Array, securityLevel: number): Promise<Uint8Array> {
-    const hash = await crypto.subtle.digest('SHA-512', seed);
+    const hash = new Uint8Array(await crypto.subtle.digest('SHA-512', seed as BufferSource));
     const keySize = securityLevel * 256; // Approximate key sizes
     const keyMaterial = new Uint8Array(keySize);
     for (let i = 0; i < keyMaterial.length; i++) {
@@ -247,7 +247,7 @@ export class PostQuantumDilithium {
   }
 
   private static async deriveSigningPrivateKey(seed: Uint8Array, securityLevel: number): Promise<Uint8Array> {
-    const hash = await crypto.subtle.digest('SHA-512', seed);
+    const hash = new Uint8Array(await crypto.subtle.digest('SHA-512', seed as BufferSource));
     const keySize = securityLevel * 128; // Approximate private key sizes
     const keyMaterial = new Uint8Array(keySize);
     for (let i = 0; i < keyMaterial.length; i++) {
@@ -261,12 +261,12 @@ export class PostQuantumDilithium {
     const signature = new Uint8Array(messageHash.byteLength + 64);
     const hashArray = new Uint8Array(messageHash);
     signature.set(hashArray);
-    
+
     // Add quantum-resistant padding
     for (let i = hashArray.length; i < signature.length; i++) {
       signature[i] = key[i % key.length] ^ 0x6a;
     }
-    
+
     return signature;
   }
 
@@ -283,37 +283,39 @@ export class PostQuantumDilithium {
 // TYPE DEFINITIONS
 // ============================================================================
 
-export interface QuantumKeyPair {
+interface QuantumKeyPair {
   publicKey: QuantumPublicKey;
   privateKey: QuantumPrivateKey;
 }
 
-export interface QuantumSigningKeyPair {
+interface QuantumSigningKeyPair {
   publicKey: QuantumPublicKey;
   privateKey: QuantumPrivateKey;
 }
 
-export interface QuantumPublicKey {
+interface QuantumPublicKey {
   algorithm: string;
   key: Uint8Array;
   metadata: {
     securityLevel: number;
     quantumResistance: string;
     nistLevel: string;
+    signatureSize?: number;
   };
 }
 
-export interface QuantumPrivateKey {
+interface QuantumPrivateKey {
   algorithm: string;
   key: Uint8Array;
   metadata: {
     securityLevel: number;
     quantumResistance: string;
     nistLevel: string;
+    signatureSize?: number;
   };
 }
 
-export interface QuantumEncapsulation {
+interface QuantumEncapsulation {
   ciphertext: Uint8Array;
   sharedSecret: Uint8Array;
   metadata: {
@@ -323,7 +325,7 @@ export interface QuantumEncapsulation {
   };
 }
 
-export interface QuantumSignature {
+interface QuantumSignature {
   signature: Uint8Array;
   metadata: {
     algorithm: string;
@@ -341,7 +343,7 @@ export interface QuantumSignature {
  * Hybrid Cryptography Manager
  * Combines classical and post-quantum cryptography for transition period
  */
-export class HybridCryptoManager {
+class HybridCryptoManager {
   /**
    * Create hybrid encryption combining classical and quantum algorithms
    * @param data - Data to encrypt
@@ -356,10 +358,10 @@ export class HybridCryptoManager {
   ): Promise<HybridEncryption> {
     // Classical encryption (AES-256)
     const classicalEncrypted = await this.classicalEncrypt(data, classicalKey);
-    
+
     // Quantum encryption for key exchange
     const quantumEncapsulated = await PostQuantumKyber.encapsulate(quantumKey, classicalKey);
-    
+
     return {
       classicalCiphertext: classicalEncrypted,
       quantumKeyExchange: quantumEncapsulated,
@@ -386,10 +388,10 @@ export class HybridCryptoManager {
   ): Promise<HybridSignature> {
     // Classical signature (ECDSA)
     const classicalSignature = await this.classicalSign(data, classicalPrivateKey);
-    
+
     // Quantum signature (Dilithium)
     const quantumSignature = await PostQuantumDilithium.sign(quantumPrivateKey, data);
-    
+
     return {
       classicalSignature,
       quantumSignature,
@@ -411,18 +413,18 @@ export class HybridCryptoManager {
     const iv = crypto.getRandomValues(new Uint8Array(16));
     const cryptoKey = await crypto.subtle.importKey(
       'raw',
-      key,
+      key as BufferSource,
       { name: 'AES-CBC', length: 256 },
       false,
       ['encrypt']
     );
-    
+
     const encrypted = await crypto.subtle.encrypt(
       { name: 'AES-CBC', iv },
       cryptoKey,
-      data
+      data as BufferSource
     );
-    
+
     const result = new Uint8Array(iv.length + encrypted.byteLength);
     result.set(iv);
     result.set(new Uint8Array(encrypted), iv.length);
@@ -431,21 +433,21 @@ export class HybridCryptoManager {
 
   private static async classicalSign(data: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
     // Use Web Crypto API for ECDSA signing
-    const hash = await crypto.subtle.digest('SHA-256', data);
+    const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', data as BufferSource));
     const cryptoKey = await crypto.subtle.importKey(
       'raw',
-      key,
+      key as BufferSource,
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
     );
-    
-    const signature = await crypto.subtle.sign('HMAC', cryptoKey, hash);
+
+    const signature = await crypto.subtle.sign('HMAC', cryptoKey, hash as BufferSource);
     return new Uint8Array(signature);
   }
 }
 
-export interface HybridEncryption {
+interface HybridEncryption {
   classicalCiphertext: Uint8Array;
   quantumKeyExchange: QuantumEncapsulation;
   metadata: {
@@ -456,7 +458,7 @@ export interface HybridEncryption {
   };
 }
 
-export interface HybridSignature {
+interface HybridSignature {
   classicalSignature: Uint8Array;
   quantumSignature: QuantumSignature;
   metadata: {
@@ -475,7 +477,7 @@ export interface HybridSignature {
  * Quantum-Resistant Key Derivation Function
  * Implements quantum-resistant hash-based key derivation
  */
-export class QuantumResistantKDF {
+class QuantumResistantKDF {
   /**
    * Derive multiple keys from quantum-resistant master key
    * @param masterKey - Quantum-resistant master key
@@ -489,18 +491,18 @@ export class QuantumResistantKDF {
     keyCount: number
   ): Promise<Uint8Array[]> {
     const keys: Uint8Array[] = [];
-    
+
     for (let i = 0; i < keyCount; i++) {
       const contextBytes = new TextEncoder().encode(`${context}_${i}`);
       const combined = new Uint8Array(masterKey.length + contextBytes.length);
       combined.set(masterKey);
       combined.set(contextBytes, masterKey.length);
-      
-      const hash = await crypto.subtle.digest('SHA-512', combined);
+
+      const hash = new Uint8Array(await crypto.subtle.digest('SHA-512', combined as BufferSource));
       const key = hash.slice(0, 32); // 256-bit derived key
       keys.push(new Uint8Array(key));
     }
-    
+
     return keys;
   }
 
@@ -513,12 +515,12 @@ export class QuantumResistantKDF {
     const baseEntropy = entropy || crypto.getRandomValues(new Uint8Array(32));
     const timestamp = new Date().getTime().toString();
     const timeBytes = new TextEncoder().encode(timestamp);
-    
+
     const combined = new Uint8Array(baseEntropy.length + timeBytes.length);
     combined.set(baseEntropy);
     combined.set(timeBytes, baseEntropy.length);
-    
-    const hash = await crypto.subtle.digest('SHA-512', combined);
+
+    const hash = new Uint8Array(await crypto.subtle.digest('SHA-512', combined as BufferSource));
     return new Uint8Array(hash.slice(0, 64)); // 512-bit master key
   }
 }

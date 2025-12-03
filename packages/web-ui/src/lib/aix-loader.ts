@@ -22,7 +22,7 @@ import {
   AIXLatticeRole,
   AIXUpdateFrequency,
   AIXTOHAConfig
-} from '../../../src/infra/research/AIXFormat';
+} from '../infra/research/AIXFormat';
 
 // ============================================================================
 // EXTENDED AIX TYPES FOR LOADER
@@ -133,10 +133,10 @@ export class AixLoader {
     try {
       // Parse YAML content
       const parsedContent = this.parseYAML(yamlContent);
-      
+
       // Extract and validate sections
       const document = await this.extractAndValidateSections(parsedContent, result);
-      
+
       if (document) {
         result.document = document;
         result.success = result.errors.length === 0;
@@ -158,23 +158,23 @@ export class AixLoader {
     let currentSection: string = '';
     let currentIndent = 0;
     let sectionStack: Array<{ name: string; indent: number; data: any }> = [];
-    
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const trimmed = line.trim();
-      
+
       // Skip empty lines and comments
       if (!trimmed || trimmed.startsWith('#')) {
         continue;
       }
-      
+
       // Calculate indentation
       const indent = line.length - line.trimStart().length;
-      
+
       // Handle section headers
       if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
         const sectionName = trimmed.slice(1, -1);
-        
+
         // Pop sections with higher indentation
         while (sectionStack.length > 0 && sectionStack[sectionStack.length - 1].indent >= indent) {
           const popped = sectionStack.pop()!;
@@ -184,36 +184,36 @@ export class AixLoader {
             sectionStack[sectionStack.length - 1].data[popped.name] = popped.data;
           }
         }
-        
+
         // Start new section
         sectionStack.push({
           name: sectionName,
           indent,
           data: {}
         });
-        
+
         currentSection = sectionName;
         currentIndent = indent;
         continue;
       }
-      
+
       // Handle key-value pairs
       const colonIndex = trimmed.indexOf(':');
       if (colonIndex > 0) {
         const key = trimmed.substring(0, colonIndex).trim();
         const value = trimmed.substring(colonIndex + 1).trim();
-        
+
         // Parse value
         let parsedValue: any = value;
-        
+
         // Handle boolean values
         if (value === 'true') parsedValue = true;
         else if (value === 'false') parsedValue = false;
         // Handle numbers
         else if (!isNaN(Number(value)) && value !== '') parsedValue = Number(value);
         // Handle quoted strings
-        else if ((value.startsWith('"') && value.endsWith('"')) || 
-                 (value.startsWith("'") && value.endsWith("'"))) {
+        else if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
           parsedValue = value.slice(1, -1);
         }
         // Handle arrays (simple case)
@@ -224,7 +224,7 @@ export class AixLoader {
             parsedValue = value;
           }
         }
-        
+
         // Add to current section
         if (sectionStack.length > 0) {
           const current = sectionStack[sectionStack.length - 1];
@@ -234,7 +234,7 @@ export class AixLoader {
         }
       }
     }
-    
+
     // Flush remaining sections
     while (sectionStack.length > 0) {
       const popped = sectionStack.pop()!;
@@ -244,7 +244,7 @@ export class AixLoader {
         sectionStack[sectionStack.length - 1].data[popped.name] = popped.data;
       }
     }
-    
+
     return result;
   }
 
@@ -603,7 +603,7 @@ export class AixLoader {
     if (document.capabilities && document.skills) {
       const capabilityIds = document.capabilities.map(c => c.id);
       const skillCapabilityIds = document.skills.map(s => s.capability_id);
-      
+
       for (const skillCapId of skillCapabilityIds) {
         if (!capabilityIds.includes(skillCapId)) {
           warnings.push(`Skill references non-existent capability: ${skillCapId}`);
@@ -623,16 +623,16 @@ export class AixLoader {
    */
   private static calculateValidationScore(result: AIXLoaderResult): number {
     let score = 100;
-    
+
     // Deduct points for errors
     score -= result.errors.length * 20;
-    
+
     // Deduct points for warnings
     score -= result.warnings.length * 5;
-    
+
     // Deduct points for missing sections
     score -= result.metadata.missing_sections.length * 15;
-    
+
     return Math.max(0, score);
   }
 }

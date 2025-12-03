@@ -1,4 +1,6 @@
-import { PublicKey, verify } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
+import nacl from 'tweetnacl';
+import bs58 from 'bs58';
 import { v4 as uuidv4 } from 'uuid';
 
 // Types for the authentication system
@@ -94,13 +96,13 @@ function base64urlDecode(str: string): Uint8Array {
 async function createHMACSignature(data: Uint8Array, secret: Uint8Array): Promise<Uint8Array> {
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
-    secret,
+    secret as BufferSource,
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
   );
 
-  const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, data);
+  const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, data as BufferSource);
   return new Uint8Array(signatureBuffer);
 }
 
@@ -119,13 +121,13 @@ async function verifyHMACSignature(
   try {
     const cryptoKey = await crypto.subtle.importKey(
       'raw',
-      secret,
+      secret as BufferSource,
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['verify']
     );
 
-    return await crypto.subtle.verify('HMAC', cryptoKey, signature, data);
+    return await crypto.subtle.verify('HMAC', cryptoKey, signature as BufferSource, data as BufferSource);
   } catch (error) {
     console.error('Error verifying HMAC signature:', error);
     return false;
@@ -141,10 +143,10 @@ export async function createSession(address: string): Promise<string> {
   try {
     // Validate the address format
     new PublicKey(address);
-    
+
     const now = Math.floor(Date.now() / 1000);
     const expirationTime = now + JWT_CONFIG.EXPIRATION_TIME;
-    
+
     // Create JWT payload
     const payload: JWTPayload = {
       sub: address,
@@ -177,7 +179,7 @@ export async function createSession(address: string): Promise<string> {
 
     // Combine to create JWT
     const token = `${message}.${encodedSignature}`;
-    
+
     console.log('✅ JWT session created for address:', address);
     return token;
   } catch (error) {
@@ -200,25 +202,29 @@ export async function verifyWalletSignature(
 ): Promise<boolean> {
   try {
     console.log('🔐 Verifying wallet signature for address:', address);
-    
+
     // Convert address to PublicKey
     const publicKey = new PublicKey(address);
-    
+
     // Convert signature from base58 to Uint8Array
-    const signatureBytes = Buffer.from(signature, 'base58');
-    
+    const signatureBytes = bs58.decode(signature);
+
     // Convert message to Uint8Array
     const messageBytes = new TextEncoder().encode(message);
-    
-    // Verify the signature using Solana's verify function
-    const isValid = verify(signatureBytes, messageBytes, publicKey);
-    
+
+    // Verify the signature using tweetnacl
+    const isValid = nacl.sign.detached.verify(
+      messageBytes,
+      signatureBytes,
+      publicKey.toBytes()
+    );
+
     if (isValid) {
       console.log('✅ Wallet signature verified successfully');
     } else {
       console.log('❌ Invalid wallet signature');
     }
-    
+
     return isValid;
   } catch (error) {
     console.error('❌ Error verifying wallet signature:', error);
@@ -236,38 +242,38 @@ export async function authenticateWallet(
 ): Promise<AuthResult> {
   try {
     const { address, signature, message } = payload;
-    
+
     // Step 1: Verify the wallet signature
     const isSignatureValid = await verifyWalletSignature(
       address,
       signature,
       message
     );
-    
+
     if (!isSignatureValid) {
       return {
         success: false,
         error: 'Invalid wallet signature'
       };
     }
-    
+
     // Step 2: Create JWT session
     const token = await createSession(address);
-    
+
     // Step 3: Parse token to get user data
     const [, payloadPart] = token.split('.');
     const decodedPayload = JSON.parse(
       new TextDecoder().decode(base64urlDecode(payloadPart))
     ) as JWTPayload;
-    
+
     const user = {
       id: decodedPayload.jti,
       address: decodedPayload.sub,
       tenantId: decodedPayload.tenantId
     };
-    
+
     console.log('✅ Wallet authentication successful for address:', address);
-    
+
     return {
       success: true,
       user,
@@ -290,37 +296,37 @@ export async function authenticateWallet(
 export async function verifyJWTToken(token: string): Promise<JWTPayload | null> {
   try {
     const [headerPart, payloadPart, signaturePart] = token.split('.');
-    
+
     if (!headerPart || !payloadPart || !signaturePart) {
       throw new Error('Invalid token format');
     }
-    
+
     // Verify signature
     const message = `${headerPart}.${payloadPart}`;
     const signature = base64urlDecode(signaturePart);
     const secretKey = stringToUint8Array(JWT_CONFIG.SECRET_KEY);
-    
+
     const isSignatureValid = await verifyHMACSignature(
       stringToUint8Array(message),
       signature,
       secretKey
     );
-    
+
     if (!isSignatureValid) {
       throw new Error('Invalid token signature');
     }
-    
+
     // Decode and validate payload
     const payload = JSON.parse(
       new TextDecoder().decode(base64urlDecode(payloadPart))
     ) as JWTPayload;
-    
+
     // Check expiration
     const now = Math.floor(Date.now() / 1000);
     if (payload.exp < now) {
       throw new Error('Token has expired');
     }
-    
+
     return payload;
   } catch (error) {
     console.error('❌ Error verifying JWT token:', error);
@@ -336,7 +342,7 @@ export async function verifyJWTToken(token: string): Promise<JWTPayload | null> 
 export function createChallengeMessage(address: string): string {
   const timestamp = Date.now();
   const nonce = uuidv4();
-  
+
   return `Sign this message to authenticate with Axiom Network.\n\nAddress: ${address}\nNonce: ${nonce}\nTimestamp: ${timestamp}\n\nThis signature will be used to verify your identity and create a secure session.`;
 }
 
@@ -358,21 +364,21 @@ export function retrieveSession(): SessionData | null {
   if (typeof window === 'undefined') {
     return null;
   }
-  
+
   try {
     const stored = localStorage.getItem('axiom_auth_session');
     if (!stored) {
       return null;
     }
-    
+
     const sessionData = JSON.parse(stored) as SessionData;
-    
+
     // Check if session has expired
     if (sessionData.expiresAt < Date.now()) {
       clearSession();
       return null;
     }
-    
+
     return sessionData;
   } catch (error) {
     console.error('Error retrieving session:', error);
@@ -398,7 +404,7 @@ export async function isSessionValid(): Promise<boolean> {
   if (!session) {
     return false;
   }
-  
+
   const payload = await verifyJWTToken(session.token);
   return payload !== null;
 }

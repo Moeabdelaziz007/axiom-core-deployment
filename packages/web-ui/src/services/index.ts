@@ -15,7 +15,7 @@ export { DreamMemory } from './dream-memory';
 export { forgeAgentDNA } from './axiomForge';
 
 // Transaction Executor Service
-export { transactionExecutor, TransactionResult } from './TransactionExecutor';
+// export { transactionExecutor, TransactionResult } from './TransactionExecutor';
 
 // WebSocket Client Service
 export { wsClient } from './WebSocketClient';

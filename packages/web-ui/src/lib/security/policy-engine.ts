@@ -59,7 +59,7 @@ export interface TransactionContext {
 // Zero-Trust Policy Engine
 export class PolicyEngine {
   private db: any;
-  private riskThresholds: Map<string, number>;
+  private riskThresholds!: Map<string, number>;
 
   constructor() {
     this.db = db;
@@ -140,7 +140,7 @@ export class PolicyEngine {
     const recommendations = this.generateRecommendations(violations, totalRiskScore);
 
     // Determine if transaction is allowed
-    const allowed = totalRiskScore < 100 && !violations.some(v => 
+    const allowed = totalRiskScore < 100 && !violations.some(v =>
       v.severity === PolicySeverity.CRITICAL || v.type === PolicyViolationType.BLACKLISTED_ADDRESS
     );
 
@@ -155,7 +155,7 @@ export class PolicyEngine {
   // Validate minimum payment amount
   private validateMinimumAmount(amount: number): PolicyViolation | null {
     const minimumAmount = 0.99 * 1e9; // 0.99 SOL in lamports
-    
+
     if (amount < minimumAmount) {
       return {
         type: PolicyViolationType.AMOUNT_TOO_LOW,
@@ -171,7 +171,7 @@ export class PolicyEngine {
   // Validate destination address
   private async validateDestinationAddress(destination: string): Promise<PolicyViolation | null> {
     const treasuryAddress = process.env.SOLANA_TREASURY_ADDRESS;
-    
+
     if (!treasuryAddress) {
       return {
         type: PolicyViolationType.INVALID_DESTINATION,
@@ -203,7 +203,7 @@ export class PolicyEngine {
       });
 
       const count = result.rows[0]?.count || 0;
-      
+
       if (count > 0) {
         return {
           type: PolicyViolationType.DUPLICATE_TRANSACTION,
@@ -234,7 +234,7 @@ export class PolicyEngine {
       });
 
       const recentCount = recentTransactions.rows[0]?.count || 0;
-      
+
       if (recentCount > 10) { // More than 10 transactions in 5 minutes
         return {
           type: PolicyViolationType.SUSPICIOUS_PATTERN,
@@ -265,7 +265,7 @@ export class PolicyEngine {
   private async checkRateLimit(fromAddress: string, timestamp: number): Promise<PolicyViolation | null> {
     try {
       const windowStart = timestamp - 60 * 1000; // 1 minute window
-      
+
       const result = await this.db.execute({
         sql: `
           SELECT COUNT(*) as count
@@ -276,7 +276,7 @@ export class PolicyEngine {
       });
 
       const count = result.rows[0]?.count || 0;
-      
+
       if (count > 5) { // More than 5 transactions per minute
         return {
           type: PolicyViolationType.RATE_LIMIT_EXCEEDED,
@@ -298,14 +298,14 @@ export class PolicyEngine {
     try {
       // In a real implementation, this would check against a blacklist table
       // For now, we'll implement basic checks
-      
+
       const suspiciousPatterns = [
         /^1111/, // Known testnet pattern
         /^5ej/, // Known suspicious pattern
         /^sys/, // System addresses
       ];
 
-      const isSuspicious = suspiciousPatterns.some(pattern => 
+      const isSuspicious = suspiciousPatterns.some(pattern =>
         pattern.test(fromAddress) || pattern.test(toAddress)
       );
 
@@ -330,9 +330,9 @@ export class PolicyEngine {
     try {
       // In a real implementation, this would check against an authorized mints table
       // For now, we'll allow all mints but log for review
-      
+
       console.log(`🔍 SPL token mint verification: ${mint}`);
-      
+
       return null;
     } catch (error) {
       console.error('Error validating mint:', error);

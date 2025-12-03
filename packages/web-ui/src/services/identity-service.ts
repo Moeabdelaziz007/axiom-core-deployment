@@ -129,7 +129,7 @@ export class IdentityService {
     // Initialize Solana connection (using devnet for testing, mainnet for production)
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     this.solanaConnection = new Connection(rpcUrl, 'confirmed');
-    
+
     // Initialize encryption key for secure key storage
     this.encryptionKey = process.env.IDENTITY_ENCRYPTION_KEY || null;
   }
@@ -162,7 +162,7 @@ export class IdentityService {
 
       // 3. Configure MENA localization settings
       const localizationConfig = this.getRegionalConfiguration(params.region);
-      
+
       // 4. Merge custom cultural context with defaults
       const culturalContext = this.mergeCulturalContext(
         localizationConfig.culturalDefaults,
@@ -245,7 +245,7 @@ export class IdentityService {
     try {
       // Generate random keypair
       const keypair = Keypair.generate();
-      
+
       // Optional encryption for private key storage
       let encryptedPrivateKey: string | undefined;
       if (this.encryptionKey) {
@@ -254,7 +254,7 @@ export class IdentityService {
       }
 
       console.log('🔑 Generated Solana keypair for wallet:', keypair.publicKey.toString());
-      
+
       return {
         success: true,
         data: {
@@ -329,7 +329,7 @@ export class IdentityService {
       };
 
       console.log('💰 Wallet validation successful:', walletInfo.publicKey, 'Balance:', balance, 'SOL');
-      
+
       return {
         success: true,
         data: walletInfo
@@ -377,7 +377,7 @@ export class IdentityService {
    * Update agent sovereignty level
    */
   async updateSovereigntyLevel(
-    agentId: string, 
+    agentId: string,
     newLevel: SovereigntyLevel
   ): Promise<WalletOperationResult> {
     try {
@@ -391,7 +391,7 @@ export class IdentityService {
 
       await db
         .update(axiomIdentities)
-        .set({ 
+        .set({
           sovereigntyLevel: newLevel,
           updatedAt: new Date()
         })
@@ -435,10 +435,10 @@ export class IdentityService {
         id: identity.id,
         agentName: identity.agentName,
         walletPublicKey: identity.walletPublicKey,
-        status: identity.status,
+        status: identity.status as 'ACTIVE' | 'SUSPENDED',
         reputation: identity.reputation,
         dnaProfile: JSON.parse(identity.dnaProfile || '{}'),
-        evolutionStage: identity.evolutionStage,
+        evolutionStage: identity.evolutionStage || 1,
         languagePreference: identity.languagePreference as LanguagePreference,
         region: identity.region as MENARegion,
         culturalContext: JSON.parse(identity.culturalContext || '{}'),
@@ -526,10 +526,10 @@ export class IdentityService {
         id: identity.id,
         agentName: identity.agentName,
         walletPublicKey: identity.walletPublicKey,
-        status: identity.status,
+        status: identity.status as 'ACTIVE' | 'SUSPENDED',
         reputation: identity.reputation,
         dnaProfile: JSON.parse(identity.dnaProfile || '{}'),
-        evolutionStage: identity.evolutionStage,
+        evolutionStage: identity.evolutionStage || 1,
         languagePreference: identity.languagePreference as LanguagePreference,
         region: identity.region as MENARegion,
         culturalContext: JSON.parse(identity.culturalContext || '{}'),
@@ -555,16 +555,18 @@ export class IdentityService {
   /**
    * Assess transaction capability based on wallet balance and sovereignty level
    */
-  async assessTransactionCapability(agentId: string): Promise<WalletOperationResult & { data?: {
-    canTransact: boolean;
-    maxTransactionAmount: number;
-    requiredSovereigntyLevel: SovereigntyLevel;
-    currentBalance: number;
-  } }> {
+  async assessTransactionCapability(agentId: string): Promise<WalletOperationResult & {
+    data?: {
+      canTransact: boolean;
+      maxTransactionAmount: number;
+      requiredSovereigntyLevel: SovereigntyLevel;
+      currentBalance: number;
+    }
+  }> {
     try {
       const walletResult = await this.getWalletInfo(agentId);
       const identityResult = await this.getAgentIdentity(agentId);
-      
+
       if (!walletResult.success || !walletResult.data) {
         return {
           success: false,
@@ -589,7 +591,7 @@ export class IdentityService {
         full: { minBalance: 5, maxAmount: 100 }
       };
 
-      const capabilities = capabilityMap[sovereigntyLevel];
+      const capabilities = capabilityMap[sovereigntyLevel as SovereigntyLevel];
       const canTransact = balance >= capabilities.minBalance;
 
       return {

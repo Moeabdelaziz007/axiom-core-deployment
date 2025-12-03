@@ -64,15 +64,15 @@ export const AI_MODELS = {
   // 👷 Workers: Fast, Free, Infinite (Groq)
   WORKER_FAST: groqViaGateway('llama-3.1-8b-instant'),
   WORKER_SMART: groqViaGateway('llama-3.3-70b-versatile'),
-  
+
   // ⚖️ Judge: Smart, Paid (Uses $5 Credit), Emergency Only
   JUDGE: vercelProGateway('gpt-4o'),
-  
+
   // 🧠 Google Gemini Models (Advanced Capabilities) - Use models that support v2 specification
   GOOGLE_RESEARCH: googleProvider('gemini-1.5-flash'),
   GOOGLE_VISION: googleProvider('gemini-1.5-flash'),
   GOOGLE_STRUCTURED: googleProvider('gemini-1.5-flash'),
-  
+
   // 🔄 Legacy compatibility (maps to old GROQ_MODELS)
   FAST: 'llama3-8b-8192',
   SMART: 'llama3-70b-8192',
@@ -110,19 +110,19 @@ export function checkAIEnvironment() {
     googleAvailable: !!GOOGLE_API_KEY,
     recommendedModel: 'WORKER_FAST' as const,
   };
-  
+
   if (!health.groqAvailable) {
     console.error('🚨 CRITICAL: GROQ_API_KEY is required for basic functionality.');
   }
-  
+
   if (!health.vercelProAvailable) {
     console.warn('⚠️ WARNING: VERCEL_AI_KEY not available. JUDGE model will fall back to SMART.');
   }
-  
+
   if (!health.googleAvailable) {
     console.warn('⚠️ WARNING: GOOGLE_API_KEY not available. Google Gemini features will be unavailable.');
   }
-  
+
   return health;
 }
 
@@ -147,24 +147,20 @@ export async function researchWithGoogle(query: string): Promise<{
     }
 
     const model = AI_MODELS.GOOGLE_RESEARCH;
-    
+
     // DEBUG: Log model type and available methods
     console.log('🔍 DEBUG: Google Research model type:', typeof model);
     console.log('🔍 DEBUG: Google Research model methods:', Object.getOwnPropertyNames(model));
     // console.log('🔍 DEBUG: Google Research model.generateText type:', typeof model.generateText);
     console.log('🔍 DEBUG: Google Research model specificationVersion:', model.specificationVersion);
     console.log('🔍 DEBUG: Google Research model provider:', model.provider);
-    
+
     // Use the correct Vercel AI SDK pattern
     console.log('🔍 DEBUG: Using generateText(model) pattern...');
     const { text } = await generateText({
       model,
       prompt: `Research and provide comprehensive information about: ${query}`,
-      tools: [
-        {
-          name: 'google_search'
-        }
-      ]
+
     });
     console.log('🔍 DEBUG: generateText(model) pattern succeeded');
 
@@ -206,23 +202,23 @@ export async function analyzeImage(imageUrl: string, prompt: string): Promise<{
     }
 
     const model = AI_MODELS.GOOGLE_VISION;
-    
+
     // DEBUG: Log model type and available methods
     console.log('🔍 DEBUG: Google Vision model type:', typeof model);
     console.log('🔍 DEBUG: Google Vision model methods:', Object.getOwnPropertyNames(model));
-    console.log('🔍 DEBUG: Google Vision model.generateText type:', typeof model.generateText);
+
     console.log('🔍 DEBUG: Google Vision model specificationVersion:', model.specificationVersion);
     console.log('🔍 DEBUG: Google Vision model provider:', model.provider);
-    
+
     // Fetch image data
     const imageResponse = await fetch(imageUrl);
     if (!imageResponse.ok) {
       throw new Error(`Failed to fetch image: ${imageResponse.statusText}`);
     }
-    
+
     const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
     const base64Image = imageBuffer.toString('base64');
-    
+
     // Use Vercel AI SDK's generateText with image
     const { text } = await generateText({
       model,
@@ -272,18 +268,18 @@ export async function generateStructuredData<T>(
     }
 
     const model = AI_MODELS.GOOGLE_STRUCTURED;
-    
+
     // DEBUG: Log model type and available methods
     console.log('🔍 DEBUG: Google Structured model type:', typeof model);
     console.log('🔍 DEBUG: Google Structured model methods:', Object.getOwnPropertyNames(model));
     console.log('🔍 DEBUG: Google Structured model specificationVersion:', model.specificationVersion);
     console.log('🔍 DEBUG: Google Structured model provider:', model.provider);
-    
+
     // Use Vercel AI SDK's generateObject for structured output
     const { object } = await generateObject({
       model,
       prompt: prompt + "\n\nSchema Requirements:\n" + JSON.stringify(schema, null, 2),
-      schema: z.any(),
+      schema: z.any() as any,
       mode: 'json'
     });
 
@@ -303,19 +299,19 @@ export async function generateStructuredData<T>(
 export const aiEngine = {
   // Direct Groq SDK (for legacy compatibility)
   groq: groqDirect,
-  
+
   // Gateway clients (recommended)
   groqGateway: groqViaGateway,
   vercelGateway: vercelProGateway,
   googleProvider,
-  
+
   // Model selection
   getModel,
   checkEnvironment: checkAIEnvironment,
-  
+
   // Model constants
   models: AI_MODELS,
-  
+
   // Google Gemini Advanced Functions
   researchWithGoogle,
   analyzeImage,

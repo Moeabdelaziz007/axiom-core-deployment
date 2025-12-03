@@ -61,7 +61,7 @@ function verifyWebhookSignature(payload: string, signature: string, secret: stri
     .createHmac('sha256', secret)
     .update(payload, 'utf8')
     .digest('hex');
-  
+
   return crypto.timingSafeEqual(
     Buffer.from(signature, 'hex'),
     Buffer.from(expectedSignature, 'hex')
@@ -141,7 +141,7 @@ export async function processHeliusWebhook(
 ): Promise<PaymentVerificationResult> {
   try {
     console.log('🔄 Processing Helius webhook with outbox integration');
-    
+
     // Verify webhook signature
     if (!verifyWebhookSignature(payload, signature, webhookSecret)) {
       return {
@@ -190,7 +190,7 @@ export async function processHeliusWebhook(
     }
 
     // Extract reference key
-    const referenceKey = extractReferenceKey(transaction.transaction);
+    const referenceKey = extractReferenceKey(transaction.transaction as any);
     if (!referenceKey) {
       return {
         success: false,
@@ -218,7 +218,7 @@ export async function processHeliusWebhook(
     }
 
     // Verify transaction details
-    const amount = transaction.meta?.postBalances?.[1] 
+    const amount = transaction.meta?.postBalances?.[1]
       ? transaction.meta.postBalances[1] - (transaction.meta.preBalances?.[1] || 0)
       : 0;
 
@@ -314,7 +314,7 @@ export async function verifyTransactionStatus(signature: string): Promise<Paymen
       };
     }
 
-    const referenceKey = extractReferenceKey(transaction.transaction);
+    const referenceKey = extractReferenceKey(transaction.transaction as any);
     if (!referenceKey) {
       return {
         success: false,
@@ -332,7 +332,7 @@ export async function verifyTransactionStatus(signature: string): Promise<Paymen
       };
     }
 
-    const amount = transaction.meta?.postBalances?.[1] 
+    const amount = transaction.meta?.postBalances?.[1]
       ? transaction.meta.postBalances[1] - (transaction.meta.preBalances?.[1] || 0)
       : 0;
 
