@@ -2,26 +2,25 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { FeatureCard } from '@/components/reset/FeatureCard';
+import { WaitlistForm } from '@/components/reset/WaitlistForm';
+import { AxiomChatbot } from '@/components/reset/AxiomChatbot';
 import dynamic from 'next/dynamic';
 
 // Lazy load MatrixRain with no SSR to avoid hydration mismatches
 const MatrixRain = dynamic(() => import('@/components/effects/MatrixRain').then(mod => mod.MatrixRain), {
   ssr: false
 });
-import { ArrowRight, Route, Fuel, Download, Scan, Zap } from 'lucide-react';
+import { Route, Fuel, Download, Scan, Zap } from 'lucide-react';
 import { useTranslation } from '@/lib/translations';
 import { Language } from '@/types/reset';
 
 interface HeroSectionProps {
   language?: Language;
-  onCTAClick?: () => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   language = 'en',
-  onCTAClick,
 }) => {
   const { t } = useTranslation(language);
   const isRTL = language === 'ar';
@@ -76,7 +75,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-24"
+          className="text-center mb-16"
         >
           {/* Badge */}
           <motion.div
@@ -99,13 +98,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Subtitle / Offer */}
           <div className="max-w-4xl mx-auto mb-12 space-y-6">
             <p className={`text-xl md:text-2xl text-gray-400 font-light tracking-wide leading-relaxed ${isRTL ? 'font-sans' : 'font-sans'}`}>
-              Get Your AI-Powered Mini-Store & Chatbot FREE for 30 Days.
+              Get Your AI-Powered Mini-Store & Chatbot.
             </p>
 
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-2xl md:text-3xl font-bold">
-              <span className="text-white">Then only</span>
+              <span className="text-white">Start from</span>
               <span className="px-4 py-1 rounded bg-green-500/10 border border-green-500/50 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                $1.99/Month
+                $0.99/Month
               </span>
               <span className="hidden md:inline text-gray-600">|</span>
               <span className="text-green-400 flex items-center gap-2">
@@ -114,27 +113,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
 
-          {/* CTA Button */}
+          {/* Waitlist Form */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="mb-20"
           >
-            <Button
-              onClick={onCTAClick}
-              size="lg"
-              className="relative overflow-hidden group bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 text-white transition-all duration-300 text-xl px-16 py-8 rounded-xl shadow-[0_0_40px_rgba(6,182,212,0.4)] border border-cyan-400/30"
-            >
-              <span className="relative z-10 font-bold tracking-widest flex items-center gap-3 font-orbitron">
-                {t('hero.cta')}
-                <ArrowRight className={`w-6 h-6 transition-transform ${isRTL ? 'rotate-180 group-hover:-translate-x-2' : 'group-hover:translate-x-2'}`} />
-              </span>
-
-              {/* Shine Effect */}
-              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
-            </Button>
+            <WaitlistForm />
           </motion.div>
         </motion.div>
 
@@ -152,6 +138,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Floating Chatbot */}
+      <AxiomChatbot />
     </section>
   );
 };
