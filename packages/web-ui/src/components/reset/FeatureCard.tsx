@@ -12,6 +12,9 @@ const TYPE_COLORS = {
   FUEL: 'hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:border-pink-500/50', // Pink
   DROP: 'hover:shadow-[0_0_30px_rgba(34,197,94,0.3)] hover:border-green-500/50', // Green
   SCAN: 'hover:shadow-[0_0_30px_rgba(234,179,8,0.3)] hover:border-yellow-500/50', // Yellow
+  SOFRA: 'hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] hover:border-orange-500/50', // Orange
+  TAJER: 'hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:border-blue-500/50', // Blue
+  'DR. MOE': 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:border-emerald-500/50', // Emerald
 };
 
 const ICON_COLORS = {
@@ -19,6 +22,9 @@ const ICON_COLORS = {
   FUEL: 'text-pink-500',
   DROP: 'text-green-500',
   SCAN: 'text-yellow-500',
+  SOFRA: 'text-orange-500',
+  TAJER: 'text-blue-500',
+  'DR. MOE': 'text-emerald-500',
 };
 
 const BG_GRADIENTS = {
@@ -26,6 +32,9 @@ const BG_GRADIENTS = {
   FUEL: 'from-pink-500/20 to-purple-500/20',
   DROP: 'from-green-500/20 to-emerald-500/20',
   SCAN: 'from-yellow-500/20 to-orange-500/20',
+  SOFRA: 'from-orange-500/20 to-red-500/20',
+  TAJER: 'from-blue-500/20 to-cyan-500/20',
+  'DR. MOE': 'from-emerald-500/20 to-green-500/20',
 };
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({
