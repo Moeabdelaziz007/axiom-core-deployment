@@ -1,17 +1,4 @@
-'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { GlassPanel } from './GlassPanel';
-import { Button } from '@/components/ui/button';
-import { ShoppingBag } from 'lucide-react';
-import { useTranslation } from '@/lib/translations';
-import { Language } from '@/types/reset';
-
-interface MerchantOfferCardProps {
-  language?: Language;
-  onCTAClick?: () => void;
-}
 
 'use client';
 
