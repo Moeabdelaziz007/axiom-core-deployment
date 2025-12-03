@@ -15,6 +15,8 @@ const TYPE_COLORS = {
   SOFRA: 'hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:border-purple-500/50', // Purple
   TAJER: 'hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:border-blue-500/50', // Blue
   'DR. MOE': 'hover:shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:border-purple-500/50', // Purple
+  USTA: 'hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:border-cyan-500/50', // Cyan
+  OSTAZ: 'hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:border-pink-500/50', // Pink
 };
 
 const ICON_COLORS = {
@@ -25,6 +27,8 @@ const ICON_COLORS = {
   SOFRA: 'text-purple-500',
   TAJER: 'text-blue-500',
   'DR. MOE': 'text-purple-500',
+  USTA: 'text-cyan-500',
+  OSTAZ: 'text-pink-500',
 };
 
 const BG_GRADIENTS = {
@@ -35,6 +39,8 @@ const BG_GRADIENTS = {
   SOFRA: 'from-purple-500/20 to-pink-500/20',
   TAJER: 'from-blue-500/20 to-cyan-500/20',
   'DR. MOE': 'from-purple-500/20 to-indigo-500/20',
+  USTA: 'from-cyan-500/20 to-teal-500/20',
+  OSTAZ: 'from-pink-500/20 to-rose-500/20',
 };
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({

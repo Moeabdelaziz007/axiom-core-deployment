@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChefHat, Palmtree, Activity, ArrowRight, Smartphone, Globe } from 'lucide-react';
+import { ChefHat, Palmtree, Activity, ArrowRight, Smartphone, Globe, Factory, GraduationCap } from 'lucide-react';
 import { HolographicAvatar } from '@/components/reset/HolographicAvatar';
 import { useTranslation } from '@/lib/translations';
 import { Language } from '@/types/reset';
@@ -60,6 +60,36 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                 language === 'ar' ? 'روشتة إلكترونية' : 'E-Prescription',
                 language === 'ar' ? 'ربط مع المخازن' : 'Warehouse Sync',
             ]
+        },
+        {
+            id: 'usta',
+            name: language === 'ar' ? 'الأسطى (Usta)' : 'Usta',
+            role: language === 'ar' ? 'مدير المصنع الذكي' : 'Smart Factory Manager',
+            desc: language === 'ar'
+                ? 'نظام لإدارة مصانع الملابس والورش. متابعة الإنتاج، المخازن، والعمال. موقع خاص لعرض منتجاتك للجملة.'
+                : 'Management system for clothing factories and workshops. Track production, inventory, and workers. Wholesale showcase website.',
+            color: 'cyan',
+            icon: Factory,
+            features: [
+                language === 'ar' ? 'إدارة خطوط الإنتاج' : 'Production Line Mgmt',
+                language === 'ar' ? 'متابعة المخزون' : 'Inventory Tracking',
+                language === 'ar' ? 'منصة بيع جملة' : 'Wholesale Platform',
+            ]
+        },
+        {
+            id: 'ostaz',
+            name: language === 'ar' ? 'الأستاذ (Ostaz)' : 'Ostaz',
+            role: language === 'ar' ? 'معلمك الخصوصي الذكي' : 'Your Smart Tutor',
+            desc: language === 'ar'
+                ? 'منصة تعليمية للمدرسين. كورسات أونلاين، واجبات، واختبارات تفاعلية. (رياضيات، إنجليزي، والمزيد).'
+                : 'Educational platform for teachers. Online courses, homework, and interactive quizzes. (Math, English, & more).',
+            color: 'pink',
+            icon: GraduationCap,
+            features: [
+                language === 'ar' ? 'فصول افتراضية' : 'Virtual Classrooms',
+                language === 'ar' ? 'تصحيح تلقائي' : 'Auto-Grading',
+                language === 'ar' ? 'دفع اشتراكات' : 'Subscription Payments',
+            ]
         }
     ];
 
@@ -83,7 +113,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                 <HolographicAvatar icon={agent.icon} color={agent.color} size="lg" />
                             </div>
 
-                            <h3 className={`text-4xl font-bold mb-2 ${agent.color === 'purple' ? 'text-purple-400' : 'text-blue-400'
+                            <h3 className={`text-4xl font-bold mb-2 ${agent.color === 'purple' ? 'text-purple-400' :
+                                agent.color === 'blue' ? 'text-blue-400' :
+                                    agent.color === 'cyan' ? 'text-cyan-400' : 'text-pink-400'
                                 }`}>
                                 {agent.name}
                             </h3>
@@ -96,7 +128,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                             <div className="flex flex-wrap gap-3 justify-center lg:justify-start mb-8">
                                 {agent.features.map((feat, i) => (
                                     <span key={i} className={`px-4 py-2 rounded-full border bg-opacity-10 text-sm font-bold ${agent.color === 'purple' ? 'border-purple-500/30 bg-purple-500 text-purple-400' :
-                                        'border-blue-500/30 bg-blue-500 text-blue-400'
+                                        agent.color === 'blue' ? 'border-blue-500/30 bg-blue-500 text-blue-400' :
+                                            agent.color === 'cyan' ? 'border-cyan-500/30 bg-cyan-500 text-cyan-400' :
+                                                'border-pink-500/30 bg-pink-500 text-pink-400'
                                         }`}>
                                         {feat}
                                     </span>
@@ -104,7 +138,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                             </div>
 
                             <Button className={`w-full sm:w-auto ${agent.color === 'purple' ? 'bg-purple-600 hover:bg-purple-500' :
-                                'bg-blue-600 hover:bg-blue-500'
+                                agent.color === 'blue' ? 'bg-blue-600 hover:bg-blue-500' :
+                                    agent.color === 'cyan' ? 'bg-cyan-600 hover:bg-cyan-500' :
+                                        'bg-pink-600 hover:bg-pink-500'
                                 }`}>
                                 {language === 'ar' ? 'وظف ' + agent.name : 'Hire ' + agent.name}
                                 <ArrowRight className="ml-2 w-4 h-4" />
@@ -113,7 +149,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
 
                         {/* Platform Mockup Side */}
                         <div className="flex-1 w-full">
-                            <div className={`relative rounded-2xl border border-white/10 bg-black backdrop-blur-xl overflow-hidden shadow-2xl group ${agent.color === 'purple' ? 'shadow-purple-500/20' : 'shadow-blue-500/20'
+                            <div className={`relative rounded-2xl border border-white/10 bg-black backdrop-blur-xl overflow-hidden shadow-2xl group ${agent.color === 'purple' ? 'shadow-purple-500/20' :
+                                    agent.color === 'blue' ? 'shadow-blue-500/20' :
+                                        agent.color === 'cyan' ? 'shadow-cyan-500/20' : 'shadow-pink-500/20'
                                 }`}>
                                 {/* Browser Bar */}
                                 <div className="h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2">
@@ -142,12 +180,16 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                         <motion.div
                                             animate={{ opacity: [0.5, 1, 0.5] }}
                                             transition={{ duration: 3, repeat: Infinity }}
-                                            className={`h-10 rounded-lg mx-auto flex items-center justify-center text-xs font-bold ${agent.color === 'purple' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'
+                                            className={`h-10 rounded-lg mx-auto flex items-center justify-center text-xs font-bold ${agent.color === 'purple' ? 'bg-purple-500/20 text-purple-400' :
+                                                    agent.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
+                                                        agent.color === 'cyan' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-pink-500/20 text-pink-400'
                                                 }`}
                                         >
                                             {agent.id === 'sofra' && (language === 'ar' ? 'قائمة الطعام' : 'Menu')}
                                             {agent.id === 'tajer' && (language === 'ar' ? 'وحداتنا المتاحة' : 'Available Units')}
                                             {agent.id === 'drmoe' && (language === 'ar' ? 'الأدوية المتوفرة' : 'Available Medicines')}
+                                            {agent.id === 'usta' && (language === 'ar' ? 'خط الإنتاج' : 'Production Line')}
+                                            {agent.id === 'ostaz' && (language === 'ar' ? 'الكورسات' : 'Courses')}
                                         </motion.div>
 
                                         {/* Content Grid */}
@@ -170,7 +212,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                         <motion.div
                                             animate={{ scale: [1, 1.05, 1] }}
                                             transition={{ duration: 2, repeat: Infinity }}
-                                            className={`h-8 rounded-lg flex items-center justify-center text-xs font-bold ${agent.color === 'purple' ? 'bg-purple-600' : 'bg-blue-600'
+                                            className={`h-8 rounded-lg flex items-center justify-center text-xs font-bold ${agent.color === 'purple' ? 'bg-purple-600' :
+                                                    agent.color === 'blue' ? 'bg-blue-600' :
+                                                        agent.color === 'cyan' ? 'bg-cyan-600' : 'bg-pink-600'
                                                 }`}
                                         >
                                             {language === 'ar' ? 'اطلب الآن' : 'Order Now'}
@@ -185,7 +229,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                             scale: [1, 1.1, 1]
                                         }}
                                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center blur-2xl opacity-20 ${agent.color === 'purple' ? 'bg-purple-500' : 'bg-blue-500'
+                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center blur-2xl opacity-20 ${agent.color === 'purple' ? 'bg-purple-500' :
+                                                agent.color === 'blue' ? 'bg-blue-500' :
+                                                    agent.color === 'cyan' ? 'bg-cyan-500' : 'bg-pink-500'
                                             }`}
                                     />
 
@@ -193,7 +239,9 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                     {[...Array(5)].map((_, i) => (
                                         <motion.div
                                             key={i}
-                                            className={`absolute w-1 h-1 rounded-full ${agent.color === 'purple' ? 'bg-purple-400' : 'bg-blue-400'
+                                            className={`absolute w-1 h-1 rounded-full ${agent.color === 'purple' ? 'bg-purple-400' :
+                                                    agent.color === 'blue' ? 'bg-blue-400' :
+                                                        agent.color === 'cyan' ? 'bg-cyan-400' : 'bg-pink-400'
                                                 }`}
                                             animate={{
                                                 x: [0, (Math.random() - 0.5) * 200],

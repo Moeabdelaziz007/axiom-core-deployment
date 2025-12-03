@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, Sparkles, Zap } from 'lucide-react';
+import { Check, Sparkles, Zap, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Language } from '@/types/reset';
 
@@ -19,6 +19,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ language = 'en' 
             name: language === 'ar' ? 'الوجود' : 'The Presence',
             nameEn: 'The Presence Tier',
             price: '1.99',
+            priceEgp: '100',
             tagline: language === 'ar' ? 'خليك موجود وسط الكبار' : 'Be present among the big players',
             icon: Sparkles,
             color: 'cyan',
@@ -29,10 +30,27 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ language = 'en' 
             ]
         },
         {
+            id: 'education',
+            name: language === 'ar' ? 'المعلم' : 'The Educator',
+            nameEn: 'The Educator Tier',
+            price: '2.99',
+            priceEgp: '150',
+            tagline: language === 'ar' ? 'ابدأ منصتك التعليمية' : 'Start your educational platform',
+            icon: GraduationCap,
+            color: 'pink',
+            features: [
+                language === 'ar' ? 'موقع تعليمي خاص' : 'Custom Educational Website',
+                language === 'ar' ? 'نظام إدارة الطلاب' : 'Student Management System',
+                language === 'ar' ? 'اختبارات وواجبات' : 'Quizzes & Assignments',
+                language === 'ar' ? 'دفع إلكتروني' : 'Online Payments',
+            ]
+        },
+        {
             id: 'sovereign',
             name: language === 'ar' ? 'السيادة' : 'The Sovereign',
             nameEn: 'The Sovereign Tier',
             price: '9.99',
+            priceEgp: '500',
             tagline: language === 'ar' ? 'امتلك متجرك الخاص واستقل بنفسك' : 'Own your store and be independent',
             icon: Zap,
             color: 'purple',
@@ -72,7 +90,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ language = 'en' 
                 </motion.div>
 
                 {/* Pricing Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
                     {tiers.map((tier, index) => (
                         <motion.div
                             key={tier.id}
@@ -92,35 +110,53 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ language = 'en' 
                             )}
 
                             {/* Card */}
-                            <div className={`relative h-full p-8 rounded-2xl border backdrop-blur-xl transition-all duration-500 ${tier.popular
-                                    ? 'border-purple-500/50 bg-gradient-to-b from-purple-900/20 to-black shadow-[0_0_50px_rgba(168,85,247,0.3)] hover:shadow-[0_0_80px_rgba(168,85,247,0.5)]'
+                            <div className={`relative h-full p-6 rounded-2xl border backdrop-blur-xl transition-all duration-500 flex flex-col ${tier.popular
+                                ? 'border-purple-500/50 bg-gradient-to-b from-purple-900/20 to-black shadow-[0_0_50px_rgba(168,85,247,0.3)] hover:shadow-[0_0_80px_rgba(168,85,247,0.5)]'
+                                : tier.color === 'pink'
+                                    ? 'border-pink-500/30 bg-black/50 hover:border-pink-500/50 hover:shadow-[0_0_50px_rgba(236,72,153,0.3)]'
                                     : 'border-white/10 bg-black/50 hover:border-cyan-500/50 hover:shadow-[0_0_50px_rgba(6,182,212,0.3)]'
                                 }`}>
                                 {/* Icon */}
-                                <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-6 ${tier.color === 'cyan' ? 'bg-cyan-500/10 border border-cyan-500/30' : 'bg-purple-500/10 border border-purple-500/30'
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-6 ${tier.color === 'cyan' ? 'bg-cyan-500/10 border border-cyan-500/30' :
+                                    tier.color === 'pink' ? 'bg-pink-500/10 border border-pink-500/30' :
+                                        'bg-purple-500/10 border border-purple-500/30'
                                     }`}>
-                                    <tier.icon className={`w-7 h-7 ${tier.color === 'cyan' ? 'text-cyan-400' : 'text-purple-400'}`} />
+                                    <tier.icon className={`w-6 h-6 ${tier.color === 'cyan' ? 'text-cyan-400' :
+                                        tier.color === 'pink' ? 'text-pink-400' :
+                                            'text-purple-400'
+                                        }`} />
                                 </div>
 
                                 {/* Name & Price */}
-                                <h3 className={`text-3xl font-bold mb-2 ${tier.color === 'cyan' ? 'text-cyan-400' : 'text-purple-400'}`}>
+                                <h3 className={`text-2xl font-bold mb-2 ${tier.color === 'cyan' ? 'text-cyan-400' :
+                                    tier.color === 'pink' ? 'text-pink-400' :
+                                        'text-purple-400'
+                                    }`}>
                                     {tier.name}
                                 </h3>
-                                <div className="flex items-baseline gap-2 mb-4">
-                                    <span className="text-5xl font-black text-white">${tier.price}</span>
-                                    <span className="text-gray-400">{language === 'ar' ? '/ شهر' : '/ month'}</span>
+                                <div className="flex flex-col mb-4">
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-4xl font-black text-white">${tier.price}</span>
+                                        <span className="text-gray-400 text-sm">{language === 'ar' ? '/ شهر' : '/ mo'}</span>
+                                    </div>
+                                    <div className="text-sm text-gray-500 font-mono">
+                                        ≈ {tier.priceEgp} EGP
+                                    </div>
                                 </div>
 
                                 {/* Tagline */}
-                                <p className="text-gray-300 mb-8 leading-relaxed">
+                                <p className="text-gray-300 mb-6 leading-relaxed text-sm min-h-[40px]">
                                     {tier.tagline}
                                 </p>
 
                                 {/* Features */}
-                                <ul className="space-y-4 mb-8">
+                                <ul className="space-y-3 mb-8 flex-grow">
                                     {tier.features.map((feature, i) => (
-                                        <li key={i} className="flex items-start gap-3">
-                                            <Check className={`w-5 h-5 mt-0.5 shrink-0 ${tier.color === 'cyan' ? 'text-cyan-400' : 'text-purple-400'}`} />
+                                        <li key={i} className="flex items-start gap-2">
+                                            <Check className={`w-4 h-4 mt-0.5 shrink-0 ${tier.color === 'cyan' ? 'text-cyan-400' :
+                                                tier.color === 'pink' ? 'text-pink-400' :
+                                                    'text-purple-400'
+                                                }`} />
                                             <span className="text-gray-300 text-sm leading-relaxed">{feature}</span>
                                         </li>
                                     ))}
@@ -128,8 +164,10 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ language = 'en' 
 
                                 {/* CTA Button */}
                                 <Button
-                                    className={`w-full text-lg font-bold ${tier.popular
-                                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500'
+                                    className={`w-full text-lg font-bold mt-auto ${tier.popular
+                                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500'
+                                        : tier.color === 'pink'
+                                            ? 'bg-pink-600 hover:bg-pink-500'
                                             : 'bg-cyan-600 hover:bg-cyan-500'
                                         }`}
                                 >

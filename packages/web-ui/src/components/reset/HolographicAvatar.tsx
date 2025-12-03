@@ -20,6 +20,7 @@ export const HolographicAvatar: React.FC<HolographicAvatarProps> = ({
         cyan: 'text-cyan-400 border-cyan-500/50 bg-cyan-500/10 shadow-cyan-500/50',
         purple: 'text-purple-400 border-purple-500/50 bg-purple-500/10 shadow-purple-500/50',
         blue: 'text-blue-400 border-blue-500/50 bg-blue-500/10 shadow-blue-500/50',
+        pink: 'text-pink-400 border-pink-500/50 bg-pink-500/10 shadow-pink-500/50',
     };
 
     const sizeMap = {
