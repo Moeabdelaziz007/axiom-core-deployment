@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { HeroSection } from './components/HeroSection';
 import { ValueProposition } from './components/ValueProposition';
 import { AgentShowcase } from './components/AgentShowcase';
+import { PricingSection } from './components/PricingSection';
 import { TelegramMiniApp } from '@/components/reset/TelegramMiniApp';
 import { Footer } from './components/Footer';
 import { Language } from '@/types/reset';
@@ -44,6 +45,9 @@ export default function ResetLandingPage() {
 
       {/* Agent Showcase */}
       <AgentShowcase language={language} />
+
+      {/* Pricing Section */}
+      <PricingSection language={language} />
 
       {/* Telegram Mini App Interface */}
       <TelegramMiniApp language={language} onAgentTaskUpdate={(taskId, status) => {
