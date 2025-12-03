@@ -27,10 +27,10 @@ export const ResetHeader: React.FC<ResetHeaderProps> = ({ language, setLanguage 
     }, []);
 
     const navLinks = [
-        { name: language === 'ar' ? 'الرئيسية' : 'Home', href: '#' },
-        { name: language === 'ar' ? 'الوكلاء' : 'Agents', href: '#agents' },
-        { name: language === 'ar' ? 'الأسعار' : 'Pricing', href: '#pricing' },
-        { name: language === 'ar' ? 'عن أكسيوم' : 'About Us', href: '#about' },
+        { name: language === 'ar' ? 'الرئيسية' : 'Home', href: '/reset' },
+        { name: language === 'ar' ? 'الوكلاء' : 'Agents', href: '/reset/agents' },
+        { name: language === 'ar' ? 'الأسعار' : 'Pricing', href: '/reset/pricing' },
+        { name: language === 'ar' ? 'عن أكسيوم' : 'About Us', href: '/reset/about' },
     ];
 
     return (

@@ -3,12 +3,9 @@
 import React, { useState } from 'react';
 import { HeroSection } from './components/HeroSection';
 import { ValueProposition } from './components/ValueProposition';
-import { AgentShowcase } from './components/AgentShowcase';
-import { PricingSection } from './components/PricingSection';
 import { Footer } from './components/Footer';
 import { Language } from '@/types/reset';
 import { ResetHeader } from './components/ResetHeader';
-import { AboutSection } from './components/AboutSection';
 
 export default function ResetLandingPage() {
   const [language, setLanguage] = useState<Language>('en');
@@ -33,19 +30,6 @@ export default function ResetLandingPage() {
 
       {/* Value Proposition */}
       <ValueProposition language={language} />
-
-      {/* Agent Showcase */}
-      <div id="agents">
-        <AgentShowcase language={language} />
-      </div>
-
-      {/* Pricing Section */}
-      <div id="pricing">
-        <PricingSection language={language} />
-      </div>
-
-      {/* About Section */}
-      <AboutSection language={language} />
 
       {/* Footer */}
       <Footer language={language} />
