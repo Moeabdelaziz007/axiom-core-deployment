@@ -12,6 +12,7 @@ import {
   NeuralWorkspace,
   SolanaVerifier,
   XPSimulator,
+  LiveDiagnostics,
   StreamingResponseHandler
 } from '@components';
 import Gigafactory from '@/components/dashboard/Gigafactory';
