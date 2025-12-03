@@ -13,8 +13,10 @@ import {
   SolanaVerifier,
   XPSimulator,
   LiveDiagnostics,
+  LiveDiagnostics,
   StreamingResponseHandler
 } from '@components';
+import Gigafactory from '@/components/dashboard/Gigafactory';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Shield, Cpu, Activity, Terminal, Grid, Brain } from 'lucide-react';
 
@@ -51,11 +53,10 @@ export default function DashboardPage() {
             <button
               key={item.id}
               onClick={() => setActiveView(item.id as any)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md border transition-all duration-300 ${
-                activeView === item.id
-                  ? 'bg-cyan-950/50 border-cyan-400 text-cyan-100 shadow-[0_0_15px_rgba(6,182,212,0.3)]'
-                  : 'bg-black/50 border-cyan-900/30 text-cyan-700 hover:border-cyan-700 hover:text-cyan-400'
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md border transition-all duration-300 ${activeView === item.id
+                ? 'bg-cyan-950/50 border-cyan-400 text-cyan-100 shadow-[0_0_15px_rgba(6,182,212,0.3)]'
+                : 'bg-black/50 border-cyan-900/30 text-cyan-700 hover:border-cyan-700 hover:text-cyan-400'
+                }`}
             >
               <item.icon className="w-4 h-4" />
               <span className="hidden md:inline font-bold text-sm">{item.label}</span>
@@ -78,7 +79,7 @@ export default function DashboardPage() {
               {/* Left Column: Dead Hand & Status */}
               <div className="lg:col-span-1 space-y-6">
                 <DeadHandMonitor />
-                
+
                 {/* System Status Card */}
                 <div className="bg-black/40 backdrop-blur-md border border-cyan-900/30 rounded-xl p-6 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -97,18 +98,18 @@ export default function DashboardPage() {
 
               {/* Right Column: Main Visualizer (Placeholder for now) */}
               <div className="lg:col-span-2">
-                 <div className="h-full min-h-[400px] bg-black/40 backdrop-blur-md border border-cyan-900/30 rounded-xl p-1 flex items-center justify-center relative">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1),transparent_70%)]" />
-                    <div className="text-center">
-                        <Activity className="w-16 h-16 text-cyan-800 mx-auto mb-4 animate-pulse" />
-                        <h2 className="text-2xl font-bold text-cyan-700">GLOBAL NETWORK MAP</h2>
-                        <p className="text-cyan-900">Offline</p>
-                        <div className="mt-4"><SolanaVerifier /></div>
-                        <div className="mt-4"><XPSimulator /></div>
-                        <div className="mt-4"><LiveDiagnostics /></div>
-                        <div className="mt-4"><StreamingResponseHandler /></div>
-                    </div>
-                 </div>
+                <div className="h-full min-h-[400px] bg-black/40 backdrop-blur-md border border-cyan-900/30 rounded-xl p-1 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.1),transparent_70%)]" />
+                  <div className="text-center">
+                    <Activity className="w-16 h-16 text-cyan-800 mx-auto mb-4 animate-pulse" />
+                    <h2 className="text-2xl font-bold text-cyan-700">GLOBAL NETWORK MAP</h2>
+                    <p className="text-cyan-900">Offline</p>
+                    <div className="mt-4"><SolanaVerifier /></div>
+                    <div className="mt-4"><XPSimulator /></div>
+                    <div className="mt-4"><LiveDiagnostics /></div>
+                    <div className="mt-4"><StreamingResponseHandler /></div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
@@ -119,8 +120,9 @@ export default function DashboardPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.05 }}
+              className="h-[700px]"
             >
-              <TheForge />
+              <Gigafactory />
             </motion.div>
           )}
 
