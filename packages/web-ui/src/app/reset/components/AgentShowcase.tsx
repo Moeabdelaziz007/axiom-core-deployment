@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChefHat, Palmtree, Activity, ArrowRight, Smartphone, Globe } from 'lucide-react';
-import { HolographicAvatar } from './HolographicAvatar';
+import { HolographicAvatar } from '@/components/reset/HolographicAvatar';
 import { useTranslation } from '@/lib/translations';
 import { Language } from '@/types/reset';
 import { Button } from '@/components/ui/button';
@@ -84,7 +84,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                             </div>
 
                             <h3 className={`text-4xl font-bold mb-2 ${agent.color === 'orange' ? 'text-orange-400' :
-                                    agent.color === 'blue' ? 'text-blue-400' : 'text-green-400'
+                                agent.color === 'blue' ? 'text-blue-400' : 'text-green-400'
                                 }`}>
                                 {agent.name}
                             </h3>
@@ -97,7 +97,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                             <div className="flex flex-wrap gap-3 justify-center lg:justify-start mb-8">
                                 {agent.features.map((feat, i) => (
                                     <span key={i} className={`px-4 py-2 rounded-full border bg-opacity-10 text-sm font-bold ${agent.color === 'orange' ? 'border-orange-500/30 bg-orange-500 text-orange-400' :
-                                            agent.color === 'blue' ? 'border-blue-500/30 bg-blue-500 text-blue-400' : 'border-green-500/30 bg-green-500 text-green-400'
+                                        agent.color === 'blue' ? 'border-blue-500/30 bg-blue-500 text-blue-400' : 'border-green-500/30 bg-green-500 text-green-400'
                                         }`}>
                                         {feat}
                                     </span>
@@ -105,7 +105,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                             </div>
 
                             <Button className={`w-full sm:w-auto ${agent.color === 'orange' ? 'bg-orange-600 hover:bg-orange-500' :
-                                    agent.color === 'blue' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-green-600 hover:bg-green-500'
+                                agent.color === 'blue' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-green-600 hover:bg-green-500'
                                 }`}>
                                 {language === 'ar' ? 'وظف ' + agent.name : 'Hire ' + agent.name}
                                 <ArrowRight className="ml-2 w-4 h-4" />
@@ -115,7 +115,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                         {/* Platform Mockup Side */}
                         <div className="flex-1 w-full">
                             <div className={`relative rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl overflow-hidden shadow-2xl group ${agent.color === 'orange' ? 'shadow-orange-500/20' :
-                                    agent.color === 'blue' ? 'shadow-blue-500/20' : 'shadow-green-500/20'
+                                agent.color === 'blue' ? 'shadow-blue-500/20' : 'shadow-green-500/20'
                                 }`}>
                                 {/* Browser Bar */}
                                 <div className="h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2">
@@ -135,7 +135,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                     {/* UI Elements */}
                                     <div className="w-full max-w-xs space-y-4 relative z-10">
                                         <div className={`h-8 w-3/4 rounded mx-auto ${agent.color === 'orange' ? 'bg-orange-500/20' :
-                                                agent.color === 'blue' ? 'bg-blue-500/20' : 'bg-green-500/20'
+                                            agent.color === 'blue' ? 'bg-blue-500/20' : 'bg-green-500/20'
                                             }`} />
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="h-24 rounded bg-white/5 border border-white/10" />
@@ -146,7 +146,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
 
                                     {/* Floating Icon */}
                                     <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full flex items-center justify-center blur-xl opacity-20 ${agent.color === 'orange' ? 'bg-orange-500' :
-                                            agent.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                                        agent.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
                                         }`} />
                                 </div>
 
