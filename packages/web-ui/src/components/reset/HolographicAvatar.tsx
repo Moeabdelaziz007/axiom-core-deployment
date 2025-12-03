@@ -18,8 +18,7 @@ export const HolographicAvatar: React.FC<HolographicAvatarProps> = ({
 }) => {
     const colorMap: Record<string, string> = {
         cyan: 'text-cyan-400 border-cyan-500/50 bg-cyan-500/10 shadow-cyan-500/50',
-        orange: 'text-orange-400 border-orange-500/50 bg-orange-500/10 shadow-orange-500/50',
-        green: 'text-green-400 border-green-500/50 bg-green-500/10 shadow-green-500/50',
+        purple: 'text-purple-400 border-purple-500/50 bg-purple-500/10 shadow-purple-500/50',
         blue: 'text-blue-400 border-blue-500/50 bg-blue-500/10 shadow-blue-500/50',
     };
 

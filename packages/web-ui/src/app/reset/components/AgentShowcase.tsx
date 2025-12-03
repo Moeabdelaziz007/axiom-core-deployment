@@ -23,7 +23,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
             desc: language === 'ar'
                 ? 'استقبل طلبات الأكل 24 ساعة. منيو إلكتروني ذكي. والأهم: سواقينك بياخدوا 100% من التوصيل.'
                 : 'Take orders 24/7. Smart digital menu. And most importantly: Your drivers keep 100% of delivery fees.',
-            color: 'orange',
+            color: 'purple',
             icon: ChefHat,
             features: [
                 language === 'ar' ? '0% عمولة توصيل' : '0% Delivery Commission',
@@ -53,7 +53,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
             desc: language === 'ar'
                 ? 'نظام إدارة صيدلية كامل. بيعرف النواقص ويطلبها، وبيجاوب على أسئلة المرضى.'
                 : 'Complete pharmacy management. Tracks shortages, orders stock, and answers patient queries.',
-            color: 'green',
+            color: 'purple',
             icon: Activity,
             features: [
                 language === 'ar' ? 'إدارة نواقص' : 'Shortage Management',
@@ -83,8 +83,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                 <HolographicAvatar icon={agent.icon} color={agent.color} size="lg" />
                             </div>
 
-                            <h3 className={`text-4xl font-bold mb-2 ${agent.color === 'orange' ? 'text-orange-400' :
-                                agent.color === 'blue' ? 'text-blue-400' : 'text-green-400'
+                            <h3 className={`text-4xl font-bold mb-2 ${agent.color === 'purple' ? 'text-purple-400' : 'text-blue-400'
                                 }`}>
                                 {agent.name}
                             </h3>
@@ -96,16 +95,16 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
 
                             <div className="flex flex-wrap gap-3 justify-center lg:justify-start mb-8">
                                 {agent.features.map((feat, i) => (
-                                    <span key={i} className={`px-4 py-2 rounded-full border bg-opacity-10 text-sm font-bold ${agent.color === 'orange' ? 'border-orange-500/30 bg-orange-500 text-orange-400' :
-                                        agent.color === 'blue' ? 'border-blue-500/30 bg-blue-500 text-blue-400' : 'border-green-500/30 bg-green-500 text-green-400'
+                                    <span key={i} className={`px-4 py-2 rounded-full border bg-opacity-10 text-sm font-bold ${agent.color === 'purple' ? 'border-purple-500/30 bg-purple-500 text-purple-400' :
+                                        'border-blue-500/30 bg-blue-500 text-blue-400'
                                         }`}>
                                         {feat}
                                     </span>
                                 ))}
                             </div>
 
-                            <Button className={`w-full sm:w-auto ${agent.color === 'orange' ? 'bg-orange-600 hover:bg-orange-500' :
-                                agent.color === 'blue' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-green-600 hover:bg-green-500'
+                            <Button className={`w-full sm:w-auto ${agent.color === 'purple' ? 'bg-purple-600 hover:bg-purple-500' :
+                                'bg-blue-600 hover:bg-blue-500'
                                 }`}>
                                 {language === 'ar' ? 'وظف ' + agent.name : 'Hire ' + agent.name}
                                 <ArrowRight className="ml-2 w-4 h-4" />
@@ -114,21 +113,20 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
 
                         {/* Platform Mockup Side */}
                         <div className="flex-1 w-full">
-                            <div className={`relative rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl overflow-hidden shadow-2xl group ${agent.color === 'orange' ? 'shadow-orange-500/20' :
-                                    agent.color === 'blue' ? 'shadow-blue-500/20' : 'shadow-green-500/20'
+                            <div className={`relative rounded-2xl border border-white/10 bg-black backdrop-blur-xl overflow-hidden shadow-2xl group ${agent.color === 'purple' ? 'shadow-purple-500/20' : 'shadow-blue-500/20'
                                 }`}>
                                 {/* Browser Bar */}
                                 <div className="h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2">
                                     <div className="w-3 h-3 rounded-full bg-red-500/50" />
                                     <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
                                     <div className="w-3 h-3 rounded-full bg-green-500/50" />
-                                    <div className="ml-4 flex-1 h-5 rounded bg-black/50 flex items-center px-3 text-[10px] text-gray-500 font-mono">
+                                    <div className="ml-4 flex-1 h-5 rounded bg-white/5 flex items-center px-3 text-[10px] text-gray-500 font-mono">
                                         axiom.id/{agent.id}
                                     </div>
                                 </div>
 
                                 {/* Platform Content Mockup */}
-                                <div className="aspect-video relative p-6 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-700">
+                                <div className="aspect-video relative p-6 flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-700 bg-black">
                                     {/* Animated Background Grid */}
                                     <motion.div
                                         animate={{
@@ -144,8 +142,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                         <motion.div
                                             animate={{ opacity: [0.5, 1, 0.5] }}
                                             transition={{ duration: 3, repeat: Infinity }}
-                                            className={`h-10 rounded-lg mx-auto flex items-center justify-center text-xs font-bold ${agent.color === 'orange' ? 'bg-orange-500/20 text-orange-400' :
-                                                    agent.color === 'blue' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
+                                            className={`h-10 rounded-lg mx-auto flex items-center justify-center text-xs font-bold ${agent.color === 'purple' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'
                                                 }`}
                                         >
                                             {agent.id === 'sofra' && (language === 'ar' ? 'قائمة الطعام' : 'Menu')}
@@ -173,8 +170,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                         <motion.div
                                             animate={{ scale: [1, 1.05, 1] }}
                                             transition={{ duration: 2, repeat: Infinity }}
-                                            className={`h-8 rounded-lg flex items-center justify-center text-xs font-bold ${agent.color === 'orange' ? 'bg-orange-600' :
-                                                    agent.color === 'blue' ? 'bg-blue-600' : 'bg-green-600'
+                                            className={`h-8 rounded-lg flex items-center justify-center text-xs font-bold ${agent.color === 'purple' ? 'bg-purple-600' : 'bg-blue-600'
                                                 }`}
                                         >
                                             {language === 'ar' ? 'اطلب الآن' : 'Order Now'}
@@ -189,8 +185,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                             scale: [1, 1.1, 1]
                                         }}
                                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center blur-2xl opacity-20 ${agent.color === 'orange' ? 'bg-orange-500' :
-                                                agent.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center blur-2xl opacity-20 ${agent.color === 'purple' ? 'bg-purple-500' : 'bg-blue-500'
                                             }`}
                                     />
 
@@ -198,8 +193,7 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                     {[...Array(5)].map((_, i) => (
                                         <motion.div
                                             key={i}
-                                            className={`absolute w-1 h-1 rounded-full ${agent.color === 'orange' ? 'bg-orange-400' :
-                                                    agent.color === 'blue' ? 'bg-blue-400' : 'bg-green-400'
+                                            className={`absolute w-1 h-1 rounded-full ${agent.color === 'purple' ? 'bg-purple-400' : 'bg-blue-400'
                                                 }`}
                                             animate={{
                                                 x: [0, (Math.random() - 0.5) * 200],
@@ -223,9 +217,10 @@ export const AgentShowcase: React.FC<AgentShowcaseProps> = ({ language = 'en' })
                                 </div>
                             </div>
                         </div>
+                    </div>
                     </motion.div>
                 ))}
-            </div>
-        </section>
+        </div>
+        </section >
     );
 };
