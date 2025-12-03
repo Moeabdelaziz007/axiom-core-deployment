@@ -96,20 +96,32 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </h1>
 
           {/* Subtitle / Offer */}
-          <div className="max-w-4xl mx-auto mb-12 space-y-6">
-            <p className={`text-xl md:text-2xl text-gray-400 font-light tracking-wide leading-relaxed ${isRTL ? 'font-sans' : 'font-sans'}`}>
-              Get Your AI-Powered Mini-Store & Chatbot.
-            </p>
+          <div className="max-w-4xl mx-auto mb-12 space-y-8">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className={`text-xl md:text-3xl text-white font-light tracking-wide leading-relaxed ${isRTL ? 'font-sans' : 'font-sans'}`}
+            >
+              "AI won't take your job. It will help you <span className="text-cyan-400 font-bold">sell more</span>, <span className="text-purple-400 font-bold">work more</span>, and <span className="text-green-400 font-bold">earn more</span>."
+            </motion.p>
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-2xl md:text-3xl font-bold">
-              <span className="text-white">Start from</span>
-              <span className="px-4 py-1 rounded bg-green-500/10 border border-green-500/50 text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                $0.99/Month
-              </span>
-              <span className="hidden md:inline text-gray-600">|</span>
-              <span className="text-green-400 flex items-center gap-2">
-                0% Commission <span className="text-xs bg-green-500 text-black px-2 py-0.5 rounded-full">FOREVER</span>
-              </span>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-xl md:text-2xl font-bold bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10">
+              <div className="flex items-center gap-3">
+                <span className="text-gray-400">Start from</span>
+                <span className="px-4 py-1 rounded bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+                  $0.99/Month
+                </span>
+              </div>
+              <div className="hidden md:block w-px h-8 bg-gray-700" />
+              <div className="flex flex-col items-center md:items-start gap-1">
+                <span className="text-green-400 flex items-center gap-2">
+                  0% Commission <span className="text-xs bg-green-500 text-black px-2 py-0.5 rounded-full font-bold">FOREVER</span>
+                </span>
+                <span className="text-sm text-gray-400 font-normal">
+                  Drivers keep <span className="text-white font-bold">100%</span> of delivery fees.
+                </span>
+              </div>
             </div>
           </div>
 
