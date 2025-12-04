@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, use } from 'react';
 import { notFound } from 'next/navigation';
 import { agents, getAgentIcon } from '@/lib/agent-configs';
 import { Play, Cpu, Activity, Send } from 'lucide-react';
@@ -10,9 +10,10 @@ import Link from 'next/link';
 // 🧬 UNIVERSAL AGENT PAGE - Day 7 (LIVE CHAT)
 // ============================================================================
 
-export default function AgentPage({ params }: { params: { id: string } }) {
-    const agent = agents[params.id];
-    const Icon = getAgentIcon(params.id);
+export default function AgentPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
+    const agent = agents[id];
+    const Icon = getAgentIcon(id);
     const [activeCapability, setActiveCapability] = useState(0);
 
     // Chat state

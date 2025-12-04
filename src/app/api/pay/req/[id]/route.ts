@@ -18,14 +18,14 @@ const paymentRequestSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const paymentId = params.id;
-    
+    const { id: paymentId } = await params;
+
     if (!paymentId) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Payment ID is required'
         },
@@ -34,14 +34,14 @@ export async function POST(
     }
 
     const body = await request.json();
-    
+
     // Validate input
     const validatedData = paymentRequestSchema.parse(body);
     const { userId, amountLamports, recipient, splToken, metadata } = validatedData;
 
     // Generate unique reference key for idempotency
     const referenceKey = generateReferenceKey(paymentId, userId);
-    
+
     // Check for existing payment with this reference key
     const existingPayment = await paymentsDb.execute({
       sql: 'SELECT id, status FROM payments WHERE reference_key = ?',
@@ -50,7 +50,7 @@ export async function POST(
 
     if (existingPayment.rows.length > 0) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Duplicate payment request',
           message: 'A payment with this reference key already exists',
@@ -128,7 +128,7 @@ export async function POST(
           amount: {
             lamports: amountLamports,
             sol: amountLamports / LAMPORTS_PER_SOL,
-            display: splToken 
+            display: splToken
               ? `${(amountLamports / Math.pow(10, splToken.decimals || 0)).toFixed(splToken.decimals || 0)} ${splToken.mint || 'SPL'}`
               : `${(amountLamports / LAMPORTS_PER_SOL).toFixed(4)} SOL`
           },
@@ -169,7 +169,7 @@ export async function POST(
     }
   } catch (error) {
     console.error('Payment request error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
@@ -182,7 +182,7 @@ export async function POST(
     }
 
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Internal server error',
         message: error instanceof Error ? error.message : 'Unknown error'
@@ -195,14 +195,14 @@ export async function POST(
 // GET endpoint to check payment request status
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const paymentId = params.id;
-    
+    const { id: paymentId } = await params;
+
     if (!paymentId) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Payment ID is required'
         },
@@ -223,7 +223,7 @@ export async function GET(
 
     if (result.rows.length === 0) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: 'Payment not found'
         },
@@ -257,7 +257,7 @@ export async function GET(
   } catch (error) {
     console.error('Payment status check error:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Internal server error',
         message: error instanceof Error ? error.message : 'Unknown error'

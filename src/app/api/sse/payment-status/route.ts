@@ -73,7 +73,7 @@ async function getPaymentStatus(paymentId: string) {
     }
 
     const payment = result.rows[0];
-    
+
     // Parse metadata
     let metadata = {};
     if (payment.metadata_json) {
@@ -117,7 +117,7 @@ function broadcastPaymentUpdate(paymentId: string, update: PaymentUpdate): void 
   }
 
   const message = `data: ${JSON.stringify(update)}\n\n`;
-  
+
   for (const controller of connections) {
     try {
       controller.enqueue(new TextEncoder().encode(message));
@@ -155,7 +155,7 @@ function sendHeartbeat(controller: ReadableStreamDefaultController): void {
 
 // Create SSE stream for payment status updates
 async function createPaymentStream(
-  request: NextRequest, 
+  request: NextRequest,
   paymentId: string
 ): Promise<Response> {
   const clientKey = getClientKey(request);
@@ -170,7 +170,7 @@ async function createPaymentStream(
         error: 'Connection limit exceeded',
         message: `Maximum ${MAX_CONNECTIONS} connections allowed per payment`
       }),
-      { 
+      {
         status: 429,
         headers: { 'Content-Type': 'application/json' }
       }
@@ -272,15 +272,15 @@ async function createPaymentStream(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const paymentId = params.id;
-    
+    const { id: paymentId } = await params;
+
     if (!paymentId) {
       return new Response(
         JSON.stringify({ error: 'Payment ID is required' }),
-        { 
+        {
           status: 400,
           headers: { 'Content-Type': 'application/json' }
         }
@@ -300,13 +300,13 @@ export async function GET(
 
   } catch (error) {
     console.error('SSE endpoint error:', error);
-    
+
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
         message: error instanceof Error ? error.message : 'Unknown error'
       }),
-      { 
+      {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       }
@@ -324,7 +324,7 @@ export async function HEAD(request: NextRequest) {
       uptime: process.uptime()
     };
 
-    return new Response(null, { 
+    return new Response(null, {
       status: 200,
       headers: {
         'X-Health-Check': JSON.stringify(healthStatus),
