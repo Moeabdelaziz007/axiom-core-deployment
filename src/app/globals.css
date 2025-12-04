@@ -2,382 +2,125 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+:root {
+  /* Axiom Carbon Palette */
+  --bg-depth: #030712;
+  /* Deepest Black-Blue */
+  --bg-surface: #0B0E14;
+  /* Card Surface */
+  --neon-blue: #0A84FF;
+  /* Trust */
+  --neon-green: #10B981;
+  /* Success */
+  --neon-purple: #7C5CFF;
+  /* AI */
 
-    --font-sans: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-orbitron: 'Orbitron', sans-serif;
-    --font-rajdhani: 'Rajdhani', sans-serif;
-
-    --axiom-cyan: #00F0FF;
-    --axiom-purple: #7000FF;
-    --axiom-neon-green: #39FF14;
-    --neon-purple-fade: rgba(157, 78, 221, 0.3);
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-
-  body {
-    @apply bg-axiom-dark text-white antialiased;
-    font-family: var(--font-sans);
-    overflow-x: hidden;
-  }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
+  /* Fonts */
+  --font-sans: 'Inter', 'Almarai', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
-@layer components {
-
-  /* 💎 Holographic Floating Panels */
-  .glass-panel {
-    background: rgba(18, 25, 30, 0.4);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(157, 78, 221, 0.3);
-    box-shadow:
-      0 4px 60px rgba(0, 240, 255, 0.2),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    position: relative;
-    overflow: hidden;
-    transform: translateZ(5px);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .glass-panel:hover {
-    border-color: rgba(0, 240, 255, 0.4);
-    box-shadow:
-      0 8px 80px rgba(0, 240, 255, 0.3),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
-    transform: translateZ(8px) translateY(-2px);
-  }
-
-  /* 💎 Premium Glass Panel with Carbon Fiber Texture */
-  .glass-panel-premium {
-    @apply bg-[#0F111A]/60 backdrop-blur-[20px] border border-white/10 relative overflow-hidden;
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.05),
-      0 4px 20px rgba(0, 0, 0, 0.5),
-      inset 0 0 20px rgba(255, 255, 255, 0.02);
-    background-image: 
-      radial-gradient(circle at 100% 100%, rgba(57, 255, 20, 0.05) 0%, transparent 15%),
-      repeating-linear-gradient(
-        45deg,
-        rgba(57, 255, 20, 0.03) 0px,
-        rgba(57, 255, 20, 0.03) 1px,
-        transparent 1px,
-        transparent 11px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        rgba(57, 255, 20, 0.03) 0px,
-        rgba(57, 255, 20, 0.03) 1px,
-        transparent 1px,
-        transparent 11px
-      );
-  }
-
-  .glass-panel-premium::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ✨ Neon Button with Green Theme */
-  .btn-neon {
-    @apply px-8 py-4 rounded-xl font-display font-bold text-white bg-gradient-to-r from-axiom-neon-green to-axiom-cyan relative overflow-hidden transition-all duration-300;
-    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
-  }
-
-  .btn-neon:hover {
-    box-shadow: 0 0 30px rgba(57, 255, 20, 0.6);
-    transform: translateY(-2px);
-  }
-
-  /* Carbon Fiber Background Pattern */
-  .carbon-fiber-bg {
-    background-color: #0a0a0a;
-    background-image: 
-      radial-gradient(circle at 100% 100%, rgba(57, 255, 20, 0.05) 0%, transparent 15%),
-      repeating-linear-gradient(
-        45deg,
-        rgba(57, 255, 20, 0.03) 0px,
-        rgba(57, 255, 20, 0.03) 1px,
-        transparent 1px,
-        transparent 11px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        rgba(57, 255, 20, 0.03) 0px,
-        rgba(57, 255, 20, 0.03) 1px,
-        transparent 1px,
-        transparent 11px
-      );
-    background-size: 30px 30px, calc(100% - 1px) calc(100% - 1px);
-  }
+body {
+  background-color: var(--bg-depth);
+  color: white;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
-@layer utilities {
-  .text-glow {
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
-  }
-
-  .text-glow-purple {
-    text-shadow: 0 0 20px rgba(112, 0, 255, 0.6);
-  }
-
-  .text-glow-green {
-    text-shadow: 0 0 15px rgba(57, 255, 20, 0.7);
-  }
-
-  .bg-deep-void {
-    background: radial-gradient(circle at 50% 50%, #1a1f35 0%, #0b0e17 100%);
-    background-attachment: fixed;
-  }
-
-  /* Neon Green Glow Effect */
-  .neon-glow {
-    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5), 0 0 20px rgba(57, 255, 20, 0.3);
-  }
-
-  .neon-glow:hover {
-    box-shadow: 0 0 15px rgba(57, 255, 20, 0.7), 0 0 30px rgba(57, 255, 20, 0.5);
-  }
-}
-
-/* --- DEEP SPACE GRAIN & GRID --- */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
+/* 🧬 1. Carbon Fiber Mesh Background */
+.bg-carbon {
+  background-color: var(--bg-depth);
   background-image:
-    /* Deep Grain Texture */
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-    /* Cyber Grid */
-    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-  background-size: 200px 200px, 40px 40px, 40px 40px;
-  background-attachment: fixed;
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  /* Grid Lines like Linear */
+  mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 100%);
+  /* Vignette */
 }
 
-/* Radial Glow for Depth */
-body::after {
-  content: "";
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 150vw;
-  height: 150vh;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.03) 0%, rgba(0, 0, 0, 0) 60%);
-  pointer-events: none;
-  z-index: -2;
+/* 🔦 2. Linear Spotlight Effect (The Magic) */
+.group-spotlight {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-/* --- QUANTUM ANIMATIONS --- */
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
-  }
-}
-
-@keyframes scanline {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-.animate-scanline::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.1), transparent);
-  animation: scanline 4s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes quantumFloat {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.3;
-  }
-  25% {
-    transform: translate(10px, -15px) scale(1.1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translate(-8px, -25px) scale(0.9);
-    opacity: 0.7;
-  }
-  75% {
-    transform: translate(-15px, -10px) scale(1.05);
-    opacity: 0.4;
-  }
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 10px var(--axiom-neon-green), 0 0 20px var(--axiom-neon-green);
-    filter: brightness(1);
-  }
-  50% {
-    box-shadow: 0 0 20px var(--axiom-neon-green), 0 0 40px var(--axiom-neon-green), 0 0 60px var(--axiom-cyan);
-    filter: brightness(1.2);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-/* Enhanced Glass with Grain Texture */
-.glass-panel::after {
+/* هذا الشعاع الذي يتبع الماوس */
+.group-spotlight::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
-  pointer-events: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: inherit;
-  opacity: 0.5;
-  mix-blend-mode: overlay;
+  padding: 1px;
+  background: linear-gradient(45deg, transparent 40%, var(--neon-blue), transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-/* Custom Scrollbar */
+.group-spotlight:hover::before {
+  opacity: 1;
+}
+
+.group-spotlight:hover {
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 0 40px rgba(10, 132, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* 🌟 3. Neon Text Glow */
+.text-glow {
+  text-shadow: 0 0 20px rgba(10, 132, 255, 0.5);
+}
+
+/* 🎯 4. Utility Classes */
+.glass-card {
+  background: rgba(11, 14, 20, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 5. Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #050505;
+  background: var(--bg-depth);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1a1d2d;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #39FF14;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+/* 6. Selection Color */
+::selection {
+  background: rgba(10, 132, 255, 0.3);
+  color: white;
 }
 
-/* === OMNI-ORB VOICE ANIMATIONS === */
-@keyframes voice-bar {
-  0%, 100% { 
-    height: 4px; 
-    opacity: 0.5; 
-  }
-  50% { 
-    height: 20px; 
-    opacity: 1; 
-  }
+/* 7. Focus States */
+input:focus,
+button:focus {
+  outline: none;
 }
 
-.animate-voice-bar {
-  animation: voice-bar 0.6s ease-in-out infinite;
-}
-
-@keyframes fade-in {
-  from { 
-    opacity: 0; 
-    transform: translateY(10px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
+input:focus-visible,
+button:focus-visible {
+  ring: 2px;
+  ring-color: var(--neon-blue);
 }
