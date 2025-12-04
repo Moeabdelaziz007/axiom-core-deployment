@@ -1,10 +1,12 @@
 /**
  * 🧠 Agent Chat API with Function Calling
  * Day 8: The Action Engine - Agents can now DO things, not just TALK
+ * Day 9: Connected to D1 Database
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { chatWithGemini, GeminiResponse } from '@/lib/gemini';
+import d1 from '@/lib/d1-client';
 
 // ============================================================================
 // AGENT SYSTEM PROMPTS (Gigafactory Config)
@@ -111,13 +113,9 @@ const AGENT_PROMPTS: Record<string, { name: string; prompt: string; welcome: str
 };
 
 // ============================================================================
-// IN-MEMORY STORES (Replace with D1 in production)
+// D1 DATABASE (Connected via src/lib/d1-client.ts)
+// Tables: orders, bookings, rfqs, sessions, medicines
 // ============================================================================
-
-const ordersStore: Array<{ id: string; items: string; total: number; status: string; createdAt: number }> = [];
-const bookingsStore: Array<{ id: string; type: string; location: string; budget: string; createdAt: number }> = [];
-const rfqsStore: Array<{ id: string; partName: string; quantity: number; urgency: string; createdAt: number }> = [];
-const sessionsStore: Array<{ id: string; subject: string; grade: string; time: string; createdAt: number }> = [];
 
 // ============================================================================
 // GEMINI API CONFIGURATION
@@ -162,12 +160,12 @@ export async function POST(request: NextRequest) {
 
             // --- 🥘 Sofra: create_order ---
             if (funcName === 'create_order') {
-                ordersStore.push({
+                // Save to D1
+                await d1.createOrder({
                     id: actionId,
                     items: args.items || '',
                     total: args.total_price || 0,
-                    status: 'pending',
-                    createdAt: Date.now()
+                    notes: args.notes
                 });
 
                 replyText = `تم استلام طلبك يا فندم! 🥘
@@ -181,12 +179,14 @@ ${args.notes ? `📝 ملاحظات: ${args.notes}` : ''}
 
             // --- 🏠 Tajer: book_property_viewing ---
             else if (funcName === 'book_property_viewing') {
-                bookingsStore.push({
+                // Save to D1
+                await d1.createBooking({
                     id: actionId,
-                    type: args.property_type || '',
+                    property_type: args.property_type || '',
                     location: args.location || '',
-                    budget: args.budget || '',
-                    createdAt: Date.now()
+                    budget: args.budget,
+                    preferred_date: args.preferred_date,
+                    customer_phone: args.phone
                 });
 
                 replyText = `تمام، سجلت طلب المعاينة! 🏠
@@ -222,12 +222,14 @@ ${args.quantity ? `📦 الكمية المطلوبة: ${args.quantity}` : ''}
 
             // --- ⚙️ Tirs: request_spare_part (RFQ) ---
             else if (funcName === 'request_spare_part') {
-                rfqsStore.push({
+                // Save to D1
+                await d1.createRFQ({
                     id: actionId,
-                    partName: args.part_name || '',
+                    part_name: args.part_name || '',
                     quantity: args.quantity || 1,
-                    urgency: args.urgency || 'normal',
-                    createdAt: Date.now()
+                    machine_model: args.machine_model,
+                    urgency: args.urgency,
+                    specs: args.specs
                 });
 
                 const urgencyText = args.urgency === 'emergency' ? '🔴 طوارئ' :
@@ -245,12 +247,13 @@ ${args.machine_model ? `🏭 الماكينة: ${args.machine_model}` : ''}
 
             // --- 📚 Ostaz: schedule_tutoring_session ---
             else if (funcName === 'schedule_tutoring_session') {
-                sessionsStore.push({
+                // Save to D1
+                await d1.createSession({
                     id: actionId,
                     subject: args.subject || '',
-                    grade: args.grade_level || '',
-                    time: args.preferred_time || '',
-                    createdAt: Date.now()
+                    grade_level: args.grade_level,
+                    preferred_time: args.preferred_time,
+                    session_type: args.session_type
                 });
 
                 replyText = `تمام يا بطل! حجزتلك الحصة! 📚
