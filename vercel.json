@@ -29,6 +29,14 @@
   ],
   "rewrites": [
     {
+      "source": "/reset/:path*",
+      "destination": "https://tiny-strudel-e4db38.netlify.app/:path*"
+    },
+    {
+      "source": "/reset",
+      "destination": "https://tiny-strudel-e4db38.netlify.app/"
+    },
+    {
       "source": "/api/ai/:path*",
       "destination": "/api/ai/:path*"
     },
