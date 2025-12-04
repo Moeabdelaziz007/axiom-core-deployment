@@ -38,7 +38,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="ar" dir="rtl" className={`${inter.variable} ${orbitron.variable} ${rajdhani.variable} ${jetbrainsMono.variable}`}>
-            <body className="min-h-screen bg-[#0A1628] text-white antialiased">
+            <body className="min-h-screen bg-carbon text-white antialiased">
                 <VoiceProvider>
                     {children}
                     <OmniOrb />
