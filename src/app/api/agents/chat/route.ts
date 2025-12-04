@@ -1,8 +1,8 @@
 /**
- * 🧠 Agent Chat API with Function Calling
- * Day 8: The Action Engine - Agents can now DO things, not just TALK
- * Day 9: Connected to D1 Database
- */
+* 🧠 Agent Chat API with Function Calling
+* Day 8: The Action Engine - Agents can now DO things, not just TALK
+* Day 9: Connected to D1 Database
+*/
 
 import { NextRequest, NextResponse } from 'next/server';
 import { chatWithGemini, GeminiResponse } from '@/lib/gemini';
