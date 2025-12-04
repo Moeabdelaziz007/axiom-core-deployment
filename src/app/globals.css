@@ -3,95 +3,83 @@
 @tailwind utilities;
 
 :root {
-  /* Axiom Carbon Palette */
-  --bg-depth: #030712;
-  /* Deepest Black-Blue */
-  --bg-surface: #0B0E14;
-  /* Card Surface */
+  --bg-depth: #0A0E17;
+  --bg-surface: #0F1419;
   --neon-blue: #0A84FF;
-  /* Trust */
   --neon-green: #10B981;
-  /* Success */
   --neon-purple: #7C5CFF;
-  /* AI */
-
-  /* Fonts */
   --font-sans: 'Inter', 'Almarai', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 body {
   background-color: var(--bg-depth);
   color: white;
   font-family: var(--font-sans);
-  overflow-x: hidden;
+  line-height: 1.6;
 }
 
-/* 🧬 1. Carbon Fiber Mesh Background */
+/* RTL Support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* Carbon Background */
 .bg-carbon {
   background-color: var(--bg-depth);
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  /* Grid Lines like Linear */
-  mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 100%);
-  /* Vignette */
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
-/* 🔦 2. Linear Spotlight Effect (The Magic) */
-.group-spotlight {
-  position: relative;
+/* Glass Cards */
+.glass-card {
+  background: rgba(15, 20, 25, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+/* Agent Card Hover Effect */
+.agent-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  overflow: hidden;
   transition: all 0.3s ease;
 }
 
-/* هذا الشعاع الذي يتبع الماوس */
-.group-spotlight::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(45deg, transparent 40%, var(--neon-blue), transparent 60%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.agent-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
 }
 
-.group-spotlight:hover::before {
-  opacity: 1;
-}
-
-.group-spotlight:hover {
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 0 40px rgba(10, 132, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-/* 🌟 3. Neon Text Glow */
+/* Text Glow */
 .text-glow {
-  text-shadow: 0 0 20px rgba(10, 132, 255, 0.5);
+  text-shadow: 0 0 30px rgba(10, 132, 255, 0.5);
 }
 
-/* 🎯 4. Utility Classes */
-.glass-card {
-  background: rgba(11, 14, 20, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 5. Scrollbar Styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
-  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -107,20 +95,73 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* 6. Selection Color */
+/* Selection */
 ::selection {
   background: rgba(10, 132, 255, 0.3);
   color: white;
 }
 
-/* 7. Focus States */
+/* Focus */
 input:focus,
 button:focus {
   outline: none;
 }
 
-input:focus-visible,
-button:focus-visible {
-  ring: 2px;
-  ring-color: var(--neon-blue);
+/* Grid Fixes */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  
+  .col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+  
+  .col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+}
+
+/* Flexbox Fixes */
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+
+/* Hide on mobile */
+@media (max-width: 767px) {
+  .md\:flex {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:flex {
+    display: flex;
+  }
 }
