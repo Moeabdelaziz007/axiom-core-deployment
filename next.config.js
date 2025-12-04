@@ -1,12 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  
+
   // Environment variables for client-side access
   env: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },
-  
+
+  // External packages (moved from experimental in Next.js 16)
+  serverExternalPackages: ['@libsql/client'],
+
+  // Turbopack config (required in Next.js 16)
+  turbopack: {},
+
   // Security headers
   async headers() {
     return [
@@ -27,32 +33,6 @@ const nextConfig = {
       },
     ];
   },
-  
-  // Experimental features for better performance
-  experimental: {
-    serverComponentsExternalPackages: ['@libsql/client'],
-    // Enable streaming for SSE
-    streaming: true,
-  },
-  
-  // Webpack configuration for better bundle optimization
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Add support for WebAssembly if needed
-    config.experiments = {
-      ...config.experiments,
-      asyncWebAssembly: true,
-    };
-    
-    return config;
-  },
-  
-  // Increase timeout for API routes (needed for external API calls)
-  api: {
-    responseLimit: '8mb',
-    bodyParser: {
-      sizeLimit: '8mb',
-    },
-  },
 };
 
-module.exports = nextConfig
+module.exports = nextConfig;
