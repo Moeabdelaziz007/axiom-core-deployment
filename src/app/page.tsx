@@ -4,29 +4,68 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight, Sparkles, Zap, ShieldCheck,
-  ChefHat, Building, Activity, Settings, BookOpen
+  ChefHat, Building, Activity, Settings, BookOpen, Globe
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// --- Agent Data (Minimal for Bento) ---
+// --- Translations ---
+const translations = {
+  en: {
+    tagline: 'THE SOVEREIGN BUSINESS OS',
+    heroTitle1: 'Your AI Team.',
+    heroTitle2: 'Zero Commission.',
+    heroSubtitle: 'Deploy 5 specialized AI agents to automate your business. Keep 100% of your profits.',
+    emailPlaceholder: 'Enter your email to join...',
+    joinButton: 'Join Waitlist',
+    agentsTitle: 'Meet Your AI Workforce',
+    valueTitle: "AI Won't Replace You",
+    valueSubtitle: 'AI will amplify your capabilities, multiply your income, and unlock success beyond imagination.',
+    valueArabic: 'الذكاء الاصطناعي مش هياخد مكانك... هيشتغل جنبك.',
+    statusOnline: 'System Status: Operational',
+    region: 'MENA Region',
+    agents: 'Agents',
+    about: 'About',
+    login: 'Login',
+  },
+  ar: {
+    tagline: 'نظام التشغيل السيادي للأعمال',
+    heroTitle1: 'فريقك الذكي.',
+    heroTitle2: 'صفر عمولة.',
+    heroSubtitle: 'خمس وكلاء ذكاء اصطناعي متخصصين لتشغيل عملك. احتفظ بـ100% من أرباحك.',
+    emailPlaceholder: 'أدخل بريدك الإلكتروني...',
+    joinButton: 'انضم للقائمة',
+    agentsTitle: 'تعرّف على فريقك الذكي',
+    valueTitle: 'الذكاء الاصطناعي مش بديلك',
+    valueSubtitle: 'هيضاعف قدراتك، يزوّد دخلك، ويفتحلك أبواب نجاح ما كنت تتخيلها.',
+    valueArabic: 'مش هياخد مكانك... هيشتغل جنبك ويساعدك تكبر.',
+    statusOnline: 'حالة النظام: يعمل',
+    region: 'منطقة الشرق الأوسط',
+    agents: 'الوكلاء',
+    about: 'عنّا',
+    login: 'تسجيل',
+  }
+};
+
+// --- Agent Data ---
 const agents = [
-  { id: 'sofra', name: 'Sofra', nameAr: 'سفرة', role: 'Restaurant OS', icon: <ChefHat />, color: '#FF6B5B', size: 'col-span-2' },
-  { id: 'tajer', name: 'Tajer', nameAr: 'تاجر', role: 'Real Estate', icon: <Building />, color: '#FFB347', size: 'col-span-1' },
-  { id: 'drmoe', name: 'Dr. Moe', nameAr: 'د. مو', role: 'Pharmacy AI', icon: <Activity />, color: '#00C4B4', size: 'col-span-1' },
-  { id: 'tirs', name: 'Tirs', nameAr: 'تِرس', role: 'Industrial B2B', icon: <Settings />, color: '#8B9EB7', size: 'col-span-2' },
-  { id: 'ostaz', name: 'Ostaz', nameAr: 'أستاذ', role: 'Education', icon: <BookOpen />, color: '#7C5CFF', size: 'col-span-3' },
+  { id: 'sofra', name: 'Sofra', nameAr: 'سفرة', role: 'Restaurant OS', roleAr: 'نظام المطاعم', icon: <ChefHat />, color: '#FF6B5B', size: 'col-span-2' },
+  { id: 'tajer', name: 'Tajer', nameAr: 'تاجر', role: 'Real Estate', roleAr: 'العقارات', icon: <Building />, color: '#FFB347', size: 'col-span-1' },
+  { id: 'drmoe', name: 'Dr. Moe', nameAr: 'د. مو', role: 'Pharmacy AI', roleAr: 'الصيدلية الذكية', icon: <Activity />, color: '#00C4B4', size: 'col-span-1' },
+  { id: 'tirs', name: 'Tirs', nameAr: 'تِرس', role: 'Industrial B2B', roleAr: 'الصناعة والجملة', icon: <Settings />, color: '#8B9EB7', size: 'col-span-2' },
+  { id: 'ostaz', name: 'Ostaz', nameAr: 'أستاذ', role: 'Education', roleAr: 'التعليم', icon: <BookOpen />, color: '#7C5CFF', size: 'col-span-3' },
 ];
 
 export default function Home() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [lang, setLang] = useState<'en' | 'ar'>('ar');
+  const t = translations[lang];
+  const isRTL = lang === 'ar';
 
-  // Waitlist Logic
   const joinWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-
     setLoading(true);
     try {
       const res = await fetch('/api/waitlist', {
@@ -42,158 +81,190 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-carbon text-white font-sans selection:bg-[#0A84FF]/30 pb-32">
+    <main className={`min-h-screen bg-[#0A0E17] text-white font-sans selection:bg-[#0A84FF]/30 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
 
-      {/* 1. Navbar (Floating Glass) */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl z-50 bg-[#0B0E14]/80 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex justify-between items-center shadow-2xl">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0A84FF] to-[#7C5CFF] flex items-center justify-center font-bold font-mono">A</div>
-          <span className="font-semibold tracking-tight">Axiom Reset</span>
+      {/* === NAVBAR === */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl z-50 bg-[#0A0E17]/90 backdrop-blur-2xl border border-white/10 rounded-2xl px-6 py-4 flex justify-between items-center shadow-2xl">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0A84FF] to-[#7C5CFF] flex items-center justify-center font-bold text-lg">A</div>
+          <span className="font-bold text-lg tracking-tight">Axiom Reset</span>
         </div>
-        <div className="hidden md:flex gap-6 text-sm text-slate-400 font-medium">
-          <a href="#agents" className="hover:text-white transition-colors">Agents</a>
-          <Link href="/about" className="hover:text-white transition-colors">About</Link>
-          <a href="#" className="hover:text-white transition-colors">Login</a>
+        <div className="hidden md:flex gap-8 text-sm text-slate-400 font-medium">
+          <a href="#agents" className="hover:text-white transition-colors">{t.agents}</a>
+          <Link href="/about" className="hover:text-white transition-colors">{t.about}</Link>
         </div>
-        <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-1.5 rounded-full text-xs font-medium border border-white/10 transition-all">
-          v1.0 Beta
+        <button
+          onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+          className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all"
+        >
+          <Globe className="w-4 h-4" />
+          {lang === 'ar' ? 'English' : 'عربي'}
         </button>
       </nav>
 
-      {/* 2. Hero Section (The Cockpit) */}
-      <section className="pt-48 pb-24 px-6 text-center max-w-4xl mx-auto relative">
-        {/* Glow behind text */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#0A84FF]/10 blur-[120px] rounded-full pointer-events-none" />
+      {/* === HERO SECTION (IMPROVED) === */}
+      <section className="relative pt-44 pb-32 px-6 overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-[#0A84FF]/20 via-[#7C5CFF]/10 to-transparent blur-[100px] rounded-full" />
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#0A84FF]/5 via-transparent to-transparent" />
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#0A84FF]/20 bg-[#0A84FF]/5 text-[#0A84FF] text-xs font-mono mb-8"
-        >
-          <Sparkles className="w-3 h-3" /> THE BUSINESS OS
-        </motion.div>
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          {/* Tag */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#0A84FF]/30 bg-[#0A84FF]/10 text-[#0A84FF] text-xs font-bold tracking-wider mb-8"
+          >
+            <Sparkles className="w-4 h-4" />
+            {t.tagline}
+          </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-6xl md:text-8xl font-bold tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40"
-        >
-          Automate. <br /> Scale. Dominate.
-        </motion.h1>
+          {/* Main Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight mb-6 leading-[1.1]"
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-slate-400">
+              {t.heroTitle1}
+            </span>
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] via-[#0A84FF] to-[#7C5CFF]">
+              {t.heroTitle2}
+            </span>
+          </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto"
-        >
-          Deploy 5 specialized AI agents to run your business operations.
-          <span className="text-white"> 0% Commission.</span> Full Sovereignty.
-        </motion.p>
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-xl md:text-2xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed"
+          >
+            {t.heroSubtitle}
+          </motion.p>
 
-        {/* Waitlist (Command Line Style) */}
-        <motion.form
-          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.3 }}
-          onSubmit={joinWaitlist}
-          className="max-w-md mx-auto relative group"
-          id="waitlist"
-        >
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#0A84FF] to-[#10B981] rounded-xl blur opacity-20 group-hover:opacity-50 transition duration-500"></div>
-          <div className="relative flex bg-[#0B0E14] border border-white/10 rounded-xl p-1.5 items-center shadow-2xl">
-            <div className="pl-4 pr-2 text-slate-500 font-mono text-sm">{'>'}</div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email to deploy..."
-              className="flex-1 bg-transparent border-none focus:ring-0 text-white placeholder-slate-600 text-sm font-mono"
-              disabled={loading || success}
-            />
-            <button
-              disabled={loading || success}
-              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-all flex items-center gap-2 ${success
-                  ? 'bg-[#10B981] text-black'
-                  : 'bg-white text-black hover:bg-slate-200'
-                }`}
-            >
-              {loading ? <Zap className="w-4 h-4 animate-spin" /> : success ? <ShieldCheck className="w-4 h-4" /> : 'Join List'}
-              {!loading && !success && <ArrowRight className="w-4 h-4" />}
-            </button>
-          </div>
-        </motion.form>
+          {/* Waitlist Form */}
+          <motion.form
+            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.3 }}
+            onSubmit={joinWaitlist}
+            className="max-w-lg mx-auto relative group"
+            id="waitlist"
+          >
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#0A84FF] via-[#7C5CFF] to-[#10B981] rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition duration-500" />
+            <div className="relative flex bg-[#0A0E17] border border-white/20 rounded-2xl p-2 items-center shadow-2xl gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t.emailPlaceholder}
+                className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-white placeholder-slate-500 text-base px-4 py-3"
+                disabled={loading || success}
+                dir="ltr"
+              />
+              <button
+                disabled={loading || success}
+                className={`px-8 py-3 rounded-xl font-bold text-base transition-all flex items-center gap-2 ${success
+                  ? 'bg-[#10B981] text-white'
+                  : 'bg-gradient-to-r from-[#0A84FF] to-[#7C5CFF] text-white hover:opacity-90'
+                  }`}
+              >
+                {loading ? <Zap className="w-5 h-5 animate-spin" /> : success ? <ShieldCheck className="w-5 h-5" /> : t.joinButton}
+                {!loading && !success && <ArrowRight className="w-5 h-5" />}
+              </button>
+            </div>
+          </motion.form>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+            className="mt-12 flex justify-center gap-8 md:gap-16 text-center"
+          >
+            <div>
+              <div className="text-3xl font-bold text-white">5</div>
+              <div className="text-sm text-slate-500">{lang === 'ar' ? 'وكيل ذكي' : 'AI Agents'}</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-[#10B981]">0%</div>
+              <div className="text-sm text-slate-500">{lang === 'ar' ? 'عمولة' : 'Commission'}</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-white">24/7</div>
+              <div className="text-sm text-slate-500">{lang === 'ar' ? 'يعمل دائماً' : 'Always On'}</div>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* 3. The Agent Bento Grid (Linear Style) */}
-      <section id="agents" className="max-w-5xl mx-auto px-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-sm font-mono text-slate-500 uppercase tracking-widest">Neural Workforce</h2>
-          <div className="h-[1px] flex-1 bg-white/10 ml-6"></div>
+      {/* === AGENTS BENTO GRID === */}
+      <section id="agents" className="max-w-5xl mx-auto px-6 pb-24">
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-lg font-bold text-white">{t.agentsTitle}</h2>
+          <div className="h-[1px] flex-1 bg-white/10 mx-6" />
+          <span className="text-sm text-slate-500 font-mono">5 AGENTS</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {agents.map((agent, idx) => (
-            <motion.div
-              key={agent.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className={`group group-spotlight p-8 rounded-2xl relative flex flex-col justify-between min-h-[240px] cursor-pointer ${agent.size}`}
-            >
-              {/* Top: Icon & Role */}
-              <div className="flex justify-between items-start">
+            <Link href={`/agents/${agent.id}`} key={agent.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className={`group p-8 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 relative flex flex-col justify-between min-h-[220px] cursor-pointer transition-all hover:bg-white/[0.05] ${agent.size}`}
+              >
+                <div className="flex justify-between items-start">
+                  <div
+                    className="p-3 rounded-xl bg-white/5 border border-white/5 transition-all group-hover:scale-110"
+                    style={{ color: agent.color }}
+                  >
+                    {agent.icon}
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-slate-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-bold mb-1">
+                    {isRTL ? agent.nameAr : agent.name}
+                  </h3>
+                  <p className="text-sm text-slate-500">{isRTL ? agent.roleAr : agent.role}</p>
+                </div>
+
                 <div
-                  className="p-3 rounded-xl bg-white/5 border border-white/5 text-white transition-colors group-hover:bg-opacity-20"
-                  style={{ color: agent.color }}
-                >
-                  {agent.icon}
-                </div>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowRight className="w-5 h-5 text-slate-500" />
-                </div>
-              </div>
-
-              {/* Bottom: Name & Glow */}
-              <div>
-                <h3 className="text-2xl font-bold mb-1 group-hover:text-glow transition-all">
-                  {agent.name}
-                </h3>
-                <p className="text-sm text-slate-500 font-mono uppercase tracking-wider">{agent.role}</p>
-              </div>
-
-              {/* Hover Gradient Background */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none rounded-2xl"
-                style={{ background: `radial-gradient(circle at bottom right, ${agent.color}, transparent 60%)` }}
-              />
-            </motion.div>
+                  className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none rounded-2xl"
+                  style={{ background: `radial-gradient(circle at bottom right, ${agent.color}, transparent 60%)` }}
+                />
+              </motion.div>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* 4. AI Value Proposition */}
-      <section className="max-w-4xl mx-auto px-6 mt-32 text-center">
+      {/* === VALUE PROPOSITION === */}
+      <section className="max-w-4xl mx-auto px-6 pb-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="p-8 md:p-12 rounded-3xl bg-gradient-to-br from-[#10B981]/10 to-[#0A84FF]/5 border border-[#10B981]/20"
+          className="p-10 md:p-16 rounded-3xl bg-gradient-to-br from-[#10B981]/10 via-[#0A84FF]/5 to-transparent border border-[#10B981]/20 text-center"
         >
-          <span className="text-4xl mb-4 block">🤖</span>
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            AI Won't Take Your Job
+          <span className="text-5xl mb-6 block">🚀</span>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            {t.valueTitle}
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            <span className="text-[#10B981] font-semibold">AI will help you work smarter,</span> earn more,
-            and achieve success you never imagined possible.
+          <p className="text-lg text-slate-400 max-w-xl mx-auto mb-6">
+            {t.valueSubtitle}
           </p>
-          <p className="text-slate-500 mt-4 text-sm">
-            من غير ما ياخد مكانك... هيشتغل <span className="text-white">جنبك</span>.
+          <p className="text-xl text-white font-bold">
+            {t.valueArabic}
           </p>
         </motion.div>
       </section>
 
-      {/* Footer Minimal */}
-      <footer className="mt-32 border-t border-white/5 pt-12 text-center text-slate-600 text-xs font-mono uppercase">
-        <p>System Status: Operational • Cairo Region</p>
-        <div className="mt-4 flex justify-center gap-4">
-          <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
+      {/* === FOOTER === */}
+      <footer className="border-t border-white/5 py-12 text-center">
+        <p className="text-slate-600 text-sm mb-4">{t.statusOnline} • {t.region}</p>
+        <div className="flex justify-center gap-6 text-sm text-slate-500">
+          <Link href="/about" className="hover:text-white transition-colors">{t.about}</Link>
         </div>
       </footer>
 
