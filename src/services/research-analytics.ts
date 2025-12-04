@@ -10,18 +10,19 @@
  * @version 1.0.0
  */
 
-import { 
-  ResearchAnalytics, 
-  ResearchPerformanceMetrics, 
-  ResearchQualityMetrics, 
-  ResearchResult, 
+import {
+  ResearchAnalytics,
+  ResearchPerformanceMetrics,
+  ResearchQualityMetrics,
+  ResearchResult,
   ResearchSessionConfig,
   ResearchDomain,
   ResearchDataSource,
-  AgentType,
   ComplianceCheckResult,
   ResearchSystemConfig
 } from '../types/research';
+
+import { AgentType } from '../lib/ai-engine';
 
 import { EventEmitter } from 'events';
 
@@ -121,7 +122,7 @@ export class ResearchAnalyticsService extends EventEmitter {
 
     // Initialize analytics
     this.initializeAnalytics();
-    
+
     console.log('📊 Research Analytics Service initialized');
   }
 
@@ -194,8 +195,8 @@ export class ResearchAnalyticsService extends EventEmitter {
     // Calculate basic metrics
     const totalSessions = recentData.length;
     const completedSessions = recentData.filter(dp => dp.errorCount === 0).length;
-    const averageSessionDuration = totalSessions > 0 
-      ? recentData.reduce((sum, dp) => sum + dp.duration, 0) / totalSessions 
+    const averageSessionDuration = totalSessions > 0
+      ? recentData.reduce((sum, dp) => sum + dp.duration, 0) / totalSessions
       : 0;
     const totalCost = recentData.reduce((sum, dp) => sum + dp.cost, 0);
     const averageQualityScore = totalSessions > 0
@@ -204,8 +205,8 @@ export class ResearchAnalyticsService extends EventEmitter {
 
     // Calculate domain distribution
     const domainDistribution = this.calculateDistribution(
-      recentData, 
-      dp => dp.domain, 
+      recentData,
+      dp => dp.domain,
       Object.values(ResearchDomain)
     );
 
@@ -337,7 +338,7 @@ export class ResearchAnalyticsService extends EventEmitter {
       recommendations.push('Optimize data source selection to reduce costs');
       recommendations.push('Implement caching for frequently accessed data');
       potentialSavings += 15; // 15% potential savings
-      
+
       implementationPlan.push({
         action: 'Implement smart data source selection',
         priority: 'high',
@@ -350,7 +351,7 @@ export class ResearchAnalyticsService extends EventEmitter {
       recommendations.push('Parallelize data collection processes');
       recommendations.push('Use pre-built workflow templates');
       potentialSavings += 10; // 10% time savings
-      
+
       implementationPlan.push({
         action: 'Enable parallel processing',
         priority: 'medium',
@@ -363,7 +364,7 @@ export class ResearchAnalyticsService extends EventEmitter {
       recommendations.push('Reduce redundant API calls');
       recommendations.push('Implement data deduplication');
       potentialSavings += 8; // 8% resource savings
-      
+
       implementationPlan.push({
         action: 'Implement data deduplication',
         priority: 'medium',
@@ -421,7 +422,7 @@ export class ResearchAnalyticsService extends EventEmitter {
   private initializeAnalytics(): void {
     // Load historical data if available
     this.loadHistoricalData();
-    
+
     // Start periodic cleanup
     if (this.retentionDays > 0) {
       setInterval(() => this.cleanupOldData(), 24 * 60 * 60 * 1000); // Daily cleanup
@@ -449,8 +450,8 @@ export class ResearchAnalyticsService extends EventEmitter {
       freshness: totalFreshness / count,
       source_credibility: totalSourceCredibility / count,
       cultural_context: totalCulturalContext / count,
-      overall_score: (totalAccuracy + totalCompleteness + totalRelevance + 
-                     totalFreshness + totalSourceCredibility + totalCulturalContext) / (6 * count)
+      overall_score: (totalAccuracy + totalCompleteness + totalRelevance +
+        totalFreshness + totalSourceCredibility + totalCulturalContext) / (6 * count)
     };
   }
 
@@ -511,7 +512,7 @@ export class ResearchAnalyticsService extends EventEmitter {
     results: ResearchResult[]
   ): Promise<void> {
     const qualityScore = this.calculateSessionQuality(results).overall_score;
-    
+
     const efficiencyMetrics: ResearchEfficiencyMetrics = {
       sessionId,
       efficiency: {
@@ -539,26 +540,26 @@ export class ResearchAnalyticsService extends EventEmitter {
 
   private async updatePerformanceTrends(dataPoint: AnalyticsDataPoint): Promise<void> {
     const metrics = ['duration', 'cost', 'qualityScore', 'dataPointsCollected', 'insightsGenerated'];
-    
+
     for (const metric of metrics) {
       for (const timeframe of ['daily', 'weekly'] as const) {
         const key = `${metric}_${timeframe}`;
         const existing = this.performanceTrends.get(key);
-        
+
         if (existing) {
           // Add new data point
           existing.data.push({
             timestamp: dataPoint.timestamp,
             value: dataPoint[metric as keyof AnalyticsDataPoint] as number
           });
-          
+
           // Keep only recent data based on timeframe
           const cutoffDate = this.getCutoffDate(timeframe);
           existing.data = existing.data.filter(dp => dp.timestamp >= cutoffDate);
-          
+
           // Update trend
           existing.trend = this.calculateTrendDirection(existing.data);
-          
+
           // Generate simple forecast
           existing.forecast = this.generateForecast(existing.data);
         } else {
@@ -584,28 +585,28 @@ export class ResearchAnalyticsService extends EventEmitter {
     allValues: T[]
   ): Record<string, number> {
     const distribution: Record<string, number> = {};
-    
+
     allValues.forEach(value => {
       distribution[String(value)] = data.filter(dp => extractor(dp) === value).length;
     });
-    
+
     return distribution;
   }
 
   private calculateDataSourceUsage(data: AnalyticsDataPoint[]): Record<ResearchDataSource, number> {
     const usage: Record<ResearchDataSource, number> = {};
-    
+
     Object.values(ResearchDataSource).forEach(source => {
-      usage[source] = data.reduce((count, dp) => 
+      usage[source] = data.reduce((count, dp) =>
         count + (dp.sourcesUsed.includes(source) ? 1 : 0), 0);
     });
-    
+
     return usage;
   }
 
   private calculateTrends(data: AnalyticsDataPoint[]): ResearchAnalytics['trends'] {
     const sortedData = data.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-    
+
     return {
       sessionGrowth: this.calculateGrowthTrend(sortedData, dp => dp.timestamp),
       qualityImprovement: this.calculateGrowthTrend(sortedData, dp => dp.qualityScore),
@@ -621,14 +622,14 @@ export class ResearchAnalyticsService extends EventEmitter {
   ): number[] {
     const windowSize = Math.min(7, Math.floor(data.length / 2)); // 7-day windows or half the data
     const trends: number[] = [];
-    
+
     for (let i = windowSize; i < data.length; i++) {
       const current = valueExtractor(data[i]);
       const previous = valueExtractor(data[i - windowSize]);
       const change = ((current - previous) / previous) * 100;
       trends.push(invert ? -change : change);
     }
-    
+
     return trends;
   }
 
@@ -640,7 +641,7 @@ export class ResearchAnalyticsService extends EventEmitter {
   private filterDataByTimeframe(timeframe: string): AnalyticsDataPoint[] {
     const now = new Date();
     let cutoffDate: Date;
-    
+
     switch (timeframe) {
       case 'week':
         cutoffDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -657,13 +658,13 @@ export class ResearchAnalyticsService extends EventEmitter {
       default:
         cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     }
-    
+
     return this.analyticsData.filter(dp => dp.timestamp >= cutoffDate);
   }
 
   private analyzeDomainPerformance(data: AnalyticsDataPoint[]): Record<ResearchDomain, any> {
     const performance: Record<string, any> = {};
-    
+
     Object.values(ResearchDomain).forEach(domain => {
       const domainData = data.filter(dp => dp.domain === domain);
       if (domainData.length > 0) {
@@ -675,13 +676,13 @@ export class ResearchAnalyticsService extends EventEmitter {
         };
       }
     });
-    
+
     return performance as Record<ResearchDomain, any>;
   }
 
   private analyzeAgentPerformance(data: AnalyticsDataPoint[]): Record<AgentType, any> {
     const performance: Record<string, any> = {};
-    
+
     Object.values(AgentType).forEach(agentType => {
       const agentData = data.filter(dp => dp.agentType === agentType);
       if (agentData.length > 0) {
@@ -693,7 +694,7 @@ export class ResearchAnalyticsService extends EventEmitter {
         };
       }
     });
-    
+
     return performance as Record<AgentType, any>;
   }
 
@@ -702,12 +703,12 @@ export class ResearchAnalyticsService extends EventEmitter {
     const sortedData = data.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
     const recentQuality = sortedData.slice(-10).map(dp => dp.qualityScore);
     const olderQuality = sortedData.slice(-20, -10).map(dp => dp.qualityScore);
-    
+
     const recentAvg = recentQuality.reduce((sum, q) => sum + q, 0) / recentQuality.length;
-    const olderAvg = olderQuality.length > 0 
-      ? olderQuality.reduce((sum, q) => sum + q, 0) / olderQuality.length 
+    const olderAvg = olderQuality.length > 0
+      ? olderQuality.reduce((sum, q) => sum + q, 0) / olderQuality.length
       : recentAvg;
-    
+
     return {
       trend: recentAvg > olderAvg ? 'improving' : recentAvg < olderAvg ? 'declining' : 'stable',
       change: ((recentAvg - olderAvg) / olderAvg) * 100,
@@ -722,10 +723,10 @@ export class ResearchAnalyticsService extends EventEmitter {
       timestamp: dp.timestamp,
       efficiency: dp.qualityScore / (dp.cost + 1) // Quality per dollar
     }));
-    
+
     const recentEfficiency = efficiencyScores.slice(-10);
     const averageEfficiency = recentEfficiency.reduce((sum, e) => sum + e.efficiency, 0) / recentEfficiency.length;
-    
+
     return {
       averageEfficiency,
       trend: averageEfficiency > 0.7 ? 'good' : averageEfficiency > 0.5 ? 'moderate' : 'poor',
@@ -735,25 +736,25 @@ export class ResearchAnalyticsService extends EventEmitter {
 
   private generateSystemRecommendations(analytics: ResearchAnalytics): string[] {
     const recommendations: string[] = [];
-    
+
     if (analytics.averageQualityScore < 0.8) {
       recommendations.push('Implement stricter quality validation for research results');
     }
-    
+
     if (analytics.costPerSession > 30) {
       recommendations.push('Optimize data source selection to reduce costs');
     }
-    
+
     if (analytics.averageSessionDuration > 120) {
       recommendations.push('Consider parallel processing to reduce session duration');
     }
-    
+
     const totalSessions = analytics.totalSessions;
     const successRate = (analytics.completedSessions / totalSessions) * 100;
     if (successRate < 90) {
       recommendations.push('Investigate common failure patterns and implement preventive measures');
     }
-    
+
     return recommendations;
   }
 
@@ -785,17 +786,17 @@ export class ResearchAnalyticsService extends EventEmitter {
 
   private calculateTrendDirection(data: Array<{ timestamp: Date; value: number }>): 'improving' | 'declining' | 'stable' {
     if (data.length < 2) return 'stable';
-    
+
     const recent = data.slice(-5);
     const older = data.slice(-10, -5);
-    
+
     if (recent.length === 0 || older.length === 0) return 'stable';
-    
+
     const recentAvg = recent.reduce((sum, d) => sum + d.value, 0) / recent.length;
     const olderAvg = older.reduce((sum, d) => sum + d.value, 0) / older.length;
-    
+
     const change = (recentAvg - olderAvg) / olderAvg;
-    
+
     if (change > 0.05) return 'improving';
     if (change < -0.05) return 'declining';
     return 'stable';
@@ -804,19 +805,19 @@ export class ResearchAnalyticsService extends EventEmitter {
   private generateForecast(data: Array<{ timestamp: Date; value: number }>): Array<{ timestamp: Date; predictedValue: number; confidence: number }> {
     // Simple linear regression forecast
     if (data.length < 3) return [];
-    
+
     const n = data.length;
     const x = data.map((_, i) => i);
     const y = data.map(d => d.value);
-    
+
     const sumX = x.reduce((sum, val) => sum + val, 0);
     const sumY = y.reduce((sum, val) => sum + val, 0);
     const sumXY = x.reduce((sum, val, i) => sum + val * y[i], 0);
     const sumXX = x.reduce((sum, val) => sum + val * val, 0);
-    
+
     const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
     const intercept = (sumY - slope * sumX) / n;
-    
+
     // Generate 3 future points
     const forecast: Array<{ timestamp: Date; predictedValue: number; confidence: number }> = [];
     for (let i = 1; i <= 3; i++) {
@@ -824,25 +825,25 @@ export class ResearchAnalyticsService extends EventEmitter {
       const predictedValue = slope * futureX + intercept;
       const lastTimestamp = data[data.length - 1].timestamp;
       const futureTimestamp = new Date(lastTimestamp.getTime() + i * 24 * 60 * 60 * 1000);
-      
+
       forecast.push({
         timestamp: futureTimestamp,
         predictedValue,
         confidence: Math.max(0.1, 0.8 - (i * 0.2)) // Decreasing confidence
       });
     }
-    
+
     return forecast;
   }
 
   private cleanupOldData(): void {
     if (this.retentionDays <= 0) return;
-    
+
     const cutoffDate = new Date(Date.now() - this.retentionDays * 24 * 60 * 60 * 1000);
     const initialLength = this.analyticsData.length;
-    
+
     this.analyticsData = this.analyticsData.filter(dp => dp.timestamp >= cutoffDate);
-    
+
     const cleanedCount = initialLength - this.analyticsData.length;
     if (cleanedCount > 0) {
       console.log(`🧹 Cleaned up ${cleanedCount} old analytics records`);
@@ -859,68 +860,68 @@ export class ResearchAnalyticsService extends EventEmitter {
     const averageCost = metrics.cost.total;
     const qualityScore = this.calculateSessionQuality(results).overall_score;
     const benchmarkCost = 25; // Assume $25 is benchmark
-    
+
     if (averageCost > benchmarkCost && qualityScore > 0.8) {
       return ((averageCost - benchmarkCost) / averageCost) * 100;
     }
-    
+
     return 0;
   }
 
   private generateOptimizationActions(metrics: ResearchPerformanceMetrics, results: ResearchResult[]): string[] {
     const actions: string[] = [];
-    
+
     if (metrics.resourceUsage.apiCalls > 100) {
       actions.push('Implement API call caching');
     }
-    
+
     if (metrics.duration > 90) {
       actions.push('Enable parallel processing');
     }
-    
+
     if (metrics.cost.total > 50) {
       actions.push('Optimize data source selection');
     }
-    
+
     return actions;
   }
 
   private identifyBottlenecks(metrics: ResearchPerformanceMetrics, results: ResearchResult[]): string[] {
     const bottlenecks: string[] = [];
-    
+
     const costBreakdown = metrics.cost.breakdown;
     const maxCost = Math.max(...Object.values(costBreakdown));
-    
+
     if (costBreakdown.dataCollection === maxCost) {
       bottlenecks.push('Data collection phase');
     }
-    
+
     if (costBreakdown.analysis === maxCost) {
       bottlenecks.push('Analysis phase');
     }
-    
+
     if (metrics.duration > 60 && results.length < 5) {
       bottlenecks.push('Low result yield');
     }
-    
+
     return bottlenecks;
   }
 
   private identifyImprovementOpportunities(metrics: ResearchPerformanceMetrics, results: ResearchResult[]): string[] {
     const opportunities: string[] = [];
-    
+
     if (metrics.efficiency.dataPointsCollected < 20) {
       opportunities.push('Increase data collection breadth');
     }
-    
+
     if (metrics.efficiency.insightsGenerated < 5) {
       opportunities.push('Enhance insight generation algorithms');
     }
-    
+
     if (metrics.cost.breakdown.validation > metrics.cost.total * 0.3) {
       opportunities.push('Optimize validation processes');
     }
-    
+
     return opportunities;
   }
 
@@ -929,7 +930,7 @@ export class ResearchAnalyticsService extends EventEmitter {
     const historicalAverage = this.analyticsData
       .filter(dp => dp.sessionId !== sessionId)
       .reduce((sum, dp) => sum + dp.qualityScore, 0) / Math.max(1, this.analyticsData.length - 1);
-    
+
     return qualityScore / historicalAverage;
   }
 

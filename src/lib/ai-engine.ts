@@ -43,7 +43,7 @@ const CURRENCY_RATES = {
 };
 
 // Agent types for MENA region
-enum AgentType {
+export enum AgentType {
   TAJER = "TAJER",      // Sales/Commerce
   MUSAFIR = "MUSAFIR",  // Travel
   SOFRA = "SOFRA",      // Food/Restaurant

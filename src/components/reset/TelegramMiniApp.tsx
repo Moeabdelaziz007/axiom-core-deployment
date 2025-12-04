@@ -3,17 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { 
-  MessageCircle, 
-  Send, 
-  Bot, 
-  Users, 
-  MapPin, 
-  CheckCircle, 
+import {
+  MessageCircle,
+  Send,
+  Bot,
+  Users,
+  MapPin,
+  CheckCircle,
   AlertCircle,
   Smartphone,
   Globe,
-  Shield
+  Shield,
+  Clock
 } from 'lucide-react';
 import { useTranslation } from '@/lib/translations';
 import { Language } from '@/types/reset';
@@ -63,7 +64,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
   const [inputText, setInputText] = useState('');
   const [tasks, setTasks] = useState<FieldTask[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<{lat: number; lng: number} | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [quantumMode, setQuantumMode] = useState(false);
 
   // Initialize quantum crypto service
@@ -147,7 +148,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
     setInputText('');
 
     // Simulate agent response
-    setTimeout(() => {
+    setTimeout(async () => {
       const agentResponse = await generateAgentResponse(inputText);
       const responseMessage: TelegramMessage = {
         id: (Date.now() + 1).toString(),
@@ -159,7 +160,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
       };
 
       setMessages(prev => [...prev, responseMessage]);
-      
+
       if (onAgentTaskUpdate && agentResponse.taskId) {
         onAgentTaskUpdate(agentResponse.taskId, 'completed');
       }
@@ -169,18 +170,18 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
   const generateAgentResponse = async (userMessage: string): Promise<{
     text: string;
     taskId?: string;
-    location?: {lat: number; lng: number; address: string};
+    location?: { lat: number; lng: number; address: string };
   }> => {
     // Simulate AI agent response based on message content
     const lowerMessage = userMessage.toLowerCase();
-    
+
     if (lowerMessage.includes('location') || lowerMessage.includes('where')) {
       return {
         text: `📍 ${t('telegram.agent.locationResponse')}: ${currentLocation?.lat || 24.7136}, ${currentLocation?.lng || 46.6753}`,
         location: currentLocation || undefined
       };
     }
-    
+
     if (lowerMessage.includes('task') || lowerMessage.includes('status')) {
       const pendingTasks = tasks.filter(t => t.status === 'pending' || t.status === 'in_progress');
       return {
@@ -188,7 +189,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
         taskId: pendingTasks[0]?.id
       };
     }
-    
+
     if (lowerMessage.includes('quantum') || lowerMessage.includes('secure')) {
       if (quantumMode) {
         return {
@@ -201,14 +202,14 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
         };
       }
     }
-    
+
     if (lowerMessage.includes('verify') || lowerMessage.includes('complete')) {
       return {
         text: `✅ ${t('telegram.agent.verifyTask')}: ${t('telegram.agent.taskVerified')}`,
         taskId: tasks.find(t => t.status === 'pending')?.id
       };
     }
-    
+
     return {
       text: `🤖 ${t('telegram.agent.defaultResponse')}: ${t('telegram.agent.readyToHelp')}`
     };
@@ -218,7 +219,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
     setTasks(prev => prev.map(task => {
       if (task.id === taskId) {
         const updatedTask = { ...task };
-        
+
         switch (action) {
           case 'start':
             updatedTask.status = 'in_progress';
@@ -235,7 +236,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
             updatedTask.quantumVerified = true;
             break;
         }
-        
+
         return updatedTask;
       }
       return task;
@@ -263,7 +264,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
             <Bot className="w-6 h-6 text-white" />
             <span className="text-white font-semibold">Axiom RESET Field Agent</span>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <div className="flex items-center">
               <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
@@ -271,7 +272,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
                 {isConnected ? t('telegram.status.connected') : t('telegram.status.disconnected')}
               </span>
             </div>
-            
+
             <Button
               onClick={handleQuantumToggle}
               size="sm"
@@ -295,11 +296,10 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
               animate={{ opacity: 1, y: 0 }}
               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                message.sender === 'user' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-800 text-white border border-gray-700'
-              }`}>
+              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.sender === 'user'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-white border border-gray-700'
+                }`}>
                 <div className="flex items-center space-x-2 mb-1">
                   {message.sender === 'agent' && <Bot className="w-4 h-4 text-blue-400" />}
                   {message.sender === 'user' && <Users className="w-4 h-4 text-green-400" />}
@@ -307,9 +307,9 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
                     {message.timestamp.toLocaleTimeString()}
                   </span>
                 </div>
-                
+
                 <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                
+
                 {message.location && (
                   <div className="mt-2 pt-2 border-t border-gray-600">
                     <div className="flex items-center text-xs text-gray-400">
@@ -329,7 +329,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
             <CheckCircle className="w-5 h-5 mr-2 text-green-400" />
             {t('telegram.tasks.title')}
           </h3>
-          
+
           <div className="space-y-3">
             {tasks.map((task) => (
               <motion.div
@@ -343,32 +343,31 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
                     <h4 className="text-white font-medium text-sm">{task.title}</h4>
                     <p className="text-gray-300 text-xs mt-1">{task.description}</p>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      task.status === 'completed' ? 'bg-green-600 text-white' :
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${task.status === 'completed' ? 'bg-green-600 text-white' :
                       task.status === 'in_progress' ? 'bg-yellow-600 text-white' :
-                      task.status === 'verified' ? 'bg-blue-600 text-white' :
-                      'bg-gray-600 text-gray-200'
-                    }`}>
+                        task.status === 'verified' ? 'bg-blue-600 text-white' :
+                          'bg-gray-600 text-gray-200'
+                      }`}>
                       {task.status === 'pending' && t('telegram.tasks.status.pending')}
                       {task.status === 'in_progress' && t('telegram.tasks.status.inProgress')}
                       {task.status === 'completed' && t('telegram.tasks.status.completed')}
                       {task.status === 'verified' && t('telegram.tasks.status.verified')}
                     </span>
-                    
+
                     {task.quantumVerified && (
                       <Shield className="w-4 h-4 text-purple-400" title="Quantum Verified" />
                     )}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between text-xs text-gray-400">
                   <div className="flex items-center">
                     <Clock className="w-3 h-3 mr-1" />
                     {new Date(task.updatedAt).toLocaleString()}
                   </div>
-                  
+
                   <div className="flex space-x-1">
                     {task.status === 'pending' && (
                       <Button
@@ -379,7 +378,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
                         {t('telegram.tasks.start')}
                       </Button>
                     )}
-                    
+
                     {task.status === 'in_progress' && (
                       <Button
                         size="sm"
@@ -389,7 +388,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
                         {t('telegram.tasks.complete')}
                       </Button>
                     )}
-                    
+
                     {task.status === 'completed' && !task.quantumVerified && (
                       <Button
                         size="sm"
@@ -401,7 +400,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
                     )}
                   </div>
                 </div>
-                
+
                 {task.location && (
                   <div className="mt-2 pt-2 border-t border-gray-600">
                     <div className="flex items-center text-xs text-gray-400">
@@ -431,7 +430,7 @@ export const TelegramMiniApp: React.FC<TelegramMiniAppProps> = ({
             placeholder={t('telegram.input.placeholder')}
             className="flex-1 bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          
+
           <Button
             onClick={handleSendMessage}
             size="sm"
