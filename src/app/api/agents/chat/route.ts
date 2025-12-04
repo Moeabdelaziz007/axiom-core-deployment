@@ -1,9 +1,10 @@
 /**
- * 🧠 Day 7: Agent Chat API
- * Connects to Gemini 1.5 Flash with agent-specific Arabic system prompts
+ * 🧠 Agent Chat API with Function Calling
+ * Day 8: The Action Engine - Agents can now DO things, not just TALK
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { chatWithGemini, GeminiResponse } from '@/lib/gemini';
 
 // ============================================================================
 // AGENT SYSTEM PROMPTS (Gigafactory Config)
@@ -25,9 +26,9 @@ const AGENT_PROMPTS: Record<string, { name: string; prompt: string; welcome: str
 - استخدم الإيموجي المناسبة
 
 قواعدك:
+✅ لما العميل يطلب أكل، استخدم الـ create_order function
 ✅ اقترح دايماً طبق جانبي أو مشروب
-✅ أكد الأوردر قبل ما تبعته
-✅ كن ودود وسريع`,
+✅ أكد الأوردر قبل ما تبعته`,
         welcome: 'أهلاً وسهلاً! 🍽️ أنا سفرة. إيه الأكل الحلو اللي تحبه؟'
     },
     tajer: {
@@ -42,9 +43,9 @@ const AGENT_PROMPTS: Record<string, { name: string; prompt: string; welcome: str
 لغتك:
 - عربية تجارية محترفة
 - قليل الكلام كثير المعنى
-- ردود مختصرة ومقنعة
 
 قواعدك:
+✅ لما العميل يحدد مكان ونوع العقار، استخدم الـ book_property_viewing function
 ✅ تحقق من التوافر قبل أي عرض
 ✅ اظهر القيمة قبل السعر`,
         welcome: 'أهلاً! 🏠 أنا تاجر. بتدور على شاليه ولا شقة؟'
@@ -62,7 +63,8 @@ const AGENT_PROMPTS: Record<string, { name: string; prompt: string; welcome: str
 - عربية مصرية رقيقة
 - اشرح الجرعات بوضوح
 
-قواعد السلامة:
+قواعدك:
+✅ لما العميل يسأل عن دواء، استخدم الـ check_medicine_availability function
 ✅ اسأل عن الحساسية دايماً
 ✅ اشرح الجرعة بوضوح
 ⛔ ما تشخصش أمراض أبداً`,
@@ -82,6 +84,7 @@ const AGENT_PROMPTS: Record<string, { name: string; prompt: string; welcome: str
 - ردود مختصرة بالأرقام
 
 قواعدك:
+✅ لما العميل يطلب قطعة غيار، استخدم الـ request_spare_part function
 ✅ دايماً اذكر MOQ
 ✅ وضح مدة التوصيل`,
         welcome: 'مرحباً ⚙️ أنا تِرس. مواصفات الطلبية إيه؟'
@@ -100,6 +103,7 @@ const AGENT_PROMPTS: Record<string, { name: string; prompt: string; welcome: str
 - شجع الطالب دايماً
 
 قواعدك:
+✅ لما الطالب يطلب حصة، استخدم الـ schedule_tutoring_session function
 ✅ بسّط المعلومة
 ✅ شجّع الطالب`,
         welcome: 'أهلاً يا بطل! 📚 جاهز نتعلم حاجة جديدة؟'
@@ -107,14 +111,22 @@ const AGENT_PROMPTS: Record<string, { name: string; prompt: string; welcome: str
 };
 
 // ============================================================================
+// IN-MEMORY STORES (Replace with D1 in production)
+// ============================================================================
+
+const ordersStore: Array<{ id: string; items: string; total: number; status: string; createdAt: number }> = [];
+const bookingsStore: Array<{ id: string; type: string; location: string; budget: string; createdAt: number }> = [];
+const rfqsStore: Array<{ id: string; partName: string; quantity: number; urgency: string; createdAt: number }> = [];
+const sessionsStore: Array<{ id: string; subject: string; grade: string; time: string; createdAt: number }> = [];
+
+// ============================================================================
 // GEMINI API CONFIGURATION
 // ============================================================================
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyCgGlT_QlpUtz6ijcE7gUZAIXNMiYj4LtA';
-const GEMINI_MODEL = 'gemini-1.5-flash';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 
 // ============================================================================
-// POST: Handle chat messages
+// POST: Handle chat messages with Function Calling
 // ============================================================================
 
 export async function POST(request: NextRequest) {
@@ -131,43 +143,146 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
         }
 
-        // Build conversation for Gemini
-        const contents = [
-            ...history.map((msg: { role: string; content: string }) => ({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.content }]
-            })),
-            { role: 'user', parts: [{ text: message }] }
-        ];
-
-        // Call Gemini API
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    systemInstruction: { parts: [{ text: agent.prompt }] },
-                    contents,
-                    generationConfig: {
-                        temperature: 0.8,
-                        maxOutputTokens: 300,
-                        topP: 0.9
-                    }
-                })
-            }
+        // Call Gemini with Function Calling
+        const aiResponse = await chatWithGemini(
+            GEMINI_API_KEY,
+            agent.prompt,
+            message,
+            history.map((msg: { role: string; content: string }) => ({
+                role: msg.role,
+                content: msg.content
+            }))
         );
 
-        if (!response.ok) {
-            console.error('Gemini Error:', await response.text());
-            return NextResponse.json({ error: 'AI service error' }, { status: 500 });
+        // ⚡ Handle Function Calls (The Muscles)
+        if (aiResponse.type === 'action') {
+            const { function: funcName, args } = aiResponse;
+            const actionId = crypto.randomUUID().slice(0, 8);
+            let replyText = "";
+
+            // --- 🥘 Sofra: create_order ---
+            if (funcName === 'create_order') {
+                ordersStore.push({
+                    id: actionId,
+                    items: args.items || '',
+                    total: args.total_price || 0,
+                    status: 'pending',
+                    createdAt: Date.now()
+                });
+
+                replyText = `تم استلام طلبك يا فندم! 🥘
+📋 رقم الطلب: #${actionId}
+🍕 الأصناف: ${args.items}
+💰 السعر التقريبي: ${args.total_price || 'يتحدد'} ج.م
+${args.notes ? `📝 ملاحظات: ${args.notes}` : ''}
+
+هيوصلك في أقرب وقت! ✅`;
+            }
+
+            // --- 🏠 Tajer: book_property_viewing ---
+            else if (funcName === 'book_property_viewing') {
+                bookingsStore.push({
+                    id: actionId,
+                    type: args.property_type || '',
+                    location: args.location || '',
+                    budget: args.budget || '',
+                    createdAt: Date.now()
+                });
+
+                replyText = `تمام، سجلت طلب المعاينة! 🏠
+📋 رقم الحجز: #${actionId}
+🏢 النوع: ${args.property_type}
+📍 المكان: ${args.location}
+💰 الميزانية: ${args.budget || 'مفتوحة'}
+${args.preferred_date ? `📅 الموعد: ${args.preferred_date}` : ''}
+
+هنتواصل معاك للتأكيد! ✅`;
+            }
+
+            // --- 💊 Dr. Moe: check_medicine_availability ---
+            else if (funcName === 'check_medicine_availability') {
+                const isAvailable = Math.random() > 0.3; // 70% chance available
+                const hasGeneric = args.generic_ok && Math.random() > 0.5;
+
+                if (isAvailable) {
+                    replyText = `✅ دواء "${args.medicine_name}" متوفر حالياً! 💊
+${args.quantity ? `📦 الكمية المطلوبة: ${args.quantity}` : ''}
+
+تحب أحجزهولك؟`;
+                } else if (hasGeneric) {
+                    replyText = `⚠️ دواء "${args.medicine_name}" ناقص حالياً.
+لكن في بديل بنفس المادة الفعالة متوفر! 💊
+
+تحب أجيبلك البديل؟`;
+                } else {
+                    replyText = `😔 للأسف "${args.medicine_name}" مش متوفر دلوقتي.
+ممكن تسيبلي رقمك وأبلغك أول ما يوصل؟`;
+                }
+            }
+
+            // --- ⚙️ Tirs: request_spare_part (RFQ) ---
+            else if (funcName === 'request_spare_part') {
+                rfqsStore.push({
+                    id: actionId,
+                    partName: args.part_name || '',
+                    quantity: args.quantity || 1,
+                    urgency: args.urgency || 'normal',
+                    createdAt: Date.now()
+                });
+
+                const urgencyText = args.urgency === 'emergency' ? '🔴 طوارئ' :
+                    args.urgency === 'urgent' ? '🟡 عاجل' : '🟢 عادي';
+
+                replyText = `تم تسجيل طلب عرض السعر (RFQ)! ⚙️
+📋 رقم الطلب: #${actionId}
+🔩 القطعة: ${args.part_name}
+📦 الكمية: ${args.quantity || 1}
+${args.machine_model ? `🏭 الماكينة: ${args.machine_model}` : ''}
+⏰ الأولوية: ${urgencyText}
+
+سيصلك الرد من المصانع خلال 24 ساعة! ✅`;
+            }
+
+            // --- 📚 Ostaz: schedule_tutoring_session ---
+            else if (funcName === 'schedule_tutoring_session') {
+                sessionsStore.push({
+                    id: actionId,
+                    subject: args.subject || '',
+                    grade: args.grade_level || '',
+                    time: args.preferred_time || '',
+                    createdAt: Date.now()
+                });
+
+                replyText = `تمام يا بطل! حجزتلك الحصة! 📚
+📋 رقم الحجز: #${actionId}
+📖 المادة: ${args.subject}
+${args.grade_level ? `🎓 المستوى: ${args.grade_level}` : ''}
+${args.preferred_time ? `⏰ الموعد: ${args.preferred_time}` : ''}
+${args.session_type ? `📍 النوع: ${args.session_type === 'online' ? 'أونلاين' : 'حضوري'}` : ''}
+
+جهز نفسك! 🚀`;
+            }
+
+            // Unknown function
+            else {
+                replyText = `تم استلام طلبك! سنتواصل معك قريباً. 📞`;
+            }
+
+            // Return action result
+            return NextResponse.json({
+                response: replyText,
+                agent: agent.name,
+                action: {
+                    type: funcName,
+                    id: actionId,
+                    args: args
+                }
+            });
         }
 
-        const data = await response.json();
-        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'عذراً، حصل خطأ. جرب تاني.';
-
+        // Normal Text Response
         return NextResponse.json({
-            response: aiText,
+            response: aiResponse.content,
             agent: agent.name
         });
 
@@ -193,5 +308,12 @@ export async function GET(request: NextRequest) {
         });
     }
 
-    return NextResponse.json({ agents: Object.keys(AGENT_PROMPTS) });
+    // Return all agents info
+    return NextResponse.json({
+        agents: Object.entries(AGENT_PROMPTS).map(([id, agent]) => ({
+            id,
+            name: agent.name,
+            welcome: agent.welcome
+        }))
+    });
 }
